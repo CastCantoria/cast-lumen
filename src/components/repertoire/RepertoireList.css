@@ -1,0 +1,17 @@
+﻿.repertoire-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.repertoire-empty {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+.repertoire-empty h3 {
+  color: #2C5530;
+  margin-bottom: 1rem;
+}
