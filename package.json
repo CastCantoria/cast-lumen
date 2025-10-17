@@ -1,31 +1,34 @@
-﻿{
-    "version":  "1.0.0",
-    "name":  "cast-lumen",
-    "scripts":  {
-                    "lint":  "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-                    "dev-win":  "powershell -File ./scripts/dev.ps1",
-                    "build-win":  "powershell -File ./scripts/build.ps1",
-                    "build":  "vite build",
-                    "dev":  "vite",
-                    "deploy-win":  "powershell -File ./scripts/deploy.ps1",
-                    "deploy":  "vite build \u0026\u0026 vercel --prod",
-                    "preview":  "vite preview"
-                },
-    "devDependencies":  {
-                            "postcss":  "^8.4.32",
-                            "vite":  "^5.0.8",
-                            "@types/react-dom":  "^18.2.17",
-                            "autoprefixer":  "^10.4.16",
-                            "@types/react":  "^18.2.43",
-                            "@vitejs/plugin-react":  "^4.2.1",
-                            "tailwindcss":  "^3.3.6"
-                        },
-    "type":  "module",
-    "dependencies":  {
-                         "react-router-dom":  "^6.20.1",
-                         "react":  "^18.2.0",
-                         "firebase":  "^10.7.1",
-                         "react-dom":  "^18.2.0"
-                     },
-    "private":  true
+﻿# Créer le package.json fusionné et valide
+@'
+{
+  "name": "cast-lumen",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "dev-win": "powershell -File ./scripts/dev.ps1",
+    "build-win": "powershell -File ./scripts/build.ps1",
+    "deploy-win": "powershell -File ./scripts/deploy.ps1",
+    "deploy": "vite build && vercel --prod"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.1",
+    "firebase": "^10.7.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.0.8",
+    "tailwindcss": "^3.3.6",
+    "autoprefixer": "^10.4.16",
+    "postcss": "^8.4.32",
+    "@types/react": "^18.2.43",
+    "@types/react-dom": "^18.2.17"
+  }
 }
+'@ | Out-File -FilePath package.json -Encoding utf8 -Force
