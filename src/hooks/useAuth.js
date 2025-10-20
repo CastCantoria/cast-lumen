@@ -1,4 +1,4 @@
-ï»¿// src/hooks/useAuth.js
+// src/hooks/useAuth.js
 import { useState, useEffect } from 'react';
 import { 
   signInWithEmailAndPassword, 
@@ -7,7 +7,7 @@ import {
   onAuthStateChanged 
 } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../config/firebase';
+import { auth, db } from '../lib/firebase';
 
 export const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -16,7 +16,7 @@ export const useAuth = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (userAuth) => {
       if (userAuth) {
-        // RÃ©cupÃ©rer les donnÃ©es supplÃ©mentaires de Firestore
+        // Récupérer les données supplémentaires de Firestore
         const userDoc = await getDoc(doc(db, 'users', userAuth.uid));
         const userData = userDoc.data();
         
@@ -43,7 +43,7 @@ export const useAuth = () => {
   const register = async (email, password, userData) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     
-    // Ajouter les donnÃ©es supplÃ©mentaires dans Firestore
+    // Ajouter les données supplémentaires dans Firestore
     await setDoc(doc(db, 'users', userCredential.user.uid), {
       email,
       role: 'member',
