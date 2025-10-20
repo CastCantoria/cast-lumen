@@ -10,7 +10,7 @@
   where,
   orderBy 
 } from "firebase/firestore";
-import { db, storage } from "../config/firebase";
+import { db, storage } from "../config/firebase.js.supp";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const repertoireService = {
