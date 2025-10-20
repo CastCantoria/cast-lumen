@@ -4,6 +4,14 @@ import { AuthProvider } from "./contexts/AuthContext"
 import Header from "./components/layout/Header"
 import Footer from "./components/layout/Footer"
 import Home from "./pages/public/Home"
+import About from "./pages/public/About"
+import Repertoire from "./pages/public/Repertoire"
+import Events from "./pages/public/Events"
+import Gallery from "./pages/public/Gallery"
+import Spiritualite from "./pages/public/Spiritualite"
+import Blog from "./pages/public/Blog"
+import Contact from "./pages/public/Contact"
+import Login from "./pages/public/Login"
 
 function App() {
   return (
@@ -14,14 +22,14 @@ function App() {
           <main style={{ flexGrow: 1 }}>
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/about" element={<div style={{ padding: "80px 20px 20px 20px", textAlign: "center" }}>A Propos - En construction</div>} />
-              <Route path="/repertoire" element={<div style={{ padding: "80px 20px 20px 20px", textAlign: "center" }}>Repertoire - En construction</div>} />
-              <Route path="/events" element={<div style={{ padding: "80px 20px 20px 20px", textAlign: "center" }}>Concerts - En construction</div>} />
-              <Route path="/gallery" element={<div style={{ padding: "80px 20px 20px 20px", textAlign: "center" }}>Galerie - En construction</div>} />
-              <Route path="/spirituality" element={<div style={{ padding: "80px 20px 20px 20px", textAlign: "center" }}>Spiritualite - En construction</div>} />
-              <Route path="/blog" element={<div style={{ padding: "80px 20px 20px 20px", textAlign: "center" }}>Blog - En construction</div>} />
-              <Route path="/contact" element={<div style={{ padding: "80px 20px 20px 20px", textAlign: "center" }}>Contact - En construction</div>} />
-              <Route path="/login" element={<div style={{ padding: "80px 20px 20px 20px", textAlign: "center" }}>Login - En construction</div>} />
+              <Route path="/about" element={<About />} />
+              <Route path="/repertoire" element={<Repertoire />} />
+              <Route path="/events" element={<Events />} />
+              <Route path="/gallery" element={<Gallery />} />
+              <Route path="/spirituality" element={<Spiritualite />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/admin" element={<div style={{ padding: "80px 20px 20px 20px", textAlign: "center" }}>Admin - En construction</div>} />
             </Routes>
           </main>
