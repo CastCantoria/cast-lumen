@@ -7,7 +7,7 @@ import {
   onAuthStateChanged 
 } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
-import { auth, db } from '../lib/firebase';
+import { auth, db } from '../config/firebase';  // Au lieu de '../lib/firebase';
 
 export const useAuth = () => {
   const [user, setUser] = useState(null);
@@ -16,7 +16,7 @@ export const useAuth = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (userAuth) => {
       if (userAuth) {
-        // Récupérer les données supplémentaires de Firestore
+        // Rï¿½cupï¿½rer les donnï¿½es supplï¿½mentaires de Firestore
         const userDoc = await getDoc(doc(db, 'users', userAuth.uid));
         const userData = userDoc.data();
         
@@ -43,7 +43,7 @@ export const useAuth = () => {
   const register = async (email, password, userData) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     
-    // Ajouter les données supplémentaires dans Firestore
+    // Ajouter les donnï¿½es supplï¿½mentaires dans Firestore
     await setDoc(doc(db, 'users', userCredential.user.uid), {
       email,
       role: 'member',
