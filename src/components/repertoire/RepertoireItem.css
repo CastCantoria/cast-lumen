@@ -1,0 +1,96 @@
+﻿.repertoire-item {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.repertoire-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.item-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #2C5530;
+  margin: 0;
+}
+
+.item-composer {
+  color: #666;
+  font-style: italic;
+  margin: 0.25rem 0;
+}
+
+.item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.meta-tag {
+  background: #f8f9fa;
+  color: #666;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+}
+
+.item-description {
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.item-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.btn-icon {
+  background: none;
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  background: #f8f9fa;
+}
+
+.media-preview {
+  margin-top: 1rem;
+}
+
+.audio-player {
+  width: 100%;
+  margin-top: 0.5rem;
+}
+
+.pdf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #2C5530;
+  text-decoration: none;
+  margin-top: 0.5rem;
+}
+
+.pdf-link:hover {
+  text-decoration: underline;
+}
