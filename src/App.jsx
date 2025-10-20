@@ -1,5 +1,5 @@
 ﻿import React from "react"
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
+import { HashRouter as Router, Routes, Route } from "react-router-dom"
 import { AuthProvider } from "./contexts/AuthContext"
 import Header from "./components/layout/Header"
 import Footer from "./components/layout/Footer"
@@ -16,7 +16,7 @@ import Login from "./pages/public/Login"
 function App() {
   return (
     <AuthProvider>
-      <Router>
+      <Router>  {/* ← HashRouter au lieu de BrowserRouter */}
         <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}>
           <Header />
           <main style={{ flexGrow: 1 }}>
