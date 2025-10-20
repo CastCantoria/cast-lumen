@@ -1,6 +1,6 @@
-ï»¿// src/pages/public/Blog.jsx
+// src/pages/public/Blog.jsx
 import React, { useState } from 'react';
-import { Calendar, User, Clock, Tag, Search } from 'lucide-react';
+// import { Calendar, User, Clock } from "lucide-react"
 
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -9,8 +9,8 @@ const Blog = () => {
   const blogPosts = [
     {
       id: 1,
-      title: "L'Art du Chant SacrÃ© Ã  Travers les SiÃ¨cles",
-      excerpt: "Exploration des traditions du chant sacrÃ© depuis le grÃ©gorien jusqu'aux compositions contemporaines...",
+      title: "L'Art du Chant Sacré à Travers les Siècles",
+      excerpt: "Exploration des traditions du chant sacré depuis le grégorien jusqu'aux compositions contemporaines...",
       author: "Lucien Emmanuel",
       date: "2024-11-10",
       readTime: "5 min",
@@ -20,8 +20,8 @@ const Blog = () => {
     },
     {
       id: 2,
-      title: "PrÃ©parer son Audition pour une Chorale SacrÃ©e",
-      excerpt: "Conseils et techniques pour rÃ©ussir son audition et intÃ©grer une chorale de chant sacrÃ©...",
+      title: "Préparer son Audition pour une Chorale Sacrée",
+      excerpt: "Conseils et techniques pour réussir son audition et intégrer une chorale de chant sacré...",
       author: "Marie Dubois",
       date: "2024-11-05",
       readTime: "3 min",
@@ -31,7 +31,7 @@ const Blog = () => {
     }
   ];
 
-  const categories = ['Tous', 'Histoire', 'Conseils', 'SpiritualitÃ©', 'Concerts', 'Annonces'];
+  const categories = ['Tous', 'Histoire', 'Conseils', 'Spiritualité', 'Concerts', 'Annonces'];
 
   const filteredPosts = blogPosts.filter(post => {
     const matchesSearch = searchTerm === '' || 
@@ -48,9 +48,9 @@ const Blog = () => {
       {/* Hero Section */}
       <section className="bg-sacred-green text-white py-16">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Blog & ActualitÃ©s</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Blog & Actualités</h1>
           <p className="text-xl text-golden opacity-90">
-            DÃ©couvrez nos articles sur le chant sacrÃ©, la spiritualitÃ© et la vie de la chorale
+            Découvrez nos articles sur le chant sacré, la spiritualité et la vie de la chorale
           </p>
         </div>
       </section>
@@ -71,7 +71,7 @@ const Blog = () => {
               />
             </div>
 
-            {/* Filtres catÃ©gories */}
+            {/* Filtres catégories */}
             <div className="flex flex-wrap gap-2">
               {categories.map(category => (
                 <button
@@ -176,10 +176,10 @@ const Blog = () => {
             <div className="text-center py-12">
               <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-gray-600 mb-2">
-                Aucun article trouvÃ©
+                Aucun article trouvé
               </h3>
               <p className="text-gray-500">
-                Essayez de modifier vos critÃ¨res de recherche
+                Essayez de modifier vos critères de recherche
               </p>
             </div>
           )}
