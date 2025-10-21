@@ -1,13 +1,14 @@
 /* src/components/layout/Header.css */
 .sacred-header {
-  background: linear-gradient(135deg, #2c5530 0%, #4a7c59 100%);
+  background: linear-gradient(135deg, #1e3c1e 0%, #2c5530 50%, #4a7c59 100%);
   color: white;
   padding: 1rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
   position: relative;
+  border-bottom: 3px solid rgba(255, 215, 0, 0.3);
 }
 
 .header-brand {
@@ -80,11 +81,15 @@
   margin: 0;
   font-size: clamp(1.8rem, 4vw, 2.2rem);
   transition: color 0.3s ease;
-  font-family: 'Times New Roman', serif;
-  font-weight: normal;
-  letter-spacing: 2px;
-  text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  font-weight: bold;
+  letter-spacing: 3px;
+  text-shadow: 2px 2px 6px rgba(0,0,0,0.4);
   line-height: 1.1;
+  background: linear-gradient(135deg, #ffffff 0%, #f0f8ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .brand-text:hover h1 {
@@ -98,10 +103,10 @@
   opacity: 0.95;
   font-size: clamp(0.8rem, 2vw, 1rem);
   transition: opacity 0.3s ease;
-  font-family: 'Times New Roman', serif;
-  letter-spacing: 0.5px;
-  color: #f0f8ff;
-  text-shadow: 1px 1px 2px rgba(0,0,0,0.4);
+  font-family: 'Georgia', 'Times New Roman', serif;
+  letter-spacing: 1px;
+  color: #e8f5e8;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
   margin-top: 0.3rem;
   line-height: 1.2;
 }
@@ -190,7 +195,7 @@
   transition: all 0.3s ease;
   font-size: 1rem;
   position: relative;
-  font-family: 'Times New Roman', serif;
+  font-family: 'Georgia', 'Times New Roman', serif;
   letter-spacing: 0.5px;
   display: flex;
   align-items: center;
@@ -200,27 +205,6 @@
 .sacred-navigation a:hover {
   background: rgba(255,255,255,0.1);
   transform: translateY(-2px);
-}
-
-/* Style pour le bouton "Nous Rejoindre" */
-.join-btn {
-  background: linear-gradient(135deg, #4a7c59 0%, #5d9c6e 100%);
-  border: 1px solid #4a7c59;
-  font-weight: bold;
-}
-
-.join-btn:hover {
-  background: linear-gradient(135deg, #5d9c6e 0%, #6ebc7e 100%);
-}
-
-/* Style pour le bouton Contact */
-.contact-btn {
-  background: rgba(255,255,255,0.15);
-  border: 1px solid rgba(255,255,255,0.3);
-}
-
-.contact-btn:hover {
-  background: rgba(255,255,255,0.25);
 }
 
 /* Navigation avec icônes */
@@ -284,9 +268,9 @@
   position: absolute;
   top: 100%;
   left: 0;
-  background: linear-gradient(135deg, #2c1a4d 0%, #1a0d2c 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  background: linear-gradient(135deg, #1a2e1a 0%, #2c5530 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
   min-width: 200px;
   opacity: 0;
   visibility: hidden;
@@ -294,6 +278,7 @@
   transition: all 0.3s ease;
   z-index: 1000;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
 }
 
 .dropdown-menu.active {
@@ -309,8 +294,10 @@
   padding: 0.8rem 1.2rem;
   color: inherit;
   text-decoration: none;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   transition: all 0.3s ease;
+  font-family: 'Georgia', 'Times New Roman', serif;
+  letter-spacing: 0.3px;
 }
 
 .dropdown-menu a:last-child {
@@ -318,8 +305,29 @@
 }
 
 .dropdown-menu a:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 215, 0, 0.1) 100%);
   padding-left: 1.5rem;
+}
+
+/* ===== STYLES POUR LE MENU NOUS CONTACTER ===== */
+
+.contact-dropdown-toggle {
+  background: linear-gradient(135deg, #4a7c59 0%, #5d9c6e 100%);
+  border: 1px solid #4a7c59;
+  font-weight: bold;
+}
+
+.contact-dropdown-toggle:hover {
+  background: linear-gradient(135deg, #5d9c6e 0%, #6ebc7e 100%);
+}
+
+.join-dropdown-item {
+  background: linear-gradient(135deg, rgba(74, 124, 89, 0.1) 0%, rgba(93, 156, 110, 0.1) 100%);
+  border-left: 3px solid #4a7c59;
+}
+
+.join-dropdown-item:hover {
+  background: linear-gradient(135deg, rgba(74, 124, 89, 0.2) 0%, rgba(93, 156, 110, 0.2) 100%);
 }
 
 /* ===== STYLES POUR LE MENU UTILISATEUR ===== */
@@ -335,13 +343,13 @@
   color: white;
   border: none;
   transition: all 0.3s ease;
-  font-family: 'Times New Roman', serif;
+  font-family: 'Georgia', 'Times New Roman', serif;
   letter-spacing: 0.5px;
 }
 
 .user-avatar {
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.95);
   color: #4a7c59;
@@ -349,9 +357,29 @@
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 1rem;
+  font-size: 1.1rem;
   border: 2px solid rgba(255, 255, 255, 0.5);
   transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.user-avatar-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.user-avatar-fallback {
+  display: none;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #4a7c59 0%, #5d9c6e 100%);
+  color: white;
+  font-weight: bold;
 }
 
 .user-menu .dropdown-toggle:hover {
@@ -360,8 +388,9 @@
 }
 
 .user-menu .dropdown-toggle:hover .user-avatar {
-  transform: scale(1.1);
+  transform: scale(1.05);
   border-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 /* Menu connexion non connecté */
@@ -375,18 +404,41 @@
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.3);
   transition: all 0.3s ease;
-  font-family: 'Times New Roman', serif;
+  font-family: 'Georgia', 'Times New Roman', serif;
   letter-spacing: 0.5px;
 }
 
 .login-icon {
-  font-size: 1.3rem;
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: transform 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.login-icon-image {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+  filter: brightness(0) invert(1);
+}
+
+.login-icon-fallback {
+  display: none;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
 }
 
 .login-menu .dropdown-toggle:hover {
@@ -394,8 +446,14 @@
   transform: translateY(-2px);
 }
 
-.login-menu .dropdown-toggle:hover .login-icon {
+.login-menu .dropdown-toggle:hover .login-icon-image {
   transform: scale(1.2);
+  filter: brightness(0) invert(1) drop-shadow(0 0 4px rgba(255, 255, 255, 0.6));
+}
+
+.login-menu .dropdown-toggle:hover .login-icon {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 /* Dropdown utilisateur amélioré */
@@ -403,16 +461,16 @@
   min-width: 220px;
   right: 0;
   left: auto;
-  background: linear-gradient(135deg, #2c1a4d 0%, #1a0d2c 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  background: linear-gradient(135deg, #1a2e1a 0%, #2c5530 100%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
   padding: 0;
   overflow: hidden;
 }
 
 .user-info {
   padding: 1rem 1.2rem;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 215, 0, 0.05) 100%);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
@@ -421,13 +479,13 @@
   color: #ffffff;
   font-size: 0.95rem;
   margin-bottom: 0.3rem;
-  font-family: 'Times New Roman', serif;
+  font-family: 'Georgia', 'Times New Roman', serif;
 }
 
 .user-info span {
   font-size: 0.8rem;
   color: rgba(255, 255, 255, 0.7);
-  font-family: 'Times New Roman', serif;
+  font-family: 'Georgia', 'Times New Roman', serif;
 }
 
 .user-role {
@@ -435,6 +493,8 @@
   margin-top: 4px;
   font-size: 0.8rem;
   color: #ffd700 !important;
+  font-weight: bold;
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
 }
 
 .dropdown-divider {
@@ -453,7 +513,7 @@
   text-decoration: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   transition: all 0.3s ease;
-  font-family: 'Times New Roman', serif;
+  font-family: 'Georgia', 'Times New Roman', serif;
 }
 
 .user-dropdown a:last-child,
@@ -463,7 +523,7 @@
 
 .user-dropdown a:hover,
 .login-dropdown a:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 215, 0, 0.1) 100%);
   padding-left: 1.5rem;
 }
 
@@ -481,7 +541,7 @@
   gap: 0.8rem;
   transition: all 0.3s ease;
   border-bottom: none !important;
-  font-family: 'Times New Roman', serif;
+  font-family: 'Georgia', 'Times New Roman', serif;
 }
 
 .logout-btn:hover {
@@ -496,6 +556,16 @@
   height: 1px;
   background: rgba(255,255,255,0.2);
   margin: 1rem 0;
+}
+
+/* Animation de lueur dorée pour l'avatar utilisateur */
+@keyframes goldenGlow {
+  0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.3); }
+  50% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.6); }
+}
+
+.user-avatar {
+  animation: goldenGlow 3s ease-in-out infinite;
 }
 
 /* ===== RESPONSIVE ===== */
@@ -574,7 +644,7 @@
     display: flex;
     align-items: center;
     transition: all 0.3s ease;
-    font-family: 'Times New Roman', serif;
+    font-family: 'Georgia', 'Times New Roman', serif;
   }
   
   .sacred-navigation a:hover {
@@ -626,8 +696,8 @@
   
   .user-avatar,
   .login-icon {
-    width: 30px;
-    height: 30px;
+    width: 35px;
+    height: 35px;
     font-size: 0.9rem;
   }
   
@@ -674,15 +744,6 @@
   .logout-btn:hover {
     padding-left: 2.5rem;
     background: rgba(255, 255, 255, 0.08);
-  }
-  
-  .join-btn,
-  .contact-btn {
-    background: rgba(255,255,255,0.1);
-    border: none;
-    border-top: 1px solid rgba(255,255,255,0.2);
-    border-radius: 0;
-    margin-top: 0.5rem;
   }
 }
 
@@ -748,8 +809,8 @@
   
   .user-avatar,
   .login-icon {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     font-size: 0.8rem;
   }
 }

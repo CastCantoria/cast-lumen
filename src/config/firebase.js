@@ -1,27 +1,27 @@
-﻿// src/config/firebase.js - FICHIER UNIQUE ET CORRECT
-import { initializeApp, getApp } from 'firebase/app';
+﻿// src/config/firebase.js
+import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
+// Configuration Firebase
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
+  apiKey: "AIzaSyCT_8j9KBKgcYr3naOFRp-Kk-s-gr_A1gs",
+  authDomain: "cast-84d3f.firebaseapp.com",
+  projectId: "cast-84d3f",
+  storageBucket: "cast-84d3f.firebasestorage.app",
+  messagingSenderId: "160422742820",
+  appId: "1:160422742820:web:f60e6c94ba743d1afd41b1",
+  measurementId: "G-9BNSYK4TH4"
 };
 
-// Initialisation sécurisée
-let app;
-try {
-  app = initializeApp(firebaseConfig);
-} catch (error) {
-  app = getApp();
-}
+// Initialiser Firebase
+const app = initializeApp(firebaseConfig);
 
+// Initialiser les services
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+// Export par défaut
 export default app;

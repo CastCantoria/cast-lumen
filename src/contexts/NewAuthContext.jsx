@@ -1,15 +1,18 @@
 ﻿import React, { createContext, useContext, useEffect, useState } from 'react';
-import { 
-  signInWithPopup, 
-  signOut as firebaseSignOut,
+import {
+  signInWithPopup,
+  signOut,
   onAuthStateChanged,
-  signInWithEmailAndPassword 
+  GoogleAuthProvider
 } from 'firebase/auth';
-import { auth, googleProvider } from '../config/firebase'; // ✅ Maintenant correct
-import { getUserProfile, createUserProfile } from '../utils/firestore';
+import { auth } from '../config/firebase';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../config/firebase';
 
+// Créer le contexte
 const AuthContext = createContext();
 
+// Hook personnalisé
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -18,6 +21,39 @@ export const useAuth = () => {
   return context;
 };
 
+// Fonctions Firestore
+const getUserProfile = async (uid) => {
+  try {
+    const userDoc = await getDoc(doc(db, 'users', uid));
+    return userDoc.exists() ? userDoc.data() : null;
+  } catch (error) {
+    console.error('Erreur récupération profil:', error);
+    return null;
+  }
+};
+
+const createUserProfile = async (user) => {
+  try {
+    const userProfile = {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName || user.email.split('@')[0],
+      photoURL: user.photoURL || null,
+      role: 'public',
+      createdAt: serverTimestamp(),
+      lastLogin: serverTimestamp(),
+      isActive: true
+    };
+
+    await setDoc(doc(db, 'users', user.uid), userProfile);
+    return userProfile;
+  } catch (error) {
+    console.error('Erreur création profil:', error);
+    throw error;
+  }
+};
+
+// Provider
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
@@ -26,17 +62,21 @@ export const AuthProvider = ({ children }) => {
   // Connexion Google
   const signInWithGoogle = async () => {
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
       const user = result.user;
-      
-      // Vérifier/Créer le profil en base
+
       let profile = await getUserProfile(user.uid);
       if (!profile) {
         profile = await createUserProfile(user);
       }
-      
+
       setCurrentUser(user);
       setUserProfile(profile);
+
+      // Message de bienvenue
+      console.log('🎉 Connexion réussie ! Bienvenue sur C.A.S.T.');
+
       return { user, profile };
     } catch (error) {
       console.error('Erreur connexion Google:', error);
@@ -44,14 +84,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Connexion email/mot de passe (existant)
-  const login = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
-  };
-
   // Déconnexion
-  const logout = () => {
-    return firebaseSignOut(auth);
+  const logout = async () => {
+    try {
+      console.log('👋 Déconnexion réussie. À bientôt sur C.A.S.T.!');
+      await signOut(auth);
+      setCurrentUser(null);
+      setUserProfile(null);
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Erreur déconnexion:', error);
+      throw error;
+    }
   };
 
   // Écouter les changements d'authentification
@@ -72,17 +116,10 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const value = {
-    // Utilisateurs
-    user: currentUser,
     currentUser,
     userProfile,
-    
-    // Méthodes d'authentification
     signInWithGoogle,
-    login,
     logout,
-    
-    // États
     loading,
     isAuthenticated: !!currentUser,
     isAdmin: userProfile?.role === 'admin',
@@ -95,3 +132,6 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+// Export pour les composants qui en auraient besoin
+export { AuthContext };

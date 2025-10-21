@@ -1,13 +1,13 @@
 // src/components/layout/Header.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/NewAuthContext';
 import './Header.css';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
-  const { currentUser, userRole, logout } = useAuth();
+  const { currentUser, userProfile, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const toggleMenu = () => {
@@ -52,11 +52,18 @@ const Header = () => {
     }
   };
 
-  // Fonction pour obtenir l'initiale de l'utilisateur
-  const getUserInitial = () => {
-    if (currentUser?.firstName) {
-      return currentUser.firstName.charAt(0).toUpperCase();
+  // Fonction pour obtenir l'avatar de l'utilisateur
+  const getUserAvatar = () => {
+    // Si l'utilisateur a une photo de profil Google
+    if (currentUser?.photoURL) {
+      return currentUser.photoURL;
     }
+    // Sinon, utiliser l'icône personnalisée
+    return "/images/icone-connexion.png";
+  };
+
+  // Fonction pour obtenir l'initiale de l'utilisateur (fallback)
+  const getUserInitial = () => {
     if (currentUser?.displayName) {
       return currentUser.displayName.charAt(0).toUpperCase();
     }
@@ -68,13 +75,18 @@ const Header = () => {
 
   // Fonction pour obtenir le nom d'affichage
   const getDisplayName = () => {
-    if (currentUser?.firstName) {
-      return currentUser.firstName;
+    if (userProfile?.displayName) {
+      return userProfile.displayName;
     }
     if (currentUser?.displayName) {
       return currentUser.displayName;
     }
     return currentUser?.email || 'Utilisateur';
+  };
+
+  // Obtenir le rôle de l'utilisateur
+  const getUserRole = () => {
+    return userProfile?.role || 'public';
   };
 
   // Navigation structurée avec dropdowns
@@ -93,6 +105,13 @@ const Header = () => {
         { path: "/events", label: "Concerts", icon: "🎵" },
         { path: "/blog", label: "Blog", icon: "📰" },
         { path: "/spirituality", label: "Spiritualité", icon: "🙏" }
+      ]
+    },
+    contact: {
+      title: "📞 Nous Contacter",
+      items: [
+        { path: "/join", label: "Nous Rejoindre", icon: "👥" },
+        { path: "/contact", label: "Contact & Infos", icon: "📞" }
       ]
     }
   };
@@ -188,21 +207,37 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Bouton Nous Rejoindre */}
-        <a href="/join" onClick={(e) => { e.preventDefault(); navigateTo('/join'); }} className="join-btn">
-          <span>👥</span> Nous Rejoindre
-        </a>
-
-        {/* Bouton Contact */}
-        <a href="/contact" onClick={(e) => { e.preventDefault(); navigateTo('/contact'); }} className="contact-btn">
-          <span>📞</span> Contact
-        </a>
+        {/* DROPDOWN NOUS CONTACTER */}
+        <div className="nav-dropdown">
+          <button 
+            className={`dropdown-toggle contact-dropdown-toggle ${activeDropdown === 'contact' ? 'active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleDropdown('contact');
+            }}
+          >
+            <span>📞</span> Nous Contacter
+            <span className="dropdown-arrow">▼</span>
+          </button>
+          <div className={`dropdown-menu ${activeDropdown === 'contact' ? 'active' : ''}`}>
+            {navigation.contact.items.map((item) => (
+              <a 
+                key={item.path} 
+                href={item.path} 
+                onClick={(e) => { e.preventDefault(); navigateTo(item.path); }}
+                className={item.path === '/join' ? 'join-dropdown-item' : ''}
+              >
+                <span>{item.icon}</span> {item.label}
+              </a>
+            ))}
+          </div>
+        </div>
 
         {/* Séparateur visuel */}
         <div className="nav-divider"></div>
 
         {/* État de connexion */}
-        {currentUser ? (
+        {isAuthenticated ? (
           // Utilisateur connecté - Avatar avec dropdown
           <div className="nav-dropdown user-menu">
             <button 
@@ -213,7 +248,19 @@ const Header = () => {
               }}
             >
               <div className="user-avatar">
-                {getUserInitial()}
+                <img 
+                  src={getUserAvatar()} 
+                  alt={getDisplayName()}
+                  className="user-avatar-image"
+                  onError={(e) => {
+                    // Si l'image ne charge pas, afficher l'initiale
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="user-avatar-fallback">
+                  {getUserInitial()}
+                </div>
               </div>
               <span className="user-name-mobile">{getDisplayName()}</span>
               <span className="dropdown-arrow">▼</span>
@@ -221,10 +268,8 @@ const Header = () => {
             <div className={`dropdown-menu user-dropdown ${activeDropdown === 'user' ? 'active' : ''}`}>
               <div className="user-info">
                 <strong>{getDisplayName()}</strong>
-                <span>{currentUser.email}</span>
-                {userRole && (
-                  <span className="user-role">Rôle: {userRole}</span>
-                )}
+                <span>{currentUser?.email}</span>
+                <span className="user-role">Rôle: {getUserRole()}</span>
               </div>
               <div className="dropdown-divider"></div>
               <a href="/dashboard" onClick={(e) => { e.preventDefault(); navigateTo('/dashboard'); }}>
@@ -233,8 +278,8 @@ const Header = () => {
               <a href="/profile" onClick={(e) => { e.preventDefault(); navigateTo('/profile'); }}>
                 <span>👤</span> Mon profil
               </a>
-              {userRole?.startsWith('admin') && (
-                <a href="/admin/dashboard" onClick={(e) => { e.preventDefault(); navigateTo('/admin/dashboard'); }}>
+              {getUserRole() === 'admin' && (
+                <a href="/admin" onClick={(e) => { e.preventDefault(); navigateTo('/admin'); }}>
                   <span>⚙️</span> Administration
                 </a>
               )}
@@ -257,13 +302,24 @@ const Header = () => {
                 toggleDropdown('login');
               }}
             >
-              <div className="login-icon">🔐</div>
+              <div className="login-icon">
+                <img 
+                  src="/images/icone-connexion.png" 
+                  alt="Connexion"
+                  className="login-icon-image"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="login-icon-fallback">👤</div>
+              </div>
               <span className="login-text-mobile">Connexion</span>
               <span className="dropdown-arrow">▼</span>
             </button>
             <div className={`dropdown-menu login-dropdown ${activeDropdown === 'login' ? 'active' : ''}`}>
               <a href="/login" onClick={(e) => { e.preventDefault(); navigateTo('/login'); }}>
-                <span>🔐</span> Se connecter
+                <span>👤</span> Se connecter
               </a>
               <a href="/register" onClick={(e) => { e.preventDefault(); navigateTo('/register'); }}>
                 <span>📝</span> S'inscrire
