@@ -9,12 +9,14 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
+  const [activeSection, setActiveSection] = useState('profile'); // 'profile' ou 'password'
 
   // États du formulaire
   const [formData, setFormData] = useState({
     displayName: '',
     email: '',
     specialite: '',
+    bio: '',
     currentPassword: '',
     newPassword: '',
     confirmPassword: ''
@@ -27,7 +29,8 @@ const Profile = () => {
         ...prev,
         displayName: userProfile.displayName || '',
         email: userProfile.email || currentUser?.email || '',
-        specialite: userProfile.specialite || ''
+        specialite: userProfile.specialite || '',
+        bio: userProfile.bio || ''
       }));
     }
   }, [userProfile, currentUser]);
@@ -52,6 +55,7 @@ const Profile = () => {
       await updateDoc(userRef, {
         displayName: formData.displayName,
         specialite: formData.specialite,
+        bio: formData.bio,
         updatedAt: new Date()
       });
 
@@ -129,85 +133,64 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* En-tête */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <h1 className="text-3xl font-bold text-cast-green">Mon Profil</h1>
-          <p className="text-gray-600 mt-2">
-            Gérez vos informations personnelles et votre mot de passe
-          </p>
+    <div className="p-6">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">👤 Mon Profil</h2>
+      
+      {/* Messages d'alerte */}
+      {message && (
+        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-6">
+          {message}
         </div>
+      )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Informations du compte */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-cast-green mb-4">
-              Informations du compte
-            </h2>
-            
-            <div className="space-y-3 mb-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Rôle</label>
-                <div className="mt-1 px-3 py-2 bg-gray-100 rounded-lg">
-                  <span className="text-cast-green font-medium capitalize">
-                    {userProfile?.role || 'Non défini'}
-                  </span>
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700">UID</label>
-                <div className="mt-1 px-3 py-2 bg-gray-100 rounded-lg font-mono text-sm">
-                  {currentUser?.uid}
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Date de création</label>
-                <div className="mt-1 px-3 py-2 bg-gray-100 rounded-lg">
-                  {userProfile?.createdAt ? new Date(userProfile.createdAt.seconds * 1000).toLocaleDateString('fr-FR') : 'Non disponible'}
-                </div>
-              </div>
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6">
+          {error}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Colonne de gauche - Informations générales */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Navigation des sections */}
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex space-x-4">
+              <button
+                onClick={() => setActiveSection('profile')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  activeSection === 'profile'
+                    ? 'bg-cast-green text-white'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                📝 Informations personnelles
+              </button>
+              <button
+                onClick={() => setActiveSection('password')}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  activeSection === 'password'
+                    ? 'bg-cast-green text-white'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                🔑 Mot de passe
+              </button>
             </div>
-
-            <button
-              onClick={logout}
-              className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition-colors duration-300"
-            >
-              Se déconnecter
-            </button>
           </div>
 
-          {/* Formulaire de modification */}
-          <div className="space-y-6">
-            {/* Formulaire profil */}
-            <form onSubmit={handleUpdateProfile} className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-cast-green mb-4">
-                Modifier le profil
-              </h2>
-
-              {message && (
-                <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4">
-                  {message}
-                </div>
-              )}
-
-              {error && (
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
-                  {error}
-                </div>
-              )}
-
-              <div className="space-y-4">
+          {/* Section Informations personnelles */}
+          {activeSection === 'profile' && (
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Informations Personnelles</h3>
+              
+              <form onSubmit={handleUpdateProfile} className="space-y-4">
                 <div>
-                  <label htmlFor="displayName" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Nom complet
                   </label>
                   <input
-                    id="displayName"
-                    name="displayName"
                     type="text"
+                    name="displayName"
                     value={formData.displayName}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
@@ -216,62 +199,72 @@ const Profile = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Email
                   </label>
                   <input
-                    id="email"
-                    name="email"
                     type="email"
+                    name="email"
                     value={formData.email}
-                    disabled
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-500"
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold bg-gray-50"
+                    readOnly
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    L'email ne peut pas être modifié pour le moment
-                  </p>
+                  <p className="text-xs text-gray-500 mt-1">L'email ne peut pas être modifié</p>
                 </div>
 
                 <div>
-                  <label htmlFor="specialite" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Spécialité
                   </label>
                   <input
-                    id="specialite"
-                    name="specialite"
                     type="text"
+                    name="specialite"
                     value={formData.specialite}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
-                    placeholder="Votre spécialité"
+                    placeholder="Ex: Chant, Piano, Communication..."
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Bio
+                  </label>
+                  <textarea
+                    name="bio"
+                    value={formData.bio}
+                    onChange={handleInputChange}
+                    rows="4"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                    placeholder="Parlez-nous de vous..."
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-cast-green text-white py-2 px-4 rounded-lg hover:bg-cast-gold transition-colors duration-300 disabled:opacity-50"
+                  className="bg-cast-green text-white py-2 px-6 rounded-lg hover:bg-cast-gold transition-colors disabled:opacity-50"
                 >
-                  {loading ? 'Mise à jour...' : 'Mettre à jour le profil'}
+                  {loading ? 'Mise à jour...' : 'Sauvegarder les modifications'}
                 </button>
-              </div>
-            </form>
+              </form>
+            </div>
+          )}
 
-            {/* Formulaire mot de passe */}
-            <form onSubmit={handleChangePassword} className="bg-white rounded-lg shadow-sm p-6">
-              <h2 className="text-xl font-semibold text-cast-green mb-4">
-                Changer le mot de passe
-              </h2>
-
-              <div className="space-y-4">
+          {/* Section Mot de passe */}
+          {activeSection === 'password' && (
+            <div className="bg-white rounded-lg border border-gray-200 p-6">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4">Changer le mot de passe</h3>
+              
+              <form onSubmit={handleChangePassword} className="space-y-4">
                 <div>
-                  <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Mot de passe actuel
                   </label>
                   <input
-                    id="currentPassword"
-                    name="currentPassword"
                     type="password"
+                    name="currentPassword"
                     value={formData.currentPassword}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
@@ -280,28 +273,26 @@ const Profile = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Nouveau mot de passe
                   </label>
                   <input
-                    id="newPassword"
-                    name="newPassword"
                     type="password"
+                    name="newPassword"
                     value={formData.newPassword}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
-                    placeholder="Nouveau mot de passe"
+                    placeholder="Nouveau mot de passe (min. 6 caractères)"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Confirmer le nouveau mot de passe
                   </label>
                   <input
-                    id="confirmPassword"
-                    name="confirmPassword"
                     type="password"
+                    name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
@@ -312,12 +303,84 @@ const Profile = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-cast-green text-white py-2 px-4 rounded-lg hover:bg-cast-gold transition-colors duration-300 disabled:opacity-50"
+                  className="bg-cast-green text-white py-2 px-6 rounded-lg hover:bg-cast-gold transition-colors disabled:opacity-50"
                 >
                   {loading ? 'Changement...' : 'Changer le mot de passe'}
                 </button>
+              </form>
+            </div>
+          )}
+        </div>
+
+        {/* Colonne de droite - Informations compte */}
+        <div className="space-y-6">
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">Informations du Compte</h3>
+            
+            <div className="space-y-3">
+              <div>
+                <span className="text-sm text-gray-500">Rôle</span>
+                <p className="font-medium capitalize">{userProfile?.role || 'public'}</p>
               </div>
-            </form>
+              
+              <div>
+                <span className="text-sm text-gray-500">Email vérifié</span>
+                <p className="font-medium">
+                  {currentUser?.emailVerified ? 
+                    <span className="text-green-600">✅ Oui</span> : 
+                    <span className="text-red-600">❌ Non</span>
+                  }
+                </p>
+              </div>
+              
+              <div>
+                <span className="text-sm text-gray-500">Membre depuis</span>
+                <p className="font-medium">
+                  {userProfile?.createdAt ? 
+                    new Date(userProfile.createdAt.seconds * 1000).toLocaleDateString('fr-FR') : 
+                    'Date non disponible'
+                  }
+                </p>
+              </div>
+              
+              <div>
+                <span className="text-sm text-gray-500">Statut</span>
+                <p className="font-medium">
+                  {userProfile?.isActive ? 
+                    <span className="text-green-600">✅ Compte actif</span> : 
+                    <span className="text-red-600">❌ Compte inactif</span>
+                  }
+                </p>
+              </div>
+
+              <div>
+                <span className="text-sm text-gray-500">UID</span>
+                <p className="font-mono text-xs bg-gray-100 p-2 rounded break-all">
+                  {currentUser?.uid}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-yellow-50 rounded-lg border border-yellow-200 p-6">
+            <h3 className="text-lg font-semibold text-yellow-800 mb-2">Actions Rapides</h3>
+            <div className="space-y-2">
+              <button 
+                onClick={() => setActiveSection('password')}
+                className="w-full text-left text-sm text-yellow-700 hover:text-yellow-800 py-2 transition-colors"
+              >
+                🔑 Changer le mot de passe
+              </button>
+              <button className="w-full text-left text-sm text-yellow-700 hover:text-yellow-800 py-2 transition-colors">
+                📧 Modifier les préférences email
+              </button>
+              <button 
+                onClick={logout}
+                className="w-full text-left text-sm text-red-600 hover:text-red-700 py-2 transition-colors"
+              >
+                🚪 Se déconnecter
+              </button>
+            </div>
           </div>
         </div>
       </div>
