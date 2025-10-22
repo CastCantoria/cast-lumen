@@ -5,6 +5,8 @@ import DashboardOverview from './DashboardOverview';
 import UserManagement from './UserManagement';
 import EventManagement from './EventManagement';
 import RepertoireManagement from './RepertoireManagement';
+import Profile from '../../pages/private/Profile'; // Chemin corrigé
+import AdminPanel from './AdminPanel';
 
 const Dashboard = () => {
   const { userProfile, logout } = useAuth();
@@ -15,11 +17,17 @@ const Dashboard = () => {
   // Définition des onglets disponibles selon le rôle
   const getAvailableTabs = () => {
     const allTabs = [
-      { id: 'overview', label: '📊 Tableau de Bord', icon: '📊', component: DashboardOverview },
-      { id: 'users', label: '👥 Utilisateurs', icon: '👥', component: UserManagement },
-      { id: 'events', label: '🎭 Événements', icon: '🎭', component: EventManagement },
-      { id: 'repertoire', label: '📜 Répertoire', icon: '📜', component: RepertoireManagement },
+      { id: 'overview', label: 'Tableau de Bord', icon: '📊', component: DashboardOverview },
+      { id: 'users', label: 'Utilisateurs', icon: '👥', component: UserManagement },
+      { id: 'events', label: 'Événements', icon: '🎭', component: EventManagement },
+      { id: 'repertoire', label: 'Répertoire', icon: '📜', component: RepertoireManagement },
+      { id: 'profile', label: 'Mon Profil', icon: '👤', component: Profile },
     ];
+
+    // Ajouter l'administration pour les admins et super-admins
+    if (userProfile?.role === 'admin' || userProfile?.role === 'super-admin') {
+      allTabs.push({ id: 'admin', label: 'Administration', icon: '⚙️', component: AdminPanel });
+    }
 
     // Filtrer selon le rôle
     if (!userProfile) return [];
@@ -30,10 +38,10 @@ const Dashboard = () => {
         return allTabs;
       case 'membre':
         return allTabs.filter(tab => 
-          ['overview', 'events', 'repertoire'].includes(tab.id)
+          ['overview', 'events', 'repertoire', 'profile'].includes(tab.id)
         );
       default:
-        return [allTabs[0]]; // seulement overview
+        return [allTabs[0], allTabs[4]]; // overview + profile
     }
   };
 
@@ -83,9 +91,9 @@ const Dashboard = () => {
     setShowProfileDropdown(!showProfileDropdown);
   };
 
-  const handleProfileNavigation = (path) => {
+  const handleProfileNavigation = (tabId) => {
     setShowProfileDropdown(false);
-    navigate(path);
+    setActiveTab(tabId);
   };
 
   const handleLogout = async () => {
@@ -152,28 +160,20 @@ const Dashboard = () => {
                   {/* Options du menu */}
                   <div className="py-2">
                     <button
-                      onClick={() => handleProfileNavigation('/profile')}
+                      onClick={() => handleProfileNavigation('profile')}
                       className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
                     >
-                      <span className="mr-3">👤</span>
+                      <span className="mr-3 text-lg">👤</span>
                       Mon Profil
                     </button>
                     
-                    {userProfile?.role === 'admin' || userProfile?.role === 'super-admin' ? (
+                    {(userProfile?.role === 'admin' || userProfile?.role === 'super-admin') && (
                       <button
-                        onClick={() => handleProfileNavigation('/admin')}
+                        onClick={() => handleProfileNavigation('admin')}
                         className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
                       >
-                        <span className="mr-3">⚙️</span>
+                        <span className="mr-3 text-lg">⚙️</span>
                         Administration
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleProfileNavigation('/dashboard')}
-                        className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
-                      >
-                        <span className="mr-3">📊</span>
-                        Tableau de Bord
                       </button>
                     )}
                   </div>
@@ -187,7 +187,7 @@ const Dashboard = () => {
                       onClick={handleLogout}
                       className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
                     >
-                      <span className="mr-3">🚪</span>
+                      <span className="mr-3 text-lg">🚪</span>
                       Déconnexion
                     </button>
                   </div>
@@ -197,7 +197,7 @@ const Dashboard = () => {
           </div>
 
           {/* Deuxième ligne : Navigation par onglets */}
-          <nav className="flex space-x-1 py-3">
+          <nav className="flex space-x-1 py-3 overflow-x-auto">
             {availableTabs.map((tab) => (
               <button
                 key={tab.id}
