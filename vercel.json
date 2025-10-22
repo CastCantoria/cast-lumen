@@ -1,24 +1,10 @@
-# Supprimer l'ancien fichier corrompu
-rm vercel.json
-
-# Créer un nouveau fichier vercel.json VALIDE
+﻿# Créer un fichier vercel.json valide et propre
 cat > vercel.json << 'EOF'
 {
   "version": 2,
-  "name": "cast-lumen",
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build"
-    }
-  ],
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "routes": [
-    {
-      "src": "/assets/(.*)",
-      "headers": {
-        "cache-control": "public, max-age=31536000, immutable"
-      }
-    },
     {
       "src": "/(.*)",
       "dest": "/index.html"
