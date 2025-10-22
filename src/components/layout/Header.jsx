@@ -110,14 +110,30 @@ const Header = () => {
     return userProfile?.role || 'public';
   };
 
-  // Navigation structurée avec dropdowns
+  // Fonction pour obtenir le titre du rôle
+  const getRoleTitle = () => {
+    switch (userProfile?.role) {
+      case 'super-admin':
+        return 'Super Administrateur';
+      case 'admin':
+        return 'Administrateur';
+      case 'membre':
+        return 'Membre';
+      default:
+        return 'Visiteur';
+    }
+  };
+
+  // Navigation structurée avec dropdowns fusionnés
   const navigation = {
     discovery: {
       title: "🌟 Découverte",
       items: [
         { path: "/about", label: "À Propos", icon: "ℹ️" },
         { path: "/repertoire", label: "Répertoire", icon: "📜" },
-        { path: "/gallery", label: "Galerie", icon: "🖼️" }
+        { path: "/gallery", label: "Galerie", icon: "🖼️" },
+        { path: "/join", label: "Nous Rejoindre", icon: "👥" },
+        { path: "/contact", label: "Contact & Infos", icon: "📞" }
       ]
     },
     activities: {
@@ -126,13 +142,6 @@ const Header = () => {
         { path: "/events", label: "Concerts", icon: "🎵" },
         { path: "/blog", label: "Blog", icon: "📰" },
         { path: "/spirituality", label: "Spiritualité", icon: "🙏" }
-      ]
-    },
-    contact: {
-      title: "📞 Nous Contacter",
-      items: [
-        { path: "/join", label: "Nous Rejoindre", icon: "👥" },
-        { path: "/contact", label: "Contact & Infos", icon: "📞" }
       ]
     }
   };
@@ -178,7 +187,7 @@ const Header = () => {
           <span>🏠</span> Accueil
         </a>
         
-        {/* DROPDOWN DÉCOUVERTE */}
+        {/* DROPDOWN DÉCOUVERTE (fusionné avec Nous Contacter) */}
         <div className="nav-dropdown">
           <button 
             className={`dropdown-toggle ${activeDropdown === 'discovery' ? 'active' : ''}`}
@@ -196,6 +205,7 @@ const Header = () => {
                 key={item.path} 
                 href={item.path} 
                 onClick={(e) => { e.preventDefault(); navigateTo(item.path); }}
+                className={item.path === '/join' ? 'join-dropdown-item' : ''}
               >
                 <span>{item.icon}</span> {item.label}
               </a>
@@ -228,62 +238,56 @@ const Header = () => {
           </div>
         </div>
 
-        {/* DROPDOWN NOUS CONTACTER */}
-        <div className="nav-dropdown">
-          <button 
-            className={`dropdown-toggle contact-dropdown-toggle ${activeDropdown === 'contact' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleDropdown('contact');
-            }}
-          >
-            <span>📞</span> Nous Contacter
-            <span className="dropdown-arrow">▼</span>
-          </button>
-          <div className={`dropdown-menu ${activeDropdown === 'contact' ? 'active' : ''}`}>
-            {navigation.contact.items.map((item) => (
-              <a 
-                key={item.path} 
-                href={item.path} 
-                onClick={(e) => { e.preventDefault(); navigateTo(item.path); }}
-                className={item.path === '/join' ? 'join-dropdown-item' : ''}
-              >
-                <span>{item.icon}</span> {item.label}
-              </a>
-            ))}
-          </div>
-        </div>
-
         {/* Séparateur visuel */}
         <div className="nav-divider"></div>
 
-        {/* État de connexion - NOUVEAU DESIGN SIMPLIFIÉ */}
+        {/* État de connexion - AVEC DROPDOWN POUR LE PROFIL */}
         {isAuthenticated ? (
-          // Utilisateur connecté - Avatar simple sans dropdown
-          <div className="user-avatar-simple">
-            <div className="user-avatar">
-              <img 
-                src={getUserAvatar()} 
-                alt={getDisplayName()}
-                className="user-avatar-image"
-                onError={(e) => {
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
-                }}
-              />
-              <div className="user-avatar-fallback">
-                {getUserInitial()}
+          // Utilisateur connecté - Avatar avec dropdown profil
+          <div className="nav-dropdown user-menu">
+            <button 
+              className={`dropdown-toggle user-avatar-toggle ${activeDropdown === 'user' ? 'active' : ''}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                toggleDropdown('user');
+              }}
+            >
+              <div className="user-avatar">
+                <img 
+                  src={getUserAvatar()} 
+                  alt={getDisplayName()}
+                  className="user-avatar-image"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                <div className="user-avatar-fallback">
+                  {getUserInitial()}
+                </div>
               </div>
-            </div>
-            <div className="user-info-tooltip">
-              <strong>{getDisplayName()}</strong>
-              <span>{currentUser?.email}</span>
-              <span className="user-role">Rôle: {getUserRole()}</span>
+              <div className="user-info-header">
+                <div className="user-greeting">Bonjour, {getDisplayName()}</div>
+                <div className="user-role-header">{getRoleTitle()} C.A.S.T.</div>
+              </div>
+              <span className="dropdown-arrow">▼</span>
+            </button>
+            <div className={`dropdown-menu user-dropdown ${activeDropdown === 'user' ? 'active' : ''}`}>
+              <div className="user-info">
+                <strong>{getDisplayName()}</strong>
+                <span>{currentUser?.email}</span>
+                <span className="user-role">Rôle: {getUserRole()}</span>
+              </div>
+              <div className="dropdown-divider"></div>
+              <a href="/profile" onClick={(e) => { e.preventDefault(); navigateTo('/profile'); }}>
+                <span>👤</span> Mon Profil
+              </a>
+              <div className="dropdown-divider"></div>
               <button 
                 onClick={handleLogout}
-                className="logout-btn-tooltip"
+                className="logout-btn"
               >
-                🚪 Déconnexion
+                <span>🚪</span> Déconnexion
               </button>
             </div>
           </div>

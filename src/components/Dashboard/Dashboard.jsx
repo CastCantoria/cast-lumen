@@ -1,39 +1,16 @@
-﻿// src/components/Dashboard/Dashboard.jsx
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import DashboardOverview from './DashboardOverview';
 import UserManagement from './UserManagement';
 import EventManagement from './EventManagement';
 import RepertoireManagement from './RepertoireManagement';
 
 const Dashboard = () => {
-  const { userProfile } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
+  const { userProfile, logout } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
-
-  // Redirection automatique selon le rôle
-  useEffect(() => {
-    if (!userProfile) return;
-
-    const currentPath = location.pathname;
-    
-    // Si l'utilisateur est sur /dashboard mais n'a pas le bon rôle, rediriger
-    if (currentPath === '/dashboard') {
-      if (userProfile.role === 'admin') {
-        navigate('/admin', { replace: true });
-      } else if (userProfile.role === 'super-admin') {
-        navigate('/super-admin', { replace: true });
-      }
-    }
-    
-    // Si l'utilisateur est sur /admin ou /super-admin mais n'a pas le bon rôle, rediriger vers /dashboard
-    if ((currentPath.startsWith('/admin') || currentPath.startsWith('/super-admin')) && 
-        !['admin', 'super-admin'].includes(userProfile.role)) {
-      navigate('/dashboard', { replace: true });
-    }
-  }, [userProfile, navigate, location]);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
+  const navigate = useNavigate();
 
   // Définition des onglets disponibles selon le rôle
   const getAvailableTabs = () => {
@@ -44,6 +21,7 @@ const Dashboard = () => {
       { id: 'repertoire', label: '📜 Répertoire', icon: '📜', component: RepertoireManagement },
     ];
 
+    // Filtrer selon le rôle
     if (!userProfile) return [];
 
     switch (userProfile.role) {
@@ -62,48 +40,175 @@ const Dashboard = () => {
   const availableTabs = getAvailableTabs();
   const ActiveComponent = availableTabs.find(tab => tab.id === activeTab)?.component || DashboardOverview;
 
+  // Fonction pour obtenir le titre du dashboard selon le rôle
+  const getDashboardTitle = () => {
+    switch (userProfile?.role) {
+      case 'super-admin':
+        return 'Super Administration C.A.S.T.';
+      case 'admin':
+        return 'Administration C.A.S.T.';
+      case 'membre':
+        return 'Espace Membre C.A.S.T.';
+      default:
+        return 'Tableau de Bord C.A.S.T.';
+    }
+  };
+
+  // Fonction pour obtenir le titre du rôle
+  const getRoleTitle = () => {
+    switch (userProfile?.role) {
+      case 'super-admin':
+        return 'Super Administrateur';
+      case 'admin':
+        return 'Administrateur';
+      case 'membre':
+        return 'Membre';
+      default:
+        return 'Visiteur';
+    }
+  };
+
+  // Fonction pour obtenir l'initiale de l'utilisateur
+  const getUserInitial = () => {
+    if (userProfile?.displayName) {
+      return userProfile.displayName.charAt(0).toUpperCase();
+    }
+    if (userProfile?.email) {
+      return userProfile.email.charAt(0).toUpperCase();
+    }
+    return 'U';
+  };
+
+  const handleProfileClick = () => {
+    setShowProfileDropdown(!showProfileDropdown);
+  };
+
+  const handleProfileNavigation = (path) => {
+    setShowProfileDropdown(false);
+    navigate(path);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      setShowProfileDropdown(false);
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
-      {/* En-tête fixe */}
+      {/* En-tête fixe amélioré avec dropdown profil */}
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-20 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            {/* Logo et titre */}
+          {/* Première ligne : Titre et informations utilisateur */}
+          <div className="flex justify-between items-center py-4 border-b border-gray-100">
+            {/* Titre et rôle */}
             <div className="flex items-center space-x-4">
               <h1 className="text-2xl font-bold text-cast-green">
-                {userProfile?.role === 'super-admin' ? 'Super Admin' : 
-                 userProfile?.role === 'admin' ? 'Administration' : 
-                 'Espace Membre'} C.A.S.T.
+                {getDashboardTitle()}
               </h1>
-              <span className="bg-cast-green text-white px-2 py-1 rounded-full text-xs capitalize">
+              <span className="bg-cast-green text-white px-3 py-1 rounded-full text-sm font-medium capitalize">
                 {userProfile?.role || 'public'}
               </span>
             </div>
             
-            {/* Informations utilisateur */}
-            <div className="flex items-center space-x-3">
-              <span className="text-sm text-gray-600">
-                Bonjour, <strong>{userProfile?.displayName || 'Utilisateur'}</strong>
-              </span>
-              <div className="w-8 h-8 bg-cast-green rounded-full flex items-center justify-center text-white text-sm font-bold">
-                {userProfile?.displayName?.charAt(0) || 'U'}
-              </div>
+            {/* Informations utilisateur avec dropdown profil */}
+            <div className="relative">
+              <button
+                onClick={handleProfileClick}
+                className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+              >
+                <div className="text-right">
+                  <div className="text-sm font-medium text-gray-900">
+                    Bonjour, {userProfile?.displayName || 'Utilisateur'}
+                  </div>
+                  <div className="text-xs text-cast-green font-semibold">
+                    {getRoleTitle()} C.A.S.T.
+                  </div>
+                </div>
+                <div className="w-12 h-12 bg-cast-green rounded-full flex items-center justify-center text-white font-bold text-lg shadow-md border-2 border-white">
+                  {getUserInitial()}
+                </div>
+              </button>
+
+              {/* Dropdown Profil */}
+              {showProfileDropdown && (
+                <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  {/* En-tête du dropdown */}
+                  <div className="px-4 py-3 border-b border-gray-100">
+                    <div className="font-semibold text-gray-900">
+                      {userProfile?.displayName || 'Utilisateur'}
+                    </div>
+                    <div className="text-sm text-gray-500">
+                      {userProfile?.email}
+                    </div>
+                    <div className="text-xs text-cast-green font-medium mt-1">
+                      Rôle: {userProfile?.role}
+                    </div>
+                  </div>
+
+                  {/* Options du menu */}
+                  <div className="py-2">
+                    <button
+                      onClick={() => handleProfileNavigation('/profile')}
+                      className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                    >
+                      <span className="mr-3">👤</span>
+                      Mon Profil
+                    </button>
+                    
+                    {userProfile?.role === 'admin' || userProfile?.role === 'super-admin' ? (
+                      <button
+                        onClick={() => handleProfileNavigation('/admin')}
+                        className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                      >
+                        <span className="mr-3">⚙️</span>
+                        Administration
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleProfileNavigation('/dashboard')}
+                        className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
+                      >
+                        <span className="mr-3">📊</span>
+                        Tableau de Bord
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Séparateur */}
+                  <div className="border-t border-gray-100"></div>
+
+                  {/* Déconnexion */}
+                  <div className="py-2">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
+                    >
+                      <span className="mr-3">🚪</span>
+                      Déconnexion
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          {/* Navigation par onglets */}
-          <nav className="flex space-x-1 overflow-x-auto pb-2">
+          {/* Deuxième ligne : Navigation par onglets */}
+          <nav className="flex space-x-1 py-3">
             {availableTabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
+                className={`flex items-center space-x-2 px-4 py-3 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
                   activeTab === tab.id
-                    ? 'bg-cast-green text-white shadow-md'
+                    ? 'bg-cast-green text-white shadow-md transform scale-105'
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >
-                <span>{tab.icon}</span>
+                <span className="text-lg">{tab.icon}</span>
                 <span>{tab.label}</span>
               </button>
             ))}
@@ -117,6 +222,14 @@ const Dashboard = () => {
           <ActiveComponent />
         </div>
       </main>
+
+      {/* Overlay pour fermer le dropdown en cliquant à l'extérieur */}
+      {showProfileDropdown && (
+        <div 
+          className="fixed inset-0 z-40"
+          onClick={() => setShowProfileDropdown(false)}
+        ></div>
+      )}
     </div>
   );
 };
