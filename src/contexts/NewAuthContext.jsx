@@ -3,23 +3,15 @@ import {
   signInWithPopup,
   signOut,
   onAuthStateChanged,
-  GoogleAuthProvider
+  GoogleAuthProvider,
+  signInWithEmailAndPassword
 } from 'firebase/auth';
-import { auth } from '../config/firebase';
+import { auth, googleProvider } from '../config/firebase'; // ✅ Utilise le provider exporté
 import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 // Créer le contexte
 const AuthContext = createContext();
-
-// Hook personnalisé
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-};
 
 // Fonctions Firestore
 const getUserProfile = async (uid) => {
@@ -53,6 +45,15 @@ const createUserProfile = async (user) => {
   }
 };
 
+// Hook personnalisé
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
+
 // Provider
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -62,8 +63,7 @@ export const AuthProvider = ({ children }) => {
   // Connexion Google
   const signInWithGoogle = async () => {
     try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, googleProvider); // ✅ Utilise le provider exporté
       const user = result.user;
 
       let profile = await getUserProfile(user.uid);
@@ -74,14 +74,17 @@ export const AuthProvider = ({ children }) => {
       setCurrentUser(user);
       setUserProfile(profile);
 
-      // Message de bienvenue
       console.log('🎉 Connexion réussie ! Bienvenue sur C.A.S.T.');
-
       return { user, profile };
     } catch (error) {
       console.error('Erreur connexion Google:', error);
       throw error;
     }
+  };
+
+  // Connexion email/mot de passe
+  const login = (email, password) => {
+    return signInWithEmailAndPassword(auth, email, password);
   };
 
   // Déconnexion
@@ -119,11 +122,13 @@ export const AuthProvider = ({ children }) => {
     currentUser,
     userProfile,
     signInWithGoogle,
+    login,
     logout,
     loading,
     isAuthenticated: !!currentUser,
     isAdmin: userProfile?.role === 'admin',
-    isMember: ['admin', 'membre'].includes(userProfile?.role)
+    isMember: ['admin', 'membre'].includes(userProfile?.role),
+    isSuperAdmin: userProfile?.role === 'super-admin'
   };
 
   return (

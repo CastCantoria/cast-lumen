@@ -2,41 +2,173 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 
-/* Styles de base */
-@layer base {
-  html {
-    font-family: 'Inter', system-ui, sans-serif;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&display=swap');
 
-  body {
-    @apply bg-gray-50 text-gray-900;
+/* Variables CSS personnalisées */
+:root {
+  --cast-green: #2C5530;
+  --cast-gold: #D4AF37;
+  --cast-green-light: #4ade80;
+  --cast-green-dark: #1e3a23;
+}
+
+/* Styles de base */
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+}
+
+.font-serif {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-cormorant {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cast-green);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cast-green-dark);
+}
+
+/* Couleurs personnalisées pour CAST */
+.cast-green {
+  color: var(--cast-green);
+}
+
+.bg-cast-green {
+  background-color: var(--cast-green);
+}
+
+.cast-gold {
+  color: var(--cast-gold);
+}
+
+.bg-cast-gold {
+  background-color: var(--cast-gold);
+}
+
+.border-cast-green {
+  border-color: var(--cast-green);
+}
+
+.border-cast-gold {
+  border-color: var(--cast-gold);
+}
+
+/* Focus states améliorés */
+.focus\:ring-cast-gold:focus {
+  --tw-ring-color: var(--cast-gold);
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus\:border-cast-gold:focus {
+  border-color: var(--cast-gold);
+}
+
+.focus\:ring-cast-green:focus {
+  --tw-ring-color: var(--cast-green);
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus\:border-cast-green:focus {
+  border-color: var(--cast-green);
+}
+
+/* Styles pour le dashboard responsive */
+.sidebar-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Scrollbar personnalisée pour le sidebar */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 2px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Layout avec sidebar */
+.main-with-sidebar {
+  margin-left: 16rem; /* 256px */
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* Styles responsives */
+@media (max-width: 1023px) {
+  .main-with-sidebar {
+    margin-left: 0;
+  }
+  
+  /* Menu mobile */
+  .mobile-menu-open {
+    transform: translateX(0);
+  }
+  
+  .mobile-menu-closed {
+    transform: translateX(-100%);
   }
 }
 
-/* Composants personnalisés */
-@layer components {
-  .btn-primary {
-    @apply bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors;
-  }
+/* Empêcher le scroll du body quand le menu mobile est ouvert */
+body.menu-open {
+  overflow: hidden;
+}
 
-  .btn-secondary {
-    @apply bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors;
+/* Amélioration du touch sur mobile */
+@media (max-width: 768px) {
+  button, 
+  [role="button"],
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
   }
-
-  .card {
-    @apply bg-white rounded-lg shadow-md p-6;
-  }
-
-  .container-cast {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  
+  /* Padding safe area pour iOS */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
 /* Animations personnalisées */
-@keyframes fade-in {
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -45,41 +177,74 @@
 }
 
 .animate-fade-in {
-  animation: fade-in 1s ease-out;
+  animation: fadeIn 0.5s ease-out;
 }
 
-/* Couleurs personnalisées */
-.text-gold {
-  color: #D4AF37;
+/* Loading states */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
 }
 
-.bg-gold {
-  background-color: #D4AF37;
+/* États de hover améliorés */
+.hover-lift {
+  transition: all 0.2s ease-in-out;
 }
 
-/* Styles pour les images responsives */
-.responsive-image {
-  max-width: 100%;
-  height: auto;
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Amélioration du focus */
-.focus-ring:focus {
-  outline: 2px solid #3b82f6;
-  outline-offset: 2px;
+/* Gradients personnalisés */
+.gradient-cast {
+  background: linear-gradient(135deg, var(--cast-green) 0%, var(--cast-gold) 100%);
 }
 
-/* Loading spinner */
-.loading-spinner {
-  border: 2px solid #f3f3f3;
-  border-top: 2px solid #3498db;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  animation: spin 1s linear infinite;
+.gradient-cast-reverse {
+  background: linear-gradient(135deg, var(--cast-gold) 0%, var(--cast-green) 100%);
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* Utilitaires personnalisés */
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.backdrop-blur {
+  backdrop-filter: blur(8px);
+}
+
+/* Styles pour les formulaires */
+.form-input:focus {
+  border-color: var(--cast-green);
+  box-shadow: 0 0 0 3px rgba(44, 85, 48, 0.1);
+}
+
+/* Styles pour les cartes */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Responsive text */
+@media (max-width: 640px) {
+  .responsive-text {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break {
+    page-break-before: always;
+  }
 }

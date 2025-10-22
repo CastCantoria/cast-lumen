@@ -1,164 +1,159 @@
-﻿import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { statsService } from '../../services/statsService';
+﻿import React from "react";
+import { useAuth } from "../../contexts/AuthContext";
+import AdminSidebar from "../../components/layout/AdminSidebar";
 
-const AdminDashboard = () => {
-  const { currentUser, userRole } = useAuth();
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    fetchStats();
-  }, []);
-
-  const fetchStats = async () => {
-    try {
-      setLoading(true);
-      const statistics = await statsService.getAllStatistics();
-      setStats(statistics);
-    } catch (err) {
-      setError('Erreur lors du chargement des statistiques');
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cast-green"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-red-600 text-center">
-          <div className="text-4xl mb-4">⚠️</div>
-          <p>{error}</p>
-          <button 
-            onClick={fetchStats}
-            className="mt-4 px-4 py-2 bg-cast-green text-white rounded-lg hover:bg-cast-gold"
-          >
-            Réessayer
-          </button>
-        </div>
-      </div>
-    );
-  }
+const SuperAdminDashboard = () => {
+  const { userProfile } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
+    <div style={{ 
+      minHeight: "100vh", 
+      backgroundColor: "#f8fafc",
+      display: "flex"
+    }}>
+      {/* Sidebar de navigation */}
+      <AdminSidebar />
+      
+      {/* Contenu principal */}
+      <div style={{ 
+        flex: 1,
+        marginLeft: "256px",
+        paddingTop: "80px",
+        paddingBottom: "40px",
+        paddingLeft: "20px",
+        paddingRight: "20px"
+      }}>
+        <div style={{ maxWidth: "1000px", margin: "0 auto" }}>
           
-          {/* En-tête */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 mb-8">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                  Tableau de Bord Administrateur
-                </h1>
-                <p className="text-gray-600">
-                  Bienvenue, {currentUser?.firstName || currentUser?.email} 
-                  <span className="ml-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                    {userRole}
-                  </span>
-                </p>
-              </div>
-              <div className="text-right">
-                <div className="text-4xl mb-2">👑</div>
-                <p className="text-sm text-gray-500">Super Administrateur</p>
-              </div>
+          {/* En-tête du Dashboard */}
+          <div style={{ 
+            backgroundColor: "white", 
+            borderRadius: "12px",
+            padding: "30px",
+            marginBottom: "30px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0"
+          }}>
+            <h1 style={{ 
+              fontSize: "2rem", 
+              fontWeight: "bold", 
+              color: "#15803d",
+              marginBottom: "8px"
+            }}>
+              Tableau de Bord Administration
+            </h1>
+            <p style={{ color: "#64748b", fontSize: "1.1rem" }}>
+              Bienvenue, {userProfile?.displayName || 'Administrateur'} 👋
+            </p>
+            <div style={{ 
+              display: "flex", 
+              alignItems: "center", 
+              marginTop: "15px",
+              padding: "12px",
+              backgroundColor: "#f0fdf4",
+              borderRadius: "8px",
+              border: "1px solid #bbf7d0"
+            }}>
+              <span style={{ 
+                backgroundColor: "#15803d", 
+                color: "white", 
+                padding: "4px 12px", 
+                borderRadius: "20px", 
+                fontSize: "0.875rem",
+                fontWeight: "600"
+              }}>
+                {userProfile?.role || 'admin'}
+                {userProfile?.role === 'super-admin' && ' 👑'}
+              </span>
+              <span style={{ marginLeft: "12px", color: "#15803d", fontSize: "0.875rem" }}>
+                Accès complet à toutes les fonctionnalités d'administration
+              </span>
             </div>
           </div>
 
           {/* Cartes de statistiques */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            {/* Membres */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-              <div className="text-3xl mb-3">👥</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Membres</h3>
-              <p className="text-3xl font-bold text-cast-green">{stats?.totalUsers || 0}</p>
-              <p className="text-sm text-gray-500 mt-2">
-                {stats?.userStats?.member || 0} choristes actifs
-              </p>
-            </div>
-
-            {/* Événements */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-              <div className="text-3xl mb-3">🎵</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Événements</h3>
-              <p className="text-3xl font-bold text-cast-green">{stats?.activeEvents || 0}</p>
-              <p className="text-sm text-gray-500 mt-2">{stats?.eventCount?.upcoming || 0} à venir</p>
-            </div>
-
-            {/* Revenus */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-              <div className="text-3xl mb-3">💰</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Revenus</h3>
-              <p className="text-3xl font-bold text-cast-green">
-                {stats?.totalRevenue ? `${stats.totalRevenue} €` : '0 €'}
-              </p>
-              <p className="text-sm text-gray-500 mt-2">{stats?.monthlyRevenue?.month}</p>
-            </div>
-
-            {/* Inscriptions */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 text-center">
-              <div className="text-3xl mb-3">📝</div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Inscriptions</h3>
-              <p className="text-3xl font-bold text-cast-green">{stats?.monthlyRegistrations?.total || 0}</p>
-              <p className="text-sm text-gray-500 mt-2">
-                {stats?.monthlyRegistrations?.confirmed || 0} confirmées
-              </p>
+          <div style={{ 
+            backgroundColor: "white", 
+            borderRadius: "12px",
+            padding: "25px",
+            marginBottom: "30px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0"
+          }}>
+            <h2 style={{ 
+              fontSize: "1.5rem", 
+              fontWeight: "600", 
+              color: "#1e293b",
+              marginBottom: "20px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px"
+            }}>
+              <span>📈</span> Aperçu de la Plateforme
+            </h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "20px" }}>
+              <div style={{ textAlign: "center", padding: "20px", backgroundColor: "#f0fdf4", borderRadius: "8px" }}>
+                <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#15803d" }}>0</div>
+                <div style={{ color: "#64748b", fontWeight: "500" }}>Utilisateurs</div>
+              </div>
+              <div style={{ textAlign: "center", padding: "20px", backgroundColor: "#fef2f2", borderRadius: "8px" }}>
+                <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#dc2626" }}>0</div>
+                <div style={{ color: "#64748b", fontWeight: "500" }}>Événements</div>
+              </div>
+              <div style={{ textAlign: "center", padding: "20px", backgroundColor: "#faf5ff", borderRadius: "8px" }}>
+                <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#7c3aed" }}>0</div>
+                <div style={{ color: "#64748b", fontWeight: "500" }}>Morceaux</div>
+              </div>
+              <div style={{ textAlign: "center", padding: "20px", backgroundColor: "#fffbeb", borderRadius: "8px" }}>
+                <div style={{ fontSize: "2rem", fontWeight: "bold", color: "#ea580c" }}>0</div>
+                <div style={{ color: "#64748b", fontWeight: "500" }}>Admins</div>
+              </div>
             </div>
           </div>
 
-          {/* Détails des statistiques */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            {/* Répartition des rôles */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Répartition des Rôles</h2>
-              <div className="space-y-3">
-                {stats?.userStats && Object.entries(stats.userStats).map(([role, count]) => {
-                  if (role !== 'total' && count > 0) {
-                    return (
-                      <div key={role} className="flex justify-between items-center">
-                        <span className="capitalize">{role.replace('_', ' ')}</span>
-                        <span className="font-semibold">{count}</span>
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
+          {/* Guide rapide */}
+          <div style={{ 
+            backgroundColor: "white", 
+            borderRadius: "12px",
+            padding: "25px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0"
+          }}>
+            <h2 style={{ 
+              fontSize: "1.5rem", 
+              fontWeight: "600", 
+              color: "#1e293b",
+              marginBottom: "20px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px"
+            }}>
+              <span>💡</span> Guide Rapide
+            </h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "20px" }}>
+              <div style={{ padding: "15px", backgroundColor: "#f8fafc", borderRadius: "8px" }}>
+                <h3 style={{ fontWeight: "600", color: "#15803d", marginBottom: "8px" }}>Gestion Utilisateurs</h3>
+                <p style={{ color: "#64748b", fontSize: "0.9rem" }}>
+                  Ajoutez, modifiez ou supprimez des utilisateurs et gérez leurs permissions.
+                </p>
               </div>
-            </div>
-
-            {/* Événements récents */}
-            <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-4">Événements Récents</h2>
-              <div className="space-y-3">
-                {stats?.recentEvents && stats.recentEvents.length > 0 ? (
-                  stats.recentEvents.map(event => (
-                    <div key={event.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">{event.title}</p>
-                        <p className="text-sm text-gray-500">
-                          {event.date?.toLocaleDateString('fr-FR')}
-                        </p>
-                      </div>
-                      <span className="px-2 py-1 bg-cast-green text-white rounded text-sm">
-                        {event.type}
-                      </span>
-                    </div>
-                  ))
-                ) : (
-                  <p className="text-gray-500 text-center">Aucun événement récent</p>
-                )}
+              <div style={{ padding: "15px", backgroundColor: "#f8fafc", borderRadius: "8px" }}>
+                <h3 style={{ fontWeight: "600", color: "#15803d", marginBottom: "8px" }}>Événements</h3>
+                <p style={{ color: "#64748b", fontSize: "0.9rem" }}>
+                  Créez et organisez des concerts, répétitions et autres activités.
+                </p>
+              </div>
+              <div style={{ padding: "15px", backgroundColor: "#f8fafc", borderRadius: "8px" }}>
+                <h3 style={{ fontWeight: "600", color: "#15803d", marginBottom: "8px" }}>Répertoire</h3>
+                <p style={{ color: "#64748b", fontSize: "0.9rem" }}>
+                  Gérez le catalogue musical avec partitions et informations détaillées.
+                </p>
+              </div>
+              <div style={{ padding: "15px", backgroundColor: "#f8fafc", borderRadius: "8px" }}>
+                <h3 style={{ fontWeight: "600", color: "#15803d", marginBottom: "8px" }}>Administration</h3>
+                <p style={{ color: "#64748b", fontSize: "0.9rem" }}>
+                  Configurez les paramètres système et surveillez l'activité.
+                </p>
               </div>
             </div>
           </div>
@@ -168,4 +163,4 @@ const AdminDashboard = () => {
   );
 };
 
-export default AdminDashboard;
+export default SuperAdminDashboard;

@@ -1,45 +1,65 @@
-﻿import { useAuth } from '../hooks/useAuth';
+﻿import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 
-export default function RequireRole({ children, role }) {
-  const { userProfile, isAuthenticated, loading } = useAuth();
+const RequireRole = ({ children, role }) => {
+  const { userProfile, loading } = useAuth();
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '50vh' 
+      }}>
+        <div>Chargement...</div>
       </div>
     );
   }
 
-  if (!isAuthenticated) {
+  // Si pas de profil utilisateur ou rôle insuffisant
+  if (!userProfile || !userProfile.role) {
     return <Navigate to="/login" replace />;
   }
 
   // Vérification des rôles
-  const hasAccess = () => {
-    switch (role) {
-      case 'admin':
-        return userProfile?.role === 'admin';
-      case 'membre':
-        return ['admin', 'membre'].includes(userProfile?.role);
-      case 'public':
-        return true;
-      default:
-        return false;
-    }
-  };
+  const hasAccess = 
+    role === 'admin' && (userProfile.role === 'admin' || userProfile.role === 'super-admin') ||
+    role === 'super-admin' && userProfile.role === 'super-admin' ||
+    role === 'membre' && (userProfile.role === 'membre' || userProfile.role === 'admin' || userProfile.role === 'super-admin');
 
-  if (!hasAccess()) {
+  if (!hasAccess) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-600 mb-4">Accès Refusé</h1>
-          <p className="text-gray-600">Vous n'avez pas les permissions nécessaires pour accéder à cette page.</p>
-        </div>
+      <div style={{ 
+        padding: "100px 20px 20px 20px", 
+        textAlign: "center",
+        minHeight: "60vh"
+      }}>
+        <h1 style={{ fontSize: "2rem", marginBottom: "1rem", color: "#dc2626" }}>
+          ⚠️ Accès Refusé
+        </h1>
+        <p style={{ fontSize: "1.2rem", marginBottom: "2rem", color: "#666" }}>
+          Vous n'avez pas les permissions nécessaires pour accéder à cette page.
+        </p>
+        <button 
+          onClick={() => window.history.back()}
+          style={{
+            padding: "12px 24px",
+            backgroundColor: "#4F46E5",
+            color: "white",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "1rem"
+          }}
+        >
+          ← Retour
+        </button>
       </div>
     );
   }
 
   return children;
-}
+};
+
+export default RequireRole;
