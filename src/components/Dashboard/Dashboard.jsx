@@ -95,6 +95,7 @@ const Dashboard = () => {
     try {
       await logout();
       setShowProfileDropdown(false);
+      // La redirection est gérée dans le AuthContext
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
     }
@@ -151,22 +152,24 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Deuxième ligne : Navigation par onglets */}
-          <nav className="flex space-x-1 py-3 overflow-x-auto">
-            {availableTabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center space-x-2 px-4 py-3 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${
-                  activeTab === tab.id
-                    ? 'bg-cast-green text-white shadow-md transform scale-105'
-                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                }`}
-              >
-                <span className="text-lg">{tab.icon}</span>
-                <span>{tab.label}</span>
-              </button>
-            ))}
+          {/* Deuxième ligne : Navigation par onglets RESPONSIVE */}
+          <nav className="py-3">
+            <div className="flex flex-wrap gap-2">
+              {availableTabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex flex-col items-center justify-center px-4 py-3 rounded-lg text-sm font-medium transition-all min-w-[100px] ${
+                    activeTab === tab.id
+                      ? 'bg-cast-green text-white shadow-md transform scale-105'
+                      : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                  }`}
+                >
+                  <span className="text-lg mb-1">{tab.icon}</span>
+                  <span className="text-xs text-center leading-tight">{tab.label}</span>
+                </button>
+              ))}
+            </div>
           </nav>
         </div>
       </header>
