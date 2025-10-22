@@ -5,7 +5,7 @@ import DashboardOverview from './DashboardOverview';
 import UserManagement from './UserManagement';
 import EventManagement from './EventManagement';
 import RepertoireManagement from './RepertoireManagement';
-import Profile from '../../pages/private/Profile'; // Chemin corrigé
+import Profile from '../../pages/private/Profile';
 import AdminPanel from './AdminPanel';
 
 const Dashboard = () => {
@@ -91,11 +91,6 @@ const Dashboard = () => {
     setShowProfileDropdown(!showProfileDropdown);
   };
 
-  const handleProfileNavigation = (tabId) => {
-    setShowProfileDropdown(false);
-    setActiveTab(tabId);
-  };
-
   const handleLogout = async () => {
     try {
       await logout();
@@ -107,7 +102,7 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20">
-      {/* En-tête fixe amélioré avec dropdown profil */}
+      {/* En-tête fixe amélioré avec dropdown simplifié */}
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-20 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Première ligne : Titre et informations utilisateur */}
@@ -122,7 +117,7 @@ const Dashboard = () => {
               </span>
             </div>
             
-            {/* Informations utilisateur avec dropdown profil */}
+            {/* Informations utilisateur avec dropdown SIMPLIFIÉ */}
             <div className="relative">
               <button
                 onClick={handleProfileClick}
@@ -141,56 +136,16 @@ const Dashboard = () => {
                 </div>
               </button>
 
-              {/* Dropdown Profil */}
+              {/* Dropdown SIMPLIFIÉ - SEULEMENT DÉCONNEXION */}
               {showProfileDropdown && (
-                <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
-                  {/* En-tête du dropdown */}
-                  <div className="px-4 py-3 border-b border-gray-100">
-                    <div className="font-semibold text-gray-900">
-                      {userProfile?.displayName || 'Utilisateur'}
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {userProfile?.email}
-                    </div>
-                    <div className="text-xs text-cast-green font-medium mt-1">
-                      Rôle: {userProfile?.role}
-                    </div>
-                  </div>
-
-                  {/* Options du menu */}
-                  <div className="py-2">
-                    <button
-                      onClick={() => handleProfileNavigation('profile')}
-                      className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
-                    >
-                      <span className="mr-3 text-lg">👤</span>
-                      Mon Profil
-                    </button>
-                    
-                    {(userProfile?.role === 'admin' || userProfile?.role === 'super-admin') && (
-                      <button
-                        onClick={() => handleProfileNavigation('admin')}
-                        className="w-full flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-150"
-                      >
-                        <span className="mr-3 text-lg">⚙️</span>
-                        Administration
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Séparateur */}
-                  <div className="border-t border-gray-100"></div>
-
-                  {/* Déconnexion */}
-                  <div className="py-2">
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
-                    >
-                      <span className="mr-3 text-lg">🚪</span>
-                      Déconnexion
-                    </button>
-                  </div>
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors duration-150"
+                  >
+                    <span className="mr-3 text-lg">🚪</span>
+                    Se déconnecter
+                  </button>
                 </div>
               )}
             </div>

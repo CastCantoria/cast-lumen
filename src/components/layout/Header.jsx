@@ -12,7 +12,6 @@ const Header = () => {
   // Redirection automatique après connexion
   useEffect(() => {
     if (userProfile && isAuthenticated) {
-      // Petit délai pour laisser le temps à l'interface de se mettre à jour
       const timer = setTimeout(() => {
         switch (userProfile.role) {
           case 'super-admin':
@@ -75,15 +74,13 @@ const Header = () => {
 
   // Fonction pour obtenir l'avatar de l'utilisateur
   const getUserAvatar = () => {
-    // Si l'utilisateur a une photo de profil Google
     if (currentUser?.photoURL) {
       return currentUser.photoURL;
     }
-    // Sinon, utiliser l'icône personnalisée
     return "/images/icone-connexion.png";
   };
 
-  // Fonction pour obtenir l'initiale de l'utilisateur (fallback)
+  // Fonction pour obtenir l'initiale de l'utilisateur
   const getUserInitial = () => {
     if (currentUser?.displayName) {
       return currentUser.displayName.charAt(0).toUpperCase();
@@ -92,36 +89,6 @@ const Header = () => {
       return currentUser.email.charAt(0).toUpperCase();
     }
     return 'U';
-  };
-
-  // Fonction pour obtenir le nom d'affichage
-  const getDisplayName = () => {
-    if (userProfile?.displayName) {
-      return userProfile.displayName;
-    }
-    if (currentUser?.displayName) {
-      return currentUser.displayName;
-    }
-    return currentUser?.email || 'Utilisateur';
-  };
-
-  // Obtenir le rôle de l'utilisateur
-  const getUserRole = () => {
-    return userProfile?.role || 'public';
-  };
-
-  // Fonction pour obtenir le titre du rôle
-  const getRoleTitle = () => {
-    switch (userProfile?.role) {
-      case 'super-admin':
-        return 'Super Administrateur';
-      case 'admin':
-        return 'Administrateur';
-      case 'membre':
-        return 'Membre';
-      default:
-        return 'Visiteur';
-    }
   };
 
   // Navigation structurée avec dropdowns fusionnés
@@ -241,74 +208,20 @@ const Header = () => {
         {/* Séparateur visuel */}
         <div className="nav-divider"></div>
 
-        {/* État de connexion - AVEC DROPDOWN POUR LE PROFIL */}
+        {/* État de connexion - SIMPLIFIÉ AVEC JUSTE DÉCONNEXION */}
         {isAuthenticated ? (
-          // Utilisateur connecté - Avatar avec dropdown profil
-          <div className="nav-dropdown user-menu">
-            <button 
-              className={`dropdown-toggle user-avatar-toggle ${activeDropdown === 'user' ? 'active' : ''}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleDropdown('user');
-              }}
-            >
-              <div className="user-avatar">
-                <img 
-                  src={getUserAvatar()} 
-                  alt={getDisplayName()}
-                  className="user-avatar-image"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-                <div className="user-avatar-fallback">
-                  {getUserInitial()}
-                </div>
-              </div>
-              <div className="user-info-header">
-                <div className="user-greeting">Bonjour, {getDisplayName()}</div>
-                <div className="user-role-header">{getRoleTitle()} C.A.S.T.</div>
-              </div>
-              <span className="dropdown-arrow">▼</span>
-            </button>
-            <div className={`dropdown-menu user-dropdown ${activeDropdown === 'user' ? 'active' : ''}`}>
-              <div className="user-info">
-                <strong>{getDisplayName()}</strong>
-                <span>{currentUser?.email}</span>
-                <span className="user-role">Rôle: {getUserRole()}</span>
-              </div>
-              <div className="dropdown-divider"></div>
-              <a href="/profile" onClick={(e) => { e.preventDefault(); navigateTo('/profile'); }}>
-                <span>👤</span> Mon Profil
-              </a>
-              <div className="dropdown-divider"></div>
-              <button 
-                onClick={handleLogout}
-                className="logout-btn"
-              >
-                <span>🚪</span> Déconnexion
-              </button>
-            </div>
-          </div>
+          // Utilisateur connecté - Bouton déconnexion simple
+          <button
+            onClick={handleLogout}
+            className="logout-btn-header"
+          >
+            <span>🚪</span> Déconnexion
+          </button>
         ) : (
-          // Utilisateur non connecté - Icône de connexion simple
-          <div className="login-icon-simple">
-            <a href="/login" onClick={(e) => { e.preventDefault(); navigateTo('/login'); }}>
-              <div className="login-icon">
-                <img 
-                  src="/images/icone-connexion.png" 
-                  alt="Connexion"
-                  className="login-icon-image"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-                <div className="login-icon-fallback">👤</div>
-              </div>
-            </a>
-          </div>
+          // Utilisateur non connecté - Lien connexion simple
+          <a href="/login" onClick={(e) => { e.preventDefault(); navigateTo('/login'); }} className="login-link-header">
+            <span>👤</span> Connexion
+          </a>
         )}
       </nav>
 
