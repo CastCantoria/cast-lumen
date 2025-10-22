@@ -1,5 +1,4 @@
-// src/components/layout/Header.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import './Header.css';
@@ -9,6 +8,28 @@ const Header = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const { currentUser, userProfile, logout, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // Redirection automatique après connexion
+  useEffect(() => {
+    if (userProfile && isAuthenticated) {
+      // Petit délai pour laisser le temps à l'interface de se mettre à jour
+      const timer = setTimeout(() => {
+        switch (userProfile.role) {
+          case 'super-admin':
+          case 'admin':
+            navigate('/admin');
+            break;
+          case 'membre':
+            navigate('/dashboard');
+            break;
+          default:
+            navigate('/');
+        }
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [userProfile, isAuthenticated, navigate]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -236,72 +257,40 @@ const Header = () => {
         {/* Séparateur visuel */}
         <div className="nav-divider"></div>
 
-        {/* État de connexion */}
+        {/* État de connexion - NOUVEAU DESIGN SIMPLIFIÉ */}
         {isAuthenticated ? (
-          // Utilisateur connecté - Avatar avec dropdown
-          <div className="nav-dropdown user-menu">
-            <button 
-              className={`dropdown-toggle user-avatar-toggle ${activeDropdown === 'user' ? 'active' : ''}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleDropdown('user');
-              }}
-            >
-              <div className="user-avatar">
-                <img 
-                  src={getUserAvatar()} 
-                  alt={getDisplayName()}
-                  className="user-avatar-image"
-                  onError={(e) => {
-                    // Si l'image ne charge pas, afficher l'initiale
-                    e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
-                  }}
-                />
-                <div className="user-avatar-fallback">
-                  {getUserInitial()}
-                </div>
+          // Utilisateur connecté - Avatar simple sans dropdown
+          <div className="user-avatar-simple">
+            <div className="user-avatar">
+              <img 
+                src={getUserAvatar()} 
+                alt={getDisplayName()}
+                className="user-avatar-image"
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling.style.display = 'flex';
+                }}
+              />
+              <div className="user-avatar-fallback">
+                {getUserInitial()}
               </div>
-              <span className="user-name-mobile">{getDisplayName()}</span>
-              <span className="dropdown-arrow">▼</span>
-            </button>
-            <div className={`dropdown-menu user-dropdown ${activeDropdown === 'user' ? 'active' : ''}`}>
-              <div className="user-info">
-                <strong>{getDisplayName()}</strong>
-                <span>{currentUser?.email}</span>
-                <span className="user-role">Rôle: {getUserRole()}</span>
-              </div>
-              <div className="dropdown-divider"></div>
-              <a href="/dashboard" onClick={(e) => { e.preventDefault(); navigateTo('/dashboard'); }}>
-                <span>📊</span> Tableau de bord
-              </a>
-              <a href="/profile" onClick={(e) => { e.preventDefault(); navigateTo('/profile'); }}>
-                <span>👤</span> Mon profil
-              </a>
-              {getUserRole() === 'admin' && (
-                <a href="/admin" onClick={(e) => { e.preventDefault(); navigateTo('/admin'); }}>
-                  <span>⚙️</span> Administration
-                </a>
-              )}
-              <div className="dropdown-divider"></div>
+            </div>
+            <div className="user-info-tooltip">
+              <strong>{getDisplayName()}</strong>
+              <span>{currentUser?.email}</span>
+              <span className="user-role">Rôle: {getUserRole()}</span>
               <button 
                 onClick={handleLogout}
-                className="logout-btn"
+                className="logout-btn-tooltip"
               >
-                <span>🚪</span> Déconnexion
+                🚪 Déconnexion
               </button>
             </div>
           </div>
         ) : (
-          // Utilisateur non connecté - Icône de connexion avec dropdown
-          <div className="nav-dropdown login-menu">
-            <button 
-              className={`dropdown-toggle login-icon-toggle ${activeDropdown === 'login' ? 'active' : ''}`}
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleDropdown('login');
-              }}
-            >
+          // Utilisateur non connecté - Icône de connexion simple
+          <div className="login-icon-simple">
+            <a href="/login" onClick={(e) => { e.preventDefault(); navigateTo('/login'); }}>
               <div className="login-icon">
                 <img 
                   src="/images/icone-connexion.png" 
@@ -314,17 +303,7 @@ const Header = () => {
                 />
                 <div className="login-icon-fallback">👤</div>
               </div>
-              <span className="login-text-mobile">Connexion</span>
-              <span className="dropdown-arrow">▼</span>
-            </button>
-            <div className={`dropdown-menu login-dropdown ${activeDropdown === 'login' ? 'active' : ''}`}>
-              <a href="/login" onClick={(e) => { e.preventDefault(); navigateTo('/login'); }}>
-                <span>👤</span> Se connecter
-              </a>
-              <a href="/register" onClick={(e) => { e.preventDefault(); navigateTo('/register'); }}>
-                <span>📝</span> S'inscrire
-              </a>
-            </div>
+            </a>
           </div>
         )}
       </nav>
