@@ -8,6 +8,7 @@
   color: white;
   z-index: 1000;
   border-bottom: 3px solid #D4AF37;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
 .header-container {
@@ -266,6 +267,59 @@
   display: block;
 }
 
+/* ===== CORRECTION GLOBALE POUR HEADER FIXED ===== */
+/* Appliquer à TOUTES les pages et composants */
+.main-content,
+.page-content,
+.dashboard-container,
+.admin-container,
+.member-container,
+.super-admin-container,
+.public-page,
+.private-page {
+  margin-top: 70px;
+  min-height: calc(100vh - 70px);
+  padding: 1rem;
+}
+
+/* Correction spécifique pour les pages de dashboard */
+.dashboard-layout,
+.admin-dashboard,
+.super-admin-dashboard,
+.member-dashboard {
+  padding-top: 70px;
+  min-height: 100vh;
+}
+
+/* Correction pour les pages publiques */
+.home-page,
+.about-page,
+.contact-page,
+.events-page,
+.gallery-page,
+.repertoire-page {
+  padding-top: 70px;
+  min-height: 100vh;
+}
+
+/* Correction pour les pages d'authentification */
+.login-page,
+.register-page,
+.profile-page {
+  padding-top: 70px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Correction pour les composants spécifiques */
+.component-wrapper,
+.page-wrapper,
+.content-wrapper {
+  padding-top: 70px;
+}
+
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
   .sacred-navigation,
@@ -282,6 +336,7 @@
 @media (max-width: 768px) {
   .header-container {
     padding: 0 1rem;
+    height: 60px;
   }
   
   .brand-text h1 {
@@ -300,6 +355,32 @@
   .btn {
     padding: 0.6rem 1rem;
     font-size: 0.8rem;
+  }
+  
+  .mobile-menu {
+    top: 60px;
+  }
+  
+  .menu-overlay {
+    top: 60px;
+  }
+  
+  /* Ajustement responsive pour le header fixed */
+  .main-content,
+  .page-content,
+  .dashboard-container,
+  .admin-container,
+  .member-container,
+  .super-admin-container,
+  .public-page,
+  .private-page {
+    margin-top: 60px;
+    min-height: calc(100vh - 60px);
+    padding: 0.75rem;
+  }
+  
+  .sacred-header {
+    height: 60px;
   }
 }
 
@@ -329,10 +410,34 @@
     padding: 0.875rem;
     font-size: 0.95rem;
   }
+  
+  .main-content,
+  .page-content {
+    padding: 0.5rem;
+  }
 }
 
-/* Animation pour le contenu des pages */
-.main-content {
-  margin-top: 70px;
-  min-height: calc(100vh - 70px);
+/* ===== CLASSES UTILITAIRES POUR TOUT LE PROJET ===== */
+/* À ajouter aux conteneurs principaux de chaque page */
+.page-container {
+  padding-top: 70px;
+  min-height: 100vh;
+}
+
+.content-area {
+  padding: 1rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Pour les pages avec sidebar */
+.layout-with-sidebar {
+  display: flex;
+  padding-top: 70px;
+  min-height: 100vh;
+}
+
+.sidebar-main-content {
+  flex: 1;
+  padding: 1rem;
 }
