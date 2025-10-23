@@ -1,8 +1,8 @@
-﻿import { useAuth } from "../contexts/NewAuthContext"; // ← CORRECTION ICI
+﻿import { useAuth } from "../contexts/AuthContext";
 import { Navigate, useLocation } from "react-router-dom";
 
 export default function RequireAuth({ children }) {
-  const { isAuthenticated, loading } = useAuth();
+  const { currentUser, loading } = useAuth();
   const location = useLocation();
 
   if (loading) {
@@ -13,7 +13,7 @@ export default function RequireAuth({ children }) {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!currentUser) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

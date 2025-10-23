@@ -9,7 +9,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const [activeSection, setActiveSection] = useState('profile'); // 'profile' ou 'password'
+  const [activeSection, setActiveSection] = useState('profile');
 
   // États du formulaire
   const [formData, setFormData] = useState({
@@ -159,7 +159,7 @@ const Profile = () => {
                 onClick={() => setActiveSection('profile')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   activeSection === 'profile'
-                    ? 'bg-cast-green text-white'
+                    ? 'bg-green-600 text-white'
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
@@ -169,7 +169,7 @@ const Profile = () => {
                 onClick={() => setActiveSection('password')}
                 className={`px-4 py-2 rounded-lg font-medium transition-colors ${
                   activeSection === 'password'
-                    ? 'bg-cast-green text-white'
+                    ? 'bg-green-600 text-white'
                     : 'text-gray-600 hover:bg-gray-100'
                 }`}
               >
@@ -193,7 +193,7 @@ const Profile = () => {
                     name="displayName"
                     value={formData.displayName}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                     placeholder="Votre nom complet"
                   />
                 </div>
@@ -207,7 +207,7 @@ const Profile = () => {
                     name="email"
                     value={formData.email}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold bg-gray-50"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 bg-gray-50"
                     readOnly
                   />
                   <p className="text-xs text-gray-500 mt-1">L'email ne peut pas être modifié</p>
@@ -222,7 +222,7 @@ const Profile = () => {
                     name="specialite"
                     value={formData.specialite}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                     placeholder="Ex: Chant, Piano, Communication..."
                   />
                 </div>
@@ -236,7 +236,7 @@ const Profile = () => {
                     value={formData.bio}
                     onChange={handleInputChange}
                     rows="4"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                     placeholder="Parlez-nous de vous..."
                   />
                 </div>
@@ -244,7 +244,7 @@ const Profile = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-cast-green text-white py-2 px-6 rounded-lg hover:bg-cast-gold transition-colors disabled:opacity-50"
+                  className="bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-yellow-600 transition-colors disabled:opacity-50"
                 >
                   {loading ? 'Mise à jour...' : 'Sauvegarder les modifications'}
                 </button>
@@ -267,7 +267,7 @@ const Profile = () => {
                     name="currentPassword"
                     value={formData.currentPassword}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                     placeholder="Votre mot de passe actuel"
                   />
                 </div>
@@ -281,7 +281,7 @@ const Profile = () => {
                     name="newPassword"
                     value={formData.newPassword}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                     placeholder="Nouveau mot de passe (min. 6 caractères)"
                   />
                 </div>
@@ -295,7 +295,7 @@ const Profile = () => {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500"
                     placeholder="Confirmer le nouveau mot de passe"
                   />
                 </div>
@@ -303,7 +303,7 @@ const Profile = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="bg-cast-green text-white py-2 px-6 rounded-lg hover:bg-cast-gold transition-colors disabled:opacity-50"
+                  className="bg-green-600 text-white py-2 px-6 rounded-lg hover:bg-yellow-600 transition-colors disabled:opacity-50"
                 >
                   {loading ? 'Changement...' : 'Changer le mot de passe'}
                 </button>
@@ -346,7 +346,7 @@ const Profile = () => {
               <div>
                 <span className="text-sm text-gray-500">Statut</span>
                 <p className="font-medium">
-                  {userProfile?.isActive ? 
+                  {userProfile?.isActive !== false ? 
                     <span className="text-green-600">✅ Compte actif</span> : 
                     <span className="text-red-600">❌ Compte inactif</span>
                   }

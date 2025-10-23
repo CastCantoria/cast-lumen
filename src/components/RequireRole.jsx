@@ -6,13 +6,8 @@ const RequireRole = ({ children, role }) => {
 
   if (loading) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '50vh' 
-      }}>
-        <div>Chargement...</div>
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
   }
@@ -30,28 +25,15 @@ const RequireRole = ({ children, role }) => {
 
   if (!hasAccess) {
     return (
-      <div style={{ 
-        padding: "100px 20px 20px 20px", 
-        textAlign: "center",
-        minHeight: "60vh"
-      }}>
-        <h1 style={{ fontSize: "2rem", marginBottom: "1rem", color: "#dc2626" }}>
-          ⚠️ Accès Refusé
-        </h1>
-        <p style={{ fontSize: "1.2rem", marginBottom: "2rem", color: "#666" }}>
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center">
+        <div className="text-6xl mb-4">⚠️</div>
+        <h1 className="text-2xl font-bold text-red-600 mb-4">Accès Refusé</h1>
+        <p className="text-gray-600 mb-8 text-lg">
           Vous n'avez pas les permissions nécessaires pour accéder à cette page.
         </p>
         <button 
           onClick={() => window.history.back()}
-          style={{
-            padding: "12px 24px",
-            backgroundColor: "#4F46E5",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontSize: "1rem"
-          }}
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
         >
           ← Retour
         </button>

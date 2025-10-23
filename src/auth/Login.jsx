@@ -1,14 +1,14 @@
-﻿import React, { useState } from 'react';
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '../config/firebase';
+﻿import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 const Login = () => {
+  const { signInWithGoogle, login, userProfile, loading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [showResetModal, setShowResetModal] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
@@ -19,7 +19,41 @@ const Login = () => {
 
   const _from = location.state?.from?.pathname || '/';
 
-  const handleSubmit = async (e) => {
+  // Redirection automatique si déjà connecté
+  useEffect(() => {
+    if (userProfile && !loading) {
+      redirectBasedOnRole(userProfile.role);
+    }
+  }, [userProfile, loading, navigate]);
+
+  const redirectBasedOnRole = (role) => {
+    switch (role) {
+      case 'super-admin':
+      case 'admin':
+        navigate('/admin');
+        break;
+      case 'membre':
+        navigate('/dashboard');
+        break;
+      default:
+        navigate(_from, { replace: true });
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setError('');
+      setLoginLoading(true);
+      await signInWithGoogle();
+      // La redirection se fera automatiquement via le useEffect
+    } catch (error) {
+      console.error('❌ Erreur connexion Google:', error);
+      setError('Erreur de connexion Google: ' + error.message);
+      setLoginLoading(false);
+    }
+  };
+
+  const handleEmailLogin = async (e) => {
     e.preventDefault();
     
     if (!email || !password) {
@@ -27,17 +61,16 @@ const Login = () => {
       return;
     }
 
-    setLoading(true);
+    setLoginLoading(true);
     setError('');
 
     try {
       console.log('🔐 Tentative de connexion avec:', email);
       
-      const result = await signInWithEmailAndPassword(auth, email, password);
+      await login(email, password);
       
-      console.log('✅ Connexion réussie!', result.user);
-      
-      navigate(_from, { replace: true });
+      console.log('✅ Connexion réussie!');
+      // La redirection se fera automatiquement via le useEffect
       
     } catch (error) {
       console.error('❌ Erreur connexion:', error);
@@ -71,27 +104,7 @@ const Login = () => {
         );
       }
     } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleLogin = async () => {
-    setLoading(true);
-    setError('');
-
-    try {
-      const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      
-      console.log('✅ Connexion Google réussie:', result.user);
-      
-      navigate(_from, { replace: true });
-      
-    } catch (error) {
-      console.error('❌ Erreur connexion Google:', error);
-      setError('Une erreur est survenue lors de la connexion Google: ' + error.message);
-    } finally {
-      setLoading(false);
+      setLoginLoading(false);
     }
   };
 
@@ -114,6 +127,30 @@ const Login = () => {
     setResetLoading(false);
   };
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-cast-green to-cast-gold flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+          <p className="mt-4 text-white">Chargement...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Si déjà connecté, afficher un message de redirection
+  if (userProfile) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-cast-green to-cast-gold flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto"></div>
+          <p className="mt-4 text-white text-lg">Redirection vers votre espace...</p>
+          <p className="mt-2 text-white opacity-80">Rôle: {userProfile.role}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-cast-green to-cast-gold flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-2xl">
@@ -129,7 +166,7 @@ const Login = () => {
         {/* Bouton Google */}
         <button
           onClick={handleGoogleLogin}
-          disabled={loading}
+          disabled={loginLoading}
           className="w-full flex justify-center items-center space-x-3 py-3 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cast-gold disabled:opacity-50 transition-all duration-300"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -138,7 +175,7 @@ const Login = () => {
             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
           </svg>
-          <span>Se connecter avec Google</span>
+          <span>{loginLoading ? 'Connexion...' : 'Se connecter avec Google'}</span>
         </button>
 
         <div className="relative">
@@ -150,7 +187,7 @@ const Login = () => {
           </div>
         </div>
 
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6" onSubmit={handleEmailLogin}>
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
               {typeof error === 'string' ? error : error}
@@ -222,14 +259,14 @@ const Login = () => {
             </button>
           </div>
 
-          {/* ✅ BOUTON CORRIGÉ - AVEC VOS COULEURS C.A.S.T. */}
+          {/* BOUTON DE CONNEXION */}
           <div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loginLoading}
               className="w-full py-3 px-4 bg-cast-green text-white font-medium rounded-lg hover:bg-cast-gold hover:text-cast-green focus:outline-none focus:ring-2 focus:ring-cast-gold focus:ring-offset-2 transition-all duration-300 disabled:opacity-50 shadow-lg"
             >
-              {loading ? 'Connexion...' : 'Se connecter'}
+              {loginLoading ? 'Connexion...' : 'Se connecter'}
             </button>
           </div>
 

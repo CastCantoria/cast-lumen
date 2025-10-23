@@ -1,5 +1,5 @@
 ﻿import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../contexts/NewAuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 
 const MemberDashboard = () => {
   const { userProfile, currentUser } = useAuth();

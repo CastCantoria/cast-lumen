@@ -1,230 +1,210 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import { useAuthorization } from '../../hooks/useAuthorization';
 import './Header.css';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState(null);
-  const { currentUser, userProfile, logout, isAuthenticated } = useAuth();
+  const { currentUser, logout, isAuthenticated } = useAuth();
+  const { isSuperAdmin, isAdmin, isMember, currentRole } = useAuthorization();
   const navigate = useNavigate();
-
-  // Redirection automatique après connexion
-  useEffect(() => {
-    if (userProfile && isAuthenticated) {
-      const timer = setTimeout(() => {
-        switch (userProfile.role) {
-          case 'super-admin':
-          case 'admin':
-            navigate('/admin');
-            break;
-          case 'membre':
-            navigate('/dashboard');
-            break;
-          default:
-            navigate('/');
-        }
-      }, 1000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [userProfile, isAuthenticated, navigate]);
+  const location = useLocation();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-    setActiveDropdown(null);
   };
 
   const closeMenu = () => {
     setIsMenuOpen(false);
-    setActiveDropdown(null);
-  };
-
-  const goToHome = () => {
-    navigate('/');
-    closeMenu();
-  };
-
-  const navigateTo = (path) => {
-    navigate(path);
-    closeMenu();
-  };
-
-  const toggleDropdown = (dropdownName) => {
-    if (activeDropdown === dropdownName) {
-      setActiveDropdown(null);
-    } else {
-      setActiveDropdown(dropdownName);
-    }
-  };
-
-  const closeDropdowns = () => {
-    setActiveDropdown(null);
   };
 
   const handleLogout = async () => {
     try {
       await logout();
       closeMenu();
-      navigate('/');
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
     }
   };
 
-  // Fonction pour obtenir l'avatar de l'utilisateur
-  const getUserAvatar = () => {
-    if (currentUser?.photoURL) {
-      return currentUser.photoURL;
-    }
-    return "/images/icone-connexion.png";
+  // Fermer le menu quand on change de page
+  useEffect(() => {
+    closeMenu();
+  }, [location.pathname]);
+
+  // Obtenir le dashboard selon le rôle
+  const getDashboardPath = () => {
+    if (isSuperAdmin) return '/super-admin';
+    if (isAdmin) return '/admin';
+    if (isMember) return '/member';
+    return '/dashboard';
   };
 
-  // Fonction pour obtenir l'initiale de l'utilisateur
-  const getUserInitial = () => {
-    if (currentUser?.displayName) {
-      return currentUser.displayName.charAt(0).toUpperCase();
-    }
-    if (currentUser?.email) {
-      return currentUser.email.charAt(0).toUpperCase();
-    }
-    return 'U';
+  // Obtenir le label du dashboard selon le rôle
+  const getDashboardLabel = () => {
+    if (isSuperAdmin) return 'Super-Admin';
+    if (isAdmin) return 'Admin';
+    if (isMember) return 'Membre';
+    return 'Dashboard';
   };
 
-  // Navigation structurée avec dropdowns fusionnés
-  const navigation = {
-    discovery: {
-      title: "🌟 Découverte",
-      items: [
-        { path: "/about", label: "À Propos", icon: "ℹ️" },
-        { path: "/repertoire", label: "Répertoire", icon: "📜" },
-        { path: "/gallery", label: "Galerie", icon: "🖼️" },
-        { path: "/join", label: "Nous Rejoindre", icon: "👥" },
-        { path: "/contact", label: "Contact & Infos", icon: "📞" }
-      ]
-    },
-    activities: {
-      title: "🎭 Activités", 
-      items: [
-        { path: "/events", label: "Concerts", icon: "🎵" },
-        { path: "/blog", label: "Blog", icon: "📰" },
-        { path: "/spirituality", label: "Spiritualité", icon: "🙏" }
-      ]
-    }
+  // Obtenir l'icône du dashboard selon le rôle
+  const getDashboardIcon = () => {
+    if (isSuperAdmin) return '👑';
+    if (isAdmin) return '⚙️';
+    if (isMember) return '⭐';
+    return '📊';
+  };
+
+  // Obtenir le label du rôle pour l'affichage
+  const getRoleLabel = () => {
+    if (isSuperAdmin) return 'Super-Admin';
+    if (isAdmin) return 'Administrateur';
+    if (isMember) return 'Membre';
+    return 'Visiteur';
   };
 
   return (
     <header className="sacred-header">
-      <div className="header-brand">
-        <div className="logo-container" onClick={goToHome}>
-          <img 
-            src="/images/logo-cantoria.png" 
-            alt="C.A.S.T. Cantoria" 
-            className="logo-image"
-            onError={(e) => {
-              e.target.style.display = 'none';
-              e.target.nextSibling.style.display = 'flex';
-            }}
-          />
-          <div className="logo-fallback">
-            🎵
+      <div className="header-container">
+        {/* Logo */}
+        <div className="header-brand" onClick={() => navigate('/')}>
+          <div className="logo-container">
+            <img 
+              src="/images/logo-cantoria.png" 
+              alt="C.A.S.T. Cantoria" 
+              className="logo-image"
+            />
+          </div>
+          <div className="brand-text">
+            <h1>C.A.S.T.</h1>
+            <p>Chœur Artistique & Spirituel de Tana</p>
           </div>
         </div>
-        <div className="brand-text" onClick={goToHome}>
-          <h1>𝕮.𝕬.𝕾.𝕿.</h1>
-          <p className="gothic-unicode">𝕮𝖍𝖔𝖊𝖚𝖗 𝕬𝖗𝖙𝖎𝖘𝖎𝖙𝖎𝖖𝖚𝖊 & 𝕾𝖕𝖎𝖗𝖎𝖙𝖚𝖊𝖑 𝖉𝖊 𝕿𝖆𝖓𝖆</p>
+
+        {/* Navigation Desktop */}
+        <nav className="sacred-navigation">
+          <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
+            Accueil
+          </Link>
+          <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>
+            À Propos
+          </Link>
+          <Link to="/events" className={`nav-link ${location.pathname === '/events' ? 'active' : ''}`}>
+            Événements
+          </Link>
+          <Link to="/gallery" className={`nav-link ${location.pathname === '/gallery' ? 'active' : ''}`}>
+            Galerie
+          </Link>
+          <Link to="/contact" className={`nav-link ${location.pathname === '/contact' ? 'active' : ''}`}>
+            Contact
+          </Link>
+        </nav>
+
+        {/* Section Utilisateur Desktop */}
+        <div className="user-section">
+          {isAuthenticated ? (
+            <div className="user-info-desktop">
+              <span className="user-greeting">
+                Bonjour, {currentUser?.displayName || 'Utilisateur'}
+              </span>
+              <span className="user-role-badge">
+                {getRoleLabel()}
+              </span>
+              <Link to={getDashboardPath()} className="btn btn-primary">
+                {getDashboardLabel()}
+              </Link>
+            </div>
+          ) : (
+            <div className="auth-buttons">
+              <Link to="/join" className="btn btn-secondary">
+                Nous Rejoindre
+              </Link>
+              <Link to="/login" className="btn btn-primary">
+                Connexion
+              </Link>
+            </div>
+          )}
         </div>
+
+        {/* Menu Burger */}
+        <button 
+          className="menu-burger"
+          onClick={toggleMenu}
+          aria-label="Menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
       </div>
 
-      <button 
-        className={`menu-burger-music ${isMenuOpen ? 'active' : ''}`}
-        onClick={toggleMenu}
-        aria-label="Menu"
-      >
-        <span className="music-icon closed">🎵</span>
-        <span className="music-icon open">🎶</span>
-      </button>
+      {/* Menu Mobile */}
+      <div className={`mobile-menu ${isMenuOpen ? 'active' : ''}`}>
+        <nav className="mobile-nav">
+          <Link to="/" className="mobile-nav-item" onClick={closeMenu}>
+            <span>🏠</span>
+            <span>Accueil</span>
+          </Link>
 
-      <nav 
-        className={`sacred-navigation ${isMenuOpen ? 'active' : ''}`}
-        onClick={closeDropdowns}
-      >
-        {/* Navigation principale */}
-        <a href="/" onClick={(e) => { e.preventDefault(); navigateTo('/'); }}>
-          <span>🏠</span> Accueil
-        </a>
-        
-        {/* DROPDOWN DÉCOUVERTE (fusionné avec Nous Contacter) */}
-        <div className="nav-dropdown">
-          <button 
-            className={`dropdown-toggle ${activeDropdown === 'discovery' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleDropdown('discovery');
-            }}
-          >
-            <span>🌟</span> Découverte
-            <span className="dropdown-arrow">▼</span>
-          </button>
-          <div className={`dropdown-menu ${activeDropdown === 'discovery' ? 'active' : ''}`}>
-            {navigation.discovery.items.map((item) => (
-              <a 
-                key={item.path} 
-                href={item.path} 
-                onClick={(e) => { e.preventDefault(); navigateTo(item.path); }}
-                className={item.path === '/join' ? 'join-dropdown-item' : ''}
-              >
-                <span>{item.icon}</span> {item.label}
-              </a>
-            ))}
-          </div>
-        </div>
+          <Link to="/about" className="mobile-nav-item" onClick={closeMenu}>
+            <span>🌟</span>
+            <span>À Propos</span>
+          </Link>
 
-        {/* DROPDOWN ACTIVITÉS */}
-        <div className="nav-dropdown">
-          <button 
-            className={`dropdown-toggle ${activeDropdown === 'activities' ? 'active' : ''}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              toggleDropdown('activities');
-            }}
-          >
-            <span>🎭</span> Activités
-            <span className="dropdown-arrow">▼</span>
-          </button>
-          <div className={`dropdown-menu ${activeDropdown === 'activities' ? 'active' : ''}`}>
-            {navigation.activities.items.map((item) => (
-              <a 
-                key={item.path} 
-                href={item.path} 
-                onClick={(e) => { e.preventDefault(); navigateTo(item.path); }}
-              >
-                <span>{item.icon}</span> {item.label}
-              </a>
-            ))}
-          </div>
-        </div>
+          <Link to="/events" className="mobile-nav-item" onClick={closeMenu}>
+            <span>🎵</span>
+            <span>Événements</span>
+          </Link>
 
-        {/* Séparateur visuel */}
-        <div className="nav-divider"></div>
+          <Link to="/gallery" className="mobile-nav-item" onClick={closeMenu}>
+            <span>🖼️</span>
+            <span>Galerie</span>
+          </Link>
 
-        {/* État de connexion - SIMPLIFIÉ AVEC JUSTE DÉCONNEXION */}
-        {isAuthenticated ? (
-          // Utilisateur connecté - Bouton déconnexion simple
-          <button
-            onClick={handleLogout}
-            className="logout-btn-header"
-          >
-            <span>🚪</span> Déconnexion
-          </button>
-        ) : (
-          // Utilisateur non connecté - Lien connexion simple
-          <a href="/login" onClick={(e) => { e.preventDefault(); navigateTo('/login'); }} className="login-link-header">
-            <span>👤</span> Connexion
-          </a>
-        )}
-      </nav>
+          <Link to="/contact" className="mobile-nav-item" onClick={closeMenu}>
+            <span>📞</span>
+            <span>Contact</span>
+          </Link>
 
+          <div className="mobile-divider"></div>
+
+          {isAuthenticated ? (
+            <>
+              <Link to={getDashboardPath()} className="mobile-nav-item dashboard-item" onClick={closeMenu}>
+                <span>{getDashboardIcon()}</span>
+                <span>{getDashboardLabel()}</span>
+              </Link>
+              <Link to="/profile" className="mobile-nav-item" onClick={closeMenu}>
+                <span>👤</span>
+                <span>Profil</span>
+              </Link>
+              <div className="mobile-nav-item" style={{ opacity: 0.7, fontStyle: 'italic' }}>
+                <span>🎭</span>
+                <span>Connecté en tant que {getRoleLabel()}</span>
+              </div>
+              <button onClick={handleLogout} className="mobile-nav-item logout-item">
+                <span>🚪</span>
+                <span>Déconnexion</span>
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/join" className="mobile-nav-item" onClick={closeMenu}>
+                <span>👥</span>
+                <span>Nous Rejoindre</span>
+              </Link>
+              <Link to="/login" className="mobile-nav-item" onClick={closeMenu}>
+                <span>🔐</span>
+                <span>Connexion</span>
+              </Link>
+            </>
+          )}
+        </nav>
+      </div>
+
+      {/* Overlay */}
       {isMenuOpen && (
         <div className="menu-overlay" onClick={closeMenu}></div>
       )}

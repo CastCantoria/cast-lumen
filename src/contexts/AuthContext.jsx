@@ -5,8 +5,8 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword 
 } from 'firebase/auth';
-import { auth, googleProvider } from '../config/firebase'; // ✅ Maintenant correct
-import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { auth, googleProvider } from '../config/firebase';
+import { doc, getDoc, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { db } from '../config/firebase';
 
 const AuthContext = createContext();
@@ -43,6 +43,30 @@ const createUserProfile = async (user) => {
   }
 };
 
+const updateUserLastLogin = async (uid) => {
+  try {
+    await updateDoc(doc(db, 'users', uid), {
+      lastLogin: serverTimestamp()
+    });
+  } catch (error) {
+    console.error('Erreur mise à jour dernière connexion:', error);
+  }
+};
+
+// Fonction utilitaire pour la redirection
+const getRedirectPath = (role) => {
+  switch (role) {
+    case 'super-admin':
+      return '/super-admin';
+    case 'admin':
+      return '/admin';
+    case 'membre':
+      return '/member';
+    default:
+      return '/dashboard';
+  }
+};
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -56,6 +80,19 @@ export const AuthProvider = ({ children }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Fonction de redirection automatique
+  const redirectUser = (profile) => {
+    if (!profile) return;
+    
+    const redirectPath = getRedirectPath(profile.role);
+    console.log(`🔄 Redirection automatique vers: ${redirectPath}`);
+    
+    // Utiliser window.location pour une redirection complète
+    setTimeout(() => {
+      window.location.href = redirectPath;
+    }, 1000);
+  };
+
   // Connexion Google
   const signInWithGoogle = async () => {
     try {
@@ -66,12 +103,18 @@ export const AuthProvider = ({ children }) => {
       let profile = await getUserProfile(user.uid);
       if (!profile) {
         profile = await createUserProfile(user);
+      } else {
+        await updateUserLastLogin(user.uid);
       }
       
       setCurrentUser(user);
       setUserProfile(profile);
       
       console.log('🎉 Connexion Google réussie ! Bienvenue sur C.A.S.T.');
+      
+      // Redirection automatique
+      redirectUser(profile);
+      
       return { user, profile };
     } catch (error) {
       console.error('Erreur connexion Google:', error);
@@ -80,8 +123,41 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Connexion email/mot de passe
-  const login = (email, password) => {
-    return signInWithEmailAndPassword(auth, email, password);
+  const login = async (email, password) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      
+      // Récupérer le profil utilisateur
+      const profile = await getUserProfile(user.uid);
+      if (profile) {
+        await updateUserLastLogin(user.uid);
+        setCurrentUser(user);
+        setUserProfile(profile);
+        
+        console.log('🎉 Connexion réussie ! Bienvenue sur C.A.S.T.');
+        
+        // Redirection automatique
+        redirectUser(profile);
+        
+        return { success: true, user, profile };
+      } else {
+        // Créer un profil si inexistant
+        const newProfile = await createUserProfile(user);
+        setCurrentUser(user);
+        setUserProfile(newProfile);
+        
+        console.log('🎉 Connexion réussie ! Profil créé.');
+        
+        // Redirection automatique
+        redirectUser(newProfile);
+        
+        return { success: true, user, profile: newProfile };
+      }
+    } catch (error) {
+      console.error('Erreur connexion:', error);
+      return { success: false, error: error.message };
+    }
   };
 
   // Déconnexion
@@ -91,6 +167,8 @@ export const AuthProvider = ({ children }) => {
       await firebaseSignOut(auth);
       setCurrentUser(null);
       setUserProfile(null);
+      
+      // Redirection vers la page d'accueil
       window.location.href = '/';
     } catch (error) {
       console.error('Erreur déconnexion:', error);
@@ -105,6 +183,12 @@ export const AuthProvider = ({ children }) => {
         const profile = await getUserProfile(user.uid);
         setCurrentUser(user);
         setUserProfile(profile);
+        
+        // Rediriger si sur la page d'accueil après connexion
+        if (window.location.pathname === '/' && profile) {
+          console.log('🔄 Redirection depuis la page d\'accueil...');
+          redirectUser(profile);
+        }
       } else {
         setCurrentUser(null);
         setUserProfile(null);
@@ -126,12 +210,16 @@ export const AuthProvider = ({ children }) => {
     login,
     logout,
     
+    // Fonction utilitaire
+    getRedirectPath,
+    
     // États
     loading,
     isAuthenticated: !!currentUser,
     isAdmin: userProfile?.role === 'admin',
-    isMember: ['admin', 'membre'].includes(userProfile?.role),
-    isSuperAdmin: userProfile?.role === 'super-admin'
+    isMember: ['admin', 'membre', 'registered-user'].includes(userProfile?.role),
+    isSuperAdmin: userProfile?.role === 'super-admin',
+    isCoreTeam: userProfile?.role === 'core-team'
   };
 
   return (
@@ -141,5 +229,4 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Export pour les composants qui en auraient besoin
 export { AuthContext };

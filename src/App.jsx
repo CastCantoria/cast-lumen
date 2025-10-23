@@ -19,6 +19,19 @@ import Dashboard from "./components/Dashboard/Dashboard"
 import Profile from "./pages/private/Profile"
 import RequireAuth from "./components/RequireAuth"
 import RequireRole from "./components/RequireRole"
+import ProtectedRoute from "./components/auth/ProtectedRoute"
+import Unauthorized from "./pages/Unauthorized"
+
+// Import des nouveaux dashboards spécifiques
+import SuperAdminDashboard from "./pages/dashboard/super-admin/SuperAdminDashboard"
+import AdminDashboard from "./pages/dashboard/admin/AdminDashboard"
+import MemberDashboard from "./pages/dashboard/member/MemberDashboard"
+
+// CORRECTION : Commenter les imports manquants pour l'instant
+// import RoleManagement from "./components/admin/RoleManagement"
+// import UserManagement from "./components/admin/UserManagement"
+// import EventManagement from "./pages/admin/EventManagement"
+// import RepertoireManagement from "./pages/admin/RepertoireManagement"
 
 function App() {
   return (
@@ -43,6 +56,7 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/join" element={<Join />} />
               <Route path="/join/success" element={<JoinSuccess />} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
 
               {/* ==================== */}
               {/* ROUTES PRIVÉES - AUTH REQUISE */}
@@ -57,132 +71,278 @@ function App() {
               />
 
               {/* ==================== */}
-              {/* DASHBOARD UNIFIÉ - ROUTE PRINCIPALE */}
+              {/* DASHBOARD UNIFIÉ - ROUTE PRINCIPALE (Compatibilité) */}
               {/* ==================== */}
               <Route 
                 path="/dashboard" 
                 element={
-                  <RequireRole role="membre">
+                  <ProtectedRoute minRequiredRole="registered-user">
                     <Dashboard />
-                  </RequireRole>
+                  </ProtectedRoute>
                 } 
               />
 
               {/* ==================== */}
-              {/* DASHBOARD ADMIN/SUPER-ADMIN */}
+              {/* DASHBOARDS SPÉCIFIQUES PAR RÔLE (NOUVEAU) */}
               {/* ==================== */}
+              
+              {/* Super Admin Dashboard */}
               <Route 
-                path="/admin/*" 
+                path="/super-admin" 
                 element={
-                  <RequireRole role="admin">
-                    <Dashboard />
-                  </RequireRole>
+                  <ProtectedRoute requiredRole="super-admin">
+                    <SuperAdminDashboard />
+                  </ProtectedRoute>
                 } 
               />
 
+              {/* Admin Dashboard */}
               <Route 
-                path="/super-admin/*" 
+                path="/admin" 
                 element={
-                  <RequireRole role="super-admin">
-                    <Dashboard />
-                  </RequireRole>
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+
+              {/* Member Dashboard */}
+              <Route 
+                path="/member" 
+                element={
+                  <ProtectedRoute requiredRole="registered-user">
+                    <MemberDashboard />
+                  </ProtectedRoute>
                 } 
               />
 
               {/* ==================== */}
-              {/* ROUTES MEMBRES (ancienne structure - à supprimer progressivement) */}
+              {/* ADMIN - SOUS-ROUTES (TEMPORAIREMENT COMMENTÉES) */}
               {/* ==================== */}
+              
+              {/* 
               <Route 
-                path="/member/dashboard" 
+                path="/admin/roles" 
                 element={
-                  <RequireRole role="membre">
-                    <div className="pt-20 px-4">
-                      <div className="max-w-6xl mx-auto py-8">
-                        <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-200">
-                          <h1 className="text-3xl font-bold text-green-600 mb-2">Espace Membre</h1>
-                          <p className="text-gray-600 mb-6">
-                            Bienvenue dans votre espace personnel dédié aux membres actifs de CAST.
-                          </p>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                              <div className="text-3xl mb-3">👤</div>
-                              <h3 className="font-semibold text-blue-700 mb-2">Mon Profil</h3>
-                              <p className="text-blue-600 text-sm">Gérez vos informations personnelles</p>
-                            </div>
-                            
-                            <div className="bg-green-50 p-6 rounded-lg border border-green-200">
-                              <div className="text-3xl mb-3">🎭</div>
-                              <h3 className="font-semibold text-green-700 mb-2">Mes Événements</h3>
-                              <p className="text-green-600 text-sm">Consultez vos participations</p>
-                            </div>
-                            
-                            <div className="bg-purple-50 p-6 rounded-lg border border-purple-200">
-                              <div className="text-3xl mb-3">📜</div>
-                              <h3 className="font-semibold text-purple-700 mb-2">Mon Répertoire</h3>
-                              <p className="text-purple-600 text-sm">Accédez à vos morceaux</p>
-                            </div>
-                          </div>
-
-                          <div className="text-center py-6">
-                            <p className="text-gray-600 mb-4">
-                              🚀 <strong>Nouveau !</strong> Découvrez notre dashboard amélioré
-                            </p>
-                            <a 
-                              href="/#/dashboard"
-                              className="bg-cast-green text-white py-2 px-6 rounded-lg hover:bg-cast-gold transition-colors inline-block"
-                            >
-                              Accéder au nouveau Dashboard
-                            </a>
-                          </div>
-                        </div>
-                      </div>
+                  <ProtectedRoute 
+                    requiredPermission="manage_all_accounts"
+                    unauthorizedRedirect="/admin"
+                  >
+                    <div className="pt-20">
+                      <RoleManagement />
                     </div>
-                  </RequireRole>
+                  </ProtectedRoute>
                 } 
               />
 
+              <Route 
+                path="/admin/users" 
+                element={
+                  <ProtectedRoute 
+                    requiredPermission="manage_users"
+                    unauthorizedRedirect="/admin"
+                  >
+                    <div className="pt-20">
+                      <UserManagement />
+                    </div>
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/admin/events" 
+                element={
+                  <ProtectedRoute 
+                    requiredPermission="manage_content"
+                    unauthorizedRedirect="/admin"
+                  >
+                    <div className="pt-20">
+                      <EventManagement />
+                    </div>
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/admin/repertoire" 
+                element={
+                  <ProtectedRoute 
+                    requiredPermission="manage_content"
+                    unauthorizedRedirect="/admin"
+                  >
+                    <div className="pt-20">
+                      <RepertoireManagement />
+                    </div>
+                  </ProtectedRoute>
+                } 
+              />
+              */}
+
+              {/* ==================== */}
+              {/* MEMBER - SOUS-ROUTES (FONCTIONNELLES) */}
+              {/* ==================== */}
+              
               <Route 
                 path="/member/repertoire" 
                 element={
-                  <RequireRole role="membre">
+                  <ProtectedRoute 
+                    requiredPermission="access_premium_content"
+                    unauthorizedRedirect="/member"
+                  >
                     <div className="pt-20 px-4">
-                      <div className="max-w-4xl mx-auto py-8">
-                        <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-200">
-                          <h1 className="text-3xl font-bold text-green-600 mb-2">Mon Répertoire Personnel</h1>
+                      <div className="max-w-6xl mx-auto py-8">
+                        <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+                          <h1 className="text-3xl font-bold text-green-600 mb-4">🎵 Mon Répertoire Personnel</h1>
                           <p className="text-gray-600 mb-6">
-                            Gérez votre collection personnelle de morceaux et partitions.
+                            Accédez à votre collection personnelle de partitions et morceaux.
                           </p>
-                          <div className="text-center py-12">
-                            <div className="text-6xl mb-4">🎵</div>
-                            <p className="text-gray-500">Fonctionnalité en cours de développement...</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div className="bg-blue-50 p-6 rounded-lg border-2 border-blue-200 text-center">
+                              <div className="text-4xl mb-3">📖</div>
+                              <h3 className="font-semibold text-blue-700 mb-2">Partitions</h3>
+                              <p className="text-blue-600 text-sm">Vos partitions personnelles</p>
+                            </div>
+                            <div className="bg-green-50 p-6 rounded-lg border-2 border-green-200 text-center">
+                              <div className="text-4xl mb-3">🎼</div>
+                              <h3 className="font-semibold text-green-700 mb-2">Exercices</h3>
+                              <p className="text-green-600 text-sm">Vos exercices vocaux</p>
+                            </div>
+                            <div className="bg-purple-50 p-6 rounded-lg border-2 border-purple-200 text-center">
+                              <div className="text-4xl mb-3">⭐</div>
+                              <h3 className="font-semibold text-purple-700 mb-2">Favoris</h3>
+                              <p className="text-purple-600 text-sm">Vos morceaux préférés</p>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </RequireRole>
+                  </ProtectedRoute>
                 } 
               />
 
               <Route 
                 path="/member/events" 
                 element={
-                  <RequireRole role="membre">
+                  <ProtectedRoute 
+                    requiredPermission="access_premium_content"
+                    unauthorizedRedirect="/member"
+                  >
                     <div className="pt-20 px-4">
-                      <div className="max-w-4xl mx-auto py-8">
-                        <div className="bg-white rounded-xl shadow-sm p-8 border border-gray-200">
-                          <h1 className="text-3xl font-bold text-green-600 mb-2">Mes Événements</h1>
+                      <div className="max-w-6xl mx-auto py-8">
+                        <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+                          <h1 className="text-3xl font-bold text-orange-600 mb-4">🎭 Mes Événements</h1>
                           <p className="text-gray-600 mb-6">
-                            Consultez vos participations aux concerts et activités.
+                            Gérez votre participation aux concerts et activités.
                           </p>
-                          <div className="text-center py-12">
-                            <div className="text-6xl mb-4">🎭</div>
-                            <p className="text-gray-500">Fonctionnalité en cours de développement...</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="space-y-4">
+                              <h3 className="text-xl font-semibold text-gray-800 mb-3">Prochains Événements</h3>
+                              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                                <div className="font-semibold text-green-700">Concert de Noël</div>
+                                <div className="text-sm text-green-600">24 Décembre 2024 • Cathédrale</div>
+                                <div className="mt-2 bg-green-100 text-green-800 px-2 py-1 rounded text-xs inline-block">
+                                  Confirmé
+                                </div>
+                              </div>
+                              <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
+                                <div className="font-semibold text-blue-700">Répétition Générale</div>
+                                <div className="text-sm text-blue-600">20 Décembre 2024 • Salle de répétition</div>
+                                <div className="mt-2 bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs inline-block">
+                                  Participation requise
+                                </div>
+                              </div>
+                            </div>
+                            <div className="space-y-4">
+                              <h3 className="text-xl font-semibold text-gray-800 mb-3">Statistiques</h3>
+                              <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-purple-50 p-4 rounded-lg text-center">
+                                  <div className="text-2xl font-bold text-purple-600">12</div>
+                                  <div className="text-sm text-purple-700">Événements</div>
+                                </div>
+                                <div className="bg-teal-50 p-4 rounded-lg text-center">
+                                  <div className="text-2xl font-bold text-teal-600">8</div>
+                                  <div className="text-sm text-teal-700">Participations</div>
+                                </div>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </RequireRole>
+                  </ProtectedRoute>
+                } 
+              />
+
+              {/* ==================== */}
+              {/* ROUTES DE COMPATIBILITÉ (ancienne structure) */}
+              {/* ==================== */}
+              
+              <Route 
+                path="/member/dashboard" 
+                element={
+                  <ProtectedRoute requiredRole="registered-user">
+                    <MemberDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/admin/dashboard" 
+                element={
+                  <ProtectedRoute requiredRole="admin">
+                    <AdminDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/super-admin/dashboard" 
+                element={
+                  <ProtectedRoute requiredRole="super-admin">
+                    <SuperAdminDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+
+              {/* ==================== */}
+              {/* ROUTES CORE-TEAM (NOUVEAU) */}
+              {/* ==================== */}
+              
+              <Route 
+                path="/core-team/media" 
+                element={
+                  <ProtectedRoute 
+                    requiredPermission="publish_media"
+                    unauthorizedRedirect="/member"
+                  >
+                    <div className="pt-20 px-4">
+                      <div className="max-w-6xl mx-auto py-8">
+                        <div className="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+                          <h1 className="text-3xl font-bold text-pink-600 mb-4">🎬 Gestion des Médias</h1>
+                          <p className="text-gray-600 mb-6">
+                            Espace dédié à la publication et gestion des contenus média.
+                          </p>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <button className="bg-blue-600 text-white p-6 rounded-lg hover:bg-blue-700 transition text-center">
+                              <div className="text-3xl mb-3">📹</div>
+                              <div className="font-semibold">Vidéos</div>
+                              <div className="text-sm opacity-90 mt-2">Gérer les vidéos</div>
+                            </button>
+                            <button className="bg-green-600 text-white p-6 rounded-lg hover:bg-green-700 transition text-center">
+                              <div className="text-3xl mb-3">🎵</div>
+                              <div className="font-semibold">Audio</div>
+                              <div className="text-sm opacity-90 mt-2">Gérer les enregistrements</div>
+                            </button>
+                            <button className="bg-purple-600 text-white p-6 rounded-lg hover:bg-purple-700 transition text-center">
+                              <div className="text-3xl mb-3">🖼️</div>
+                              <div className="font-semibold">Photos</div>
+                              <div className="text-sm opacity-90 mt-2">Gérer la galerie</div>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </ProtectedRoute>
                 } 
               />
 
@@ -193,24 +353,32 @@ function App() {
                 path="*" 
                 element={
                   <div className="min-h-[60vh] flex flex-col items-center justify-center pt-20 px-4 text-center">
-                    <h1 className="text-6xl font-bold text-gray-800 mb-4">404</h1>
-                    <h2 className="text-3xl font-semibold text-gray-700 mb-4">Page Non Trouvée</h2>
-                    <p className="text-xl text-gray-600 mb-8 max-w-md">
-                      La page que vous recherchez n'existe pas ou a été déplacée.
-                    </p>
-                    <div className="space-y-3">
-                      <button 
-                        onClick={() => window.history.back()}
-                        className="bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors text-lg block"
-                      >
-                        ← Retour à la page précédente
-                      </button>
-                      <a 
-                        href="/#/"
-                        className="bg-cast-green text-white py-3 px-6 rounded-lg hover:bg-cast-gold transition-colors text-lg block"
-                      >
-                        🏠 Retour à l'accueil
-                      </a>
+                    <div className="bg-white rounded-2xl shadow-lg p-8 max-w-md mx-auto">
+                      <h1 className="text-6xl font-bold text-gray-800 mb-4">404</h1>
+                      <h2 className="text-2xl font-semibold text-gray-700 mb-4">Page Non Trouvée</h2>
+                      <p className="text-lg text-gray-600 mb-8">
+                        La page que vous recherchez n'existe pas ou a été déplacée.
+                      </p>
+                      <div className="space-y-3">
+                        <button 
+                          onClick={() => window.history.back()}
+                          className="w-full bg-indigo-600 text-white py-3 px-6 rounded-lg hover:bg-indigo-700 transition-colors text-lg"
+                        >
+                          ← Retour
+                        </button>
+                        <a 
+                          href="/#/"
+                          className="w-full bg-cast-green text-white py-3 px-6 rounded-lg hover:bg-cast-gold transition-colors text-lg block text-center"
+                        >
+                          🏠 Accueil
+                        </a>
+                        <a 
+                          href="/#/dashboard"
+                          className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors text-lg block text-center"
+                        >
+                          📊 Dashboard
+                        </a>
+                      </div>
                     </div>
                   </div>
                 } 

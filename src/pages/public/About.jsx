@@ -13,7 +13,7 @@ const About = () => {
     {
       name: "Maître Eric Rasamimanana",
       role: "Chef de Chœur",
-      description: "Diplômée du Conservatoire de Paris, elle dirige la chorale avec passion et exigence artistique",
+      description: "Diplômée du Conservatoire de Paris, il dirige la chorale avec passion et exigence artistique",
       image: "/images/eric-ras.jpg",
       specialties: ["Direction Musicale", "Pédagogie Vocale", "Répertoire Sacré"]
     },
@@ -23,6 +23,13 @@ const About = () => {
       description: "Ancien soliste de l'Opéra de Paris, il supervise la qualité artistique des productions",
       image: "/images/jules-ran.jpg",
       specialties: ["Technique Vocale", "Arrangements", "Production"]
+    },
+    {
+      name: "Tovoniaina Rahendrison, LeMizoo",
+      role: "Responsable Technique",
+      description: "Passionné par les technologies nouvelles, veut montrer que tout vient de Dieu. Par l'art évangélique, la voix collective du Chœur Artistique & Spirituel de Tanà (C.A.S.T.), et une mission d'évangélisation portée par l'unité et le talent reçus de Dieu, ce site internet est né pour glorifier et diffuser cette vocation.",
+      image: "/images/icone-connexion.png",
+      specialties: ["Conception du site", "Technique Vocale", "Arrangements", "Production"]
     }
   ];
 

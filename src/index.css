@@ -12,12 +12,29 @@
   --cast-green-dark: #1e3a23;
 }
 
-/* Styles de base */
+/* Reset et styles de base */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
 body {
   font-family: 'Inter', sans-serif;
   line-height: 1.6;
+  overflow-x: hidden;
 }
 
+/* Styles pour le header fixe */
+body.has-fixed-header {
+  padding-top: 70px;
+}
+
+/* Polices */
 .font-serif {
   font-family: 'Playfair Display', serif;
 }
@@ -74,6 +91,70 @@ html {
 .border-cast-gold {
   border-color: var(--cast-gold);
 }
+
+/* ===== STYLES CRITIQUES POUR LE HEADER MOBILE ===== */
+
+/* Header fixe */
+.sacred-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 10000 !important; /* Très élevé */
+}
+
+/* Menu mobile - STYLES CRITIQUES */
+.mobile-menu {
+  position: fixed !important;
+  top: 70px !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: linear-gradient(135deg, #1e3c1e 0%, #2c5530 100%) !important;
+  transform: translateX(-100%) !important;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  z-index: 9999 !important; /* Au-dessus de tout */
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.mobile-menu.active {
+  transform: translateX(0) !important;
+}
+
+/* Overlay */
+.menu-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  z-index: 9998 !important; /* Juste en dessous du menu */
+  display: none !important;
+}
+
+/* Afficher l'overlay sur mobile */
+@media (max-width: 768px) {
+  .menu-overlay {
+    display: block !important;
+  }
+}
+
+/* Bouton menu burger */
+.menu-burger {
+  display: none !important;
+  z-index: 10001 !important; /* Au-dessus du header */
+}
+
+@media (max-width: 1024px) {
+  .menu-burger {
+    display: flex !important;
+  }
+}
+
+/* ===== FIN DES STYLES CRITIQUES ===== */
 
 /* Focus states améliorés */
 .focus\:ring-cast-gold:focus {
@@ -132,15 +213,6 @@ html {
 @media (max-width: 1023px) {
   .main-with-sidebar {
     margin-left: 0;
-  }
-  
-  /* Menu mobile */
-  .mobile-menu-open {
-    transform: translateX(0);
-  }
-  
-  .mobile-menu-closed {
-    transform: translateX(-100%);
   }
 }
 
@@ -246,5 +318,93 @@ body.menu-open {
   
   .print-break {
     page-break-before: always;
+  }
+}
+
+/* Styles pour les onglets du dashboard en responsive */
+.dashboard-tabs-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dashboard-tab-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-width: 100px;
+  text-align: center;
+}
+
+.dashboard-tab-button.active {
+  background-color: #15803d; /* cast-green */
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-tab-button:not(.active) {
+  color: #4b5563; /* gray-600 */
+  background-color: transparent;
+}
+
+.dashboard-tab-button:not(.active):hover {
+  background-color: #f3f4f6; /* gray-100 */
+  color: #111827; /* gray-900 */
+}
+
+.dashboard-tab-icon {
+  font-size: 1.125rem;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-tab-label {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Sur très petits écrans */
+@media (max-width: 480px) {
+  .dashboard-tab-button {
+    min-width: 80px;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .dashboard-tab-icon {
+    font-size: 1rem;
+  }
+  
+  .dashboard-tab-label {
+    font-size: 0.7rem;
+  }
+}
+
+/* Sur écrans moyens et grands */
+@media (min-width: 769px) {
+  .dashboard-tabs-container {
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+  }
+  
+  .dashboard-tab-button {
+    flex-direction: row;
+    min-width: auto;
+    padding: 0.75rem 1rem;
+  }
+  
+  .dashboard-tab-icon {
+    margin-bottom: 0;
+    margin-right: 0.5rem;
+  }
+  
+  .dashboard-tab-label {
+    font-size: 0.875rem;
   }
 }
