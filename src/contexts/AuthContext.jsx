@@ -53,17 +53,17 @@ const updateUserLastLogin = async (uid) => {
   }
 };
 
-// Fonction utilitaire pour la redirection
+// FONCTION CORRIGÉE POUR HashRouter - AJOUT DU #
 const getRedirectPath = (role) => {
   switch (role) {
     case 'super-admin':
-      return '/super-admin';
+      return '/#/super-admin';
     case 'admin':
-      return '/admin';
+      return '/#/admin';
     case 'membre':
-      return '/member';
+      return '/#/member';
     default:
-      return '/dashboard';
+      return '/#/dashboard';
   }
 };
 
@@ -80,17 +80,17 @@ export const AuthProvider = ({ children }) => {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Fonction de redirection automatique
+  // FONCTION DE REDIRECTION CORRIGÉE
   const redirectUser = (profile) => {
     if (!profile) return;
     
     const redirectPath = getRedirectPath(profile.role);
-    console.log(`🔄 Redirection automatique vers: ${redirectPath}`);
+    console.log(`🔄 Redirection automatique HashRouter vers: ${redirectPath}`);
     
-    // Utiliser window.location pour une redirection complète
+    // Utiliser window.location avec le # pour HashRouter
     setTimeout(() => {
       window.location.href = redirectPath;
-    }, 1000);
+    }, 1500); // Augmenté à 1.5s pour laisser le temps à l'UI de s'afficher
   };
 
   // Connexion Google
@@ -112,8 +112,10 @@ export const AuthProvider = ({ children }) => {
       
       console.log('🎉 Connexion Google réussie ! Bienvenue sur C.A.S.T.');
       
-      // Redirection automatique
-      redirectUser(profile);
+      // Redirection automatique AVEC SUCCÈS VISUEL
+      setTimeout(() => {
+        redirectUser(profile);
+      }, 2000); // Laisser 2s pour voir le message de succès
       
       return { user, profile };
     } catch (error) {
@@ -137,8 +139,10 @@ export const AuthProvider = ({ children }) => {
         
         console.log('🎉 Connexion réussie ! Bienvenue sur C.A.S.T.');
         
-        // Redirection automatique
-        redirectUser(profile);
+        // Redirection automatique AVEC SUCCÈS VISUEL
+        setTimeout(() => {
+          redirectUser(profile);
+        }, 2000);
         
         return { success: true, user, profile };
       } else {
@@ -150,7 +154,9 @@ export const AuthProvider = ({ children }) => {
         console.log('🎉 Connexion réussie ! Profil créé.');
         
         // Redirection automatique
-        redirectUser(newProfile);
+        setTimeout(() => {
+          redirectUser(newProfile);
+        }, 2000);
         
         return { success: true, user, profile: newProfile };
       }
@@ -168,8 +174,10 @@ export const AuthProvider = ({ children }) => {
       setCurrentUser(null);
       setUserProfile(null);
       
-      // Redirection vers la page d'accueil
-      window.location.href = '/';
+      // Redirection vers la page d'accueil AVEC #
+      setTimeout(() => {
+        window.location.href = '/#/';
+      }, 1000);
     } catch (error) {
       console.error('Erreur déconnexion:', error);
       throw error;
@@ -184,11 +192,11 @@ export const AuthProvider = ({ children }) => {
         setCurrentUser(user);
         setUserProfile(profile);
         
-        // Rediriger si sur la page d'accueil après connexion
-        if (window.location.pathname === '/' && profile) {
-          console.log('🔄 Redirection depuis la page d\'accueil...');
-          redirectUser(profile);
-        }
+        // NE PAS rediriger automatiquement depuis la page d'accueil
+        // Laisser l'utilisateur voir la page et naviguer manuellement
+        // ou utiliser un bouton de redirection explicite
+        console.log('✅ Utilisateur connecté:', profile?.email);
+        
       } else {
         setCurrentUser(null);
         setUserProfile(null);
