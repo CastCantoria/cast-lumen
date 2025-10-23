@@ -1,4 +1,4 @@
-# Remplacer le package.json par la version qui fonctionnait
+# Recréer le package.json correct
 cat > package.json << 'EOF'
 {
   "name": "cast-lumen",
