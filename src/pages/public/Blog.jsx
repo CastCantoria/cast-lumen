@@ -142,9 +142,12 @@ const Blog = () => {
                       <span className="mx-4">•</span>
                       <span>⏱️ {featuredPost.readTime}</span>
                     </div>
-                    <button className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition font-semibold">
+                    <Link 
+                      to={`/blog/${featuredPost.id}`}
+                      className="bg-orange-600 text-white px-6 py-2 rounded-lg hover:bg-orange-700 transition font-semibold"
+                    >
                       Lire l'article
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -201,9 +204,12 @@ const Blog = () => {
                   <p className="text-gray-600 mb-4">{post.excerpt}</p>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700 font-semibold">✍️ {post.author}</span>
-                    <button className="text-orange-600 hover:text-orange-700 font-semibold">
+                    <Link 
+                      to={`/blog/${post.id}`}
+                      className="text-orange-600 hover:text-orange-700 font-semibold"
+                    >
                       Lire la suite →
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </article>

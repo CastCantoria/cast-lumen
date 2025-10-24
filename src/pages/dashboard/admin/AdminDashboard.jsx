@@ -2,6 +2,7 @@
 import { useAuth } from '../../../contexts/AuthContext';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../config/firebase';
+import { Link } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const { userProfile, currentUser } = useAuth();
@@ -38,98 +39,478 @@ const AdminDashboard = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "100vh",
+        backgroundColor: "#f8fafc"
+      }}>
+        <div style={{
+          animation: "spin 1s linear infinite",
+          borderRadius: "50%",
+          height: "3rem",
+          width: "3rem",
+          border: "2px solid #2563eb",
+          borderTopColor: "transparent"
+        }}></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-cyan-900">
+    <div style={{
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #0ea5e9 100%)"
+    }}>
       {/* Header */}
-      <div className="bg-black bg-opacity-50 text-white p-6">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold mb-2">Tableau de Bord Administrateur</h1>
-          <p className="text-blue-200">
+      <div style={{
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        color: "white",
+        padding: "1.5rem"
+      }}>
+        <div style={{
+          maxWidth: "80rem",
+          margin: "0 auto"
+        }}>
+          <h1 style={{
+            fontSize: "1.875rem",
+            fontWeight: "bold",
+            marginBottom: "0.5rem"
+          }}>
+            Tableau de Bord Administrateur
+          </h1>
+          <p style={{ color: "#bfdbfe" }}>
             Gestion des membres et activités de C.A.S.T.
           </p>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto p-6">
+      <div style={{
+        maxWidth: "80rem",
+        margin: "0 auto",
+        padding: "1.5rem"
+      }}>
         {/* Statistiques */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-            <div className="text-3xl font-bold text-blue-600">{stats.totalMembers}</div>
-            <div className="text-gray-600">Membres Actifs</div>
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+          gap: "1.5rem",
+          marginBottom: "2rem"
+        }}>
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "0.5rem",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+            padding: "1.5rem",
+            textAlign: "center"
+          }}>
+            <div style={{
+              fontSize: "1.875rem",
+              fontWeight: "bold",
+              color: "#2563eb"
+            }}>
+              {stats.totalMembers}
+            </div>
+            <div style={{ color: "#4b5563" }}>Membres Actifs</div>
           </div>
-          <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-            <div className="text-3xl font-bold text-orange-600">{stats.pendingRequests}</div>
-            <div className="text-gray-600">Demandes en Attente</div>
+          
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "0.5rem",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+            padding: "1.5rem",
+            textAlign: "center"
+          }}>
+            <div style={{
+              fontSize: "1.875rem",
+              fontWeight: "bold",
+              color: "#ea580c"
+            }}>
+              {stats.pendingRequests}
+            </div>
+            <div style={{ color: "#4b5563" }}>Demandes en Attente</div>
           </div>
-          <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-            <div className="text-3xl font-bold text-green-600">{stats.activeEvents}</div>
-            <div className="text-gray-600">Événements Actifs</div>
+          
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "0.5rem",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+            padding: "1.5rem",
+            textAlign: "center"
+          }}>
+            <div style={{
+              fontSize: "1.875rem",
+              fontWeight: "bold",
+              color: "#16a34a"
+            }}>
+              {stats.activeEvents}
+            </div>
+            <div style={{ color: "#4b5563" }}>Événements Actifs</div>
           </div>
-          <div className="bg-white rounded-lg shadow-lg p-6 text-center">
-            <div className="text-3xl font-bold text-purple-600">{stats.totalRepertoire}</div>
-            <div className="text-gray-600">Pièces au Répertoire</div>
+          
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "0.5rem",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+            padding: "1.5rem",
+            textAlign: "center"
+          }}>
+            <div style={{
+              fontSize: "1.875rem",
+              fontWeight: "bold",
+              color: "#7c3aed"
+            }}>
+              {stats.totalRepertoire}
+            </div>
+            <div style={{ color: "#4b5563" }}>Pièces au Répertoire</div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
+          gap: "2rem"
+        }}>
           {/* Gestion des Membres */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Gestion des Membres</h2>
-            <div className="space-y-3">
-              <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition">
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "0.5rem",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+            padding: "1.5rem"
+          }}>
+            <h2 style={{
+              fontSize: "1.25rem",
+              fontWeight: "bold",
+              marginBottom: "1rem",
+              color: "#1f2937"
+            }}>
+              Gestion des Membres
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <Link 
+                to="/admin/users" 
+                style={{
+                  width: "100%",
+                  backgroundColor: "#2563eb",
+                  color: "white",
+                  padding: "0.75rem 1rem",
+                  borderRadius: "0.5rem",
+                  border: "none",
+                  cursor: "pointer",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  fontWeight: "500",
+                  transition: "background-color 0.3s"
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = "#1d4ed8"}
+                onMouseOut={(e) => e.target.style.backgroundColor = "#2563eb"}
+              >
                 👥 Voir tous les Membres
-              </button>
-              <button className="w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-700 transition">
+              </Link>
+              
+              <Link 
+                to="/admin/admissions" 
+                style={{
+                  width: "100%",
+                  backgroundColor: "#16a34a",
+                  color: "white",
+                  padding: "0.75rem 1rem",
+                  borderRadius: "0.5rem",
+                  border: "none",
+                  cursor: "pointer",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  fontWeight: "500",
+                  transition: "background-color 0.3s"
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = "#15803d"}
+                onMouseOut={(e) => e.target.style.backgroundColor = "#16a34a"}
+              >
                 ✅ Gérer les Admissions
-              </button>
-              <button className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition">
+              </Link>
+              
+              <Link 
+                to="/admin/messages" 
+                style={{
+                  width: "100%",
+                  backgroundColor: "#7c3aed",
+                  color: "white",
+                  padding: "0.75rem 1rem",
+                  borderRadius: "0.5rem",
+                  border: "none",
+                  cursor: "pointer",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  fontWeight: "500",
+                  transition: "background-color 0.3s"
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = "#6d28d9"}
+                onMouseOut={(e) => e.target.style.backgroundColor = "#7c3aed"}
+              >
                 📧 Envoyer un Message
-              </button>
+              </Link>
             </div>
           </div>
 
           {/* Gestion des Événements */}
-          <div className="bg-white rounded-lg shadow-lg p-6">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">Gestion des Événements</h2>
-            <div className="space-y-3">
-              <button className="w-full bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 transition">
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "0.5rem",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+            padding: "1.5rem"
+          }}>
+            <h2 style={{
+              fontSize: "1.25rem",
+              fontWeight: "bold",
+              marginBottom: "1rem",
+              color: "#1f2937"
+            }}>
+              Gestion des Événements
+            </h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+              <Link 
+                to="/admin/events/create" 
+                style={{
+                  width: "100%",
+                  backgroundColor: "#ea580c",
+                  color: "white",
+                  padding: "0.75rem 1rem",
+                  borderRadius: "0.5rem",
+                  border: "none",
+                  cursor: "pointer",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  fontWeight: "500",
+                  transition: "background-color 0.3s"
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = "#c2410c"}
+                onMouseOut={(e) => e.target.style.backgroundColor = "#ea580c"}
+              >
                 🎵 Créer un Événement
-              </button>
-              <button className="w-full bg-teal-600 text-white py-3 px-4 rounded-lg hover:bg-teal-700 transition">
+              </Link>
+              
+              <Link 
+                to="/admin/calendar" 
+                style={{
+                  width: "100%",
+                  backgroundColor: "#0d9488",
+                  color: "white",
+                  padding: "0.75rem 1rem",
+                  borderRadius: "0.5rem",
+                  border: "none",
+                  cursor: "pointer",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  fontWeight: "500",
+                  transition: "background-color 0.3s"
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = "#0f766e"}
+                onMouseOut={(e) => e.target.style.backgroundColor = "#0d9488"}
+              >
                 📅 Calendrier des Concerts
-              </button>
-              <button className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition">
+              </Link>
+              
+              <Link 
+                to="/admin/statistics" 
+                style={{
+                  width: "100%",
+                  backgroundColor: "#4f46e5",
+                  color: "white",
+                  padding: "0.75rem 1rem",
+                  borderRadius: "0.5rem",
+                  border: "none",
+                  cursor: "pointer",
+                  textAlign: "center",
+                  textDecoration: "none",
+                  fontWeight: "500",
+                  transition: "background-color 0.3s"
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = "#4338ca"}
+                onMouseOut={(e) => e.target.style.backgroundColor = "#4f46e5"}
+              >
                 📊 Statistiques de Participation
-              </button>
+              </Link>
             </div>
           </div>
         </div>
 
         {/* Actions Rapides */}
-        <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
-          <h2 className="text-xl font-bold mb-4 text-gray-800">Actions Rapides</h2>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <button className="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-700 transition">
+        <div style={{
+          marginTop: "2rem",
+          backgroundColor: "white",
+          borderRadius: "0.5rem",
+          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+          padding: "1.5rem"
+        }}>
+          <h2 style={{
+            fontSize: "1.25rem",
+            fontWeight: "bold",
+            marginBottom: "1rem",
+            color: "#1f2937"
+          }}>
+            Actions Rapides
+          </h2>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "1rem"
+          }}>
+            <Link 
+              to="/admin/partitions/add" 
+              style={{
+                backgroundColor: "#4b5563",
+                color: "white",
+                padding: "0.5rem 1rem",
+                borderRadius: "0.375rem",
+                border: "none",
+                cursor: "pointer",
+                textAlign: "center",
+                textDecoration: "none",
+                fontWeight: "500",
+                transition: "background-color 0.3s"
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = "#374151"}
+              onMouseOut={(e) => e.target.style.backgroundColor = "#4b5563"}
+            >
               📝 Ajouter une Partition
-            </button>
-            <button className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700 transition">
+            </Link>
+            
+            <Link 
+              to="/admin/gallery" 
+              style={{
+                backgroundColor: "#dc2626",
+                color: "white",
+                padding: "0.5rem 1rem",
+                borderRadius: "0.375rem",
+                border: "none",
+                cursor: "pointer",
+                textAlign: "center",
+                textDecoration: "none",
+                fontWeight: "500",
+                transition: "background-color 0.3s"
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = "#b91c1c"}
+              onMouseOut={(e) => e.target.style.backgroundColor = "#dc2626"}
+            >
               🖼️ Gérer la Galerie
-            </button>
-            <button className="bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-700 transition">
+            </Link>
+            
+            <Link 
+              to="/admin/articles/create" 
+              style={{
+                backgroundColor: "#ca8a04",
+                color: "white",
+                padding: "0.5rem 1rem",
+                borderRadius: "0.375rem",
+                border: "none",
+                cursor: "pointer",
+                textAlign: "center",
+                textDecoration: "none",
+                fontWeight: "500",
+                transition: "background-color 0.3s"
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = "#a16207"}
+              onMouseOut={(e) => e.target.style.backgroundColor = "#ca8a04"}
+            >
               📰 Publier un Article
-            </button>
-            <button className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 transition">
+            </Link>
+            
+            <Link 
+              to="/admin/invite" 
+              style={{
+                backgroundColor: "#16a34a",
+                color: "white",
+                padding: "0.5rem 1rem",
+                borderRadius: "0.375rem",
+                border: "none",
+                cursor: "pointer",
+                textAlign: "center",
+                textDecoration: "none",
+                fontWeight: "500",
+                transition: "background-color 0.3s"
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = "#15803d"}
+              onMouseOut={(e) => e.target.style.backgroundColor = "#16a34a"}
+            >
               👥 Inviter un Membre
-            </button>
+            </Link>
+          </div>
+        </div>
+
+        {/* Section Informations */}
+        <div style={{
+          marginTop: "2rem",
+          backgroundColor: "white",
+          borderRadius: "0.5rem",
+          boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)",
+          padding: "1.5rem"
+        }}>
+          <h2 style={{
+            fontSize: "1.25rem",
+            fontWeight: "bold",
+            marginBottom: "1rem",
+            color: "#1f2937"
+          }}>
+            Informations Administrateur
+          </h2>
+          <div style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+            gap: "1rem"
+          }}>
+            <div style={{
+              backgroundColor: "#f0f9ff",
+              padding: "1rem",
+              borderRadius: "0.5rem",
+              border: "1px solid #bae6fd"
+            }}>
+              <h3 style={{
+                fontWeight: "600",
+                color: "#0369a1",
+                marginBottom: "0.5rem"
+              }}>
+                📋 Prochaines Actions
+              </h3>
+              <ul style={{ color: "#475569", fontSize: "0.875rem", listStyle: "none", padding: 0 }}>
+                <li style={{ marginBottom: "0.25rem" }}>• Examiner les nouvelles demandes d'adhésion</li>
+                <li style={{ marginBottom: "0.25rem" }}>• Planifier le prochain concert</li>
+                <li style={{ marginBottom: "0.25rem" }}>• Mettre à jour le répertoire</li>
+              </ul>
+            </div>
+            
+            <div style={{
+              backgroundColor: "#f0fdf4",
+              padding: "1rem",
+              borderRadius: "0.5rem",
+              border: "1px solid #bbf7d0"
+            }}>
+              <h3 style={{
+                fontWeight: "600",
+                color: "#15803d",
+                marginBottom: "0.5rem"
+              }}>
+                🎯 Objectifs du Mois
+              </h3>
+              <ul style={{ color: "#475569", fontSize: "0.875rem", listStyle: "none", padding: 0 }}>
+                <li style={{ marginBottom: "0.25rem" }}>• Atteindre 60 membres actifs</li>
+                <li style={{ marginBottom: "0.25rem" }}>• Organiser 3 concerts</li>
+                <li style={{ marginBottom: "0.25rem" }}>• Ajouter 5 nouvelles partitions</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Styles d'animation */}
+      <style>
+        {`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}
+      </style>
     </div>
   );
 };

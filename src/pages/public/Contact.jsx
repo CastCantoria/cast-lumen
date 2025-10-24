@@ -159,18 +159,18 @@ const Contact = () => {
               <div className="border-t pt-6">
                 <h3 className="font-semibold text-gray-900 mb-4">Suivez-Nous</h3>
                 <div className="flex space-x-4">
-                  <button className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition">
+                  <Link to="#" className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white hover:bg-blue-700 transition">
                     <span className="text-sm">f</span>
-                  </button>
-                  <button className="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white hover:bg-pink-700 transition">
+                  </Link>
+                  <Link to="#" className="w-10 h-10 bg-pink-600 rounded-full flex items-center justify-center text-white hover:bg-pink-700 transition">
                     <span className="text-sm">📷</span>
-                  </button>
-                  <button className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center text-white hover:bg-blue-500 transition">
+                  </Link>
+                  <Link to="#" className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center text-white hover:bg-blue-500 transition">
                     <span className="text-sm">t</span>
-                  </button>
-                  <button className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white hover:bg-red-700 transition">
+                  </Link>
+                  <Link to="#" className="w-10 h-10 bg-red-600 rounded-full flex items-center justify-center text-white hover:bg-red-700 transition">
                     <span className="text-sm">▶</span>
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
@@ -377,9 +377,12 @@ const Contact = () => {
             >
               Voir nos Horaires
             </Link>
-            <button className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition">
+            <Link 
+              to="/contact"
+              className="border-2 border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-white hover:text-blue-600 transition"
+            >
               Obtenir l'Itinéraire
-            </button>
+            </Link>
           </div>
         </div>
       </section>

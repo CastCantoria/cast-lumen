@@ -1,0 +1,37 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "@eslint/js"
+  ],
+  "overrides": [
+    {
+      "files": ["**/*.js", "**/*.jsx"],
+      "plugins": ["react-refresh"],
+      "rules": {
+        "react-refresh/only-export-components": "warn",
+        "no-unused-vars": "warn",
+        "no-undef": "warn"
+      }
+    },
+    {
+      "files": ["tailwind.config.js", "vite.config.js"],
+      "env": {
+        "node": true
+      }
+    },
+    {
+      "files": ["scripts/**/*.cjs"],
+      "env": {
+        "node": true
+      },
+      "rules": {
+        "no-undef": "off"
+      }
+    }
+  ]
+}

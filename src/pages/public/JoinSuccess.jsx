@@ -36,7 +36,7 @@ const JoinSuccess = () => {
             </Link>
             <Link 
               to="/contact"
-              className="block w-full bg-gray-600 text-white py-3 px-4 rounded-lg hover:bg-gray-700 transition"
+              className="block w-full border border-gray-300 text-gray-700 py-3 px-4 rounded-lg hover:border-blue-600 hover:text-blue-600 transition"
             >
               Nous contacter
             </Link>

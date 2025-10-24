@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Partenaires = () => {
   return (
@@ -93,12 +94,18 @@ const Partenaires = () => {
               <h3 className="text-2xl font-bold mb-4">
                 📞 Devenir partenaire
               </h3>
-              <p className="text-xl">
+              <p className="text-xl mb-4">
                 +261 34 11 361 57 (Yas)
               </p>
-              <p className="text-lg mt-4">
+              <p className="text-lg mb-6">
                 Rejoignez notre réseau de partenaires et soutenez la musique sacrée à Madagascar
               </p>
+              <Link 
+                to="/contact"
+                className="inline-block bg-white text-green-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+              >
+                Devenir Partenaire
+              </Link>
             </div>
           </div>
         </section>

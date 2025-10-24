@@ -126,10 +126,23 @@ const EventManagement = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cast-green mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement des événements...</p>
+      <div style={{ 
+        minHeight: "100vh", 
+        backgroundColor: "#f8fafc",
+        display: "flex"
+      }}>
+        <AdminSidebar />
+        <div style={{ 
+          flex: 1,
+          marginLeft: "256px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Chargement des événements...</p>
+          </div>
         </div>
       </div>
     );
@@ -150,24 +163,69 @@ const EventManagement = () => {
         marginLeft: "256px",
         padding: "80px 20px 40px 20px"
       }}>
-        <div className="max-w-7xl mx-auto">
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
           
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "24px",
+            marginBottom: "24px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0"
+          }}>
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px"
+            }}>
               <div>
-                <h1 className="text-3xl font-bold text-cast-green">Gestion des Événements</h1>
-                <p className="text-gray-600 mt-2">Organisez concerts et activités</p>
+                <h1 style={{
+                  fontSize: "1.875rem",
+                  fontWeight: "bold",
+                  color: "#15803d"
+                }}>
+                  Gestion des Événements
+                </h1>
+                <p style={{ color: "#64748b", marginTop: "8px" }}>
+                  Organisez concerts et activités
+                </p>
               </div>
-              <div className="flex space-x-3 mt-4 md:mt-0">
+              <div style={{
+                display: "flex",
+                gap: "12px",
+                flexWrap: "wrap"
+              }}>
                 <button
                   onClick={() => setShowAddModal(true)}
-                  className="bg-cast-green text-white py-2 px-4 rounded-lg hover:bg-cast-gold transition-colors duration-300"
+                  style={{
+                    backgroundColor: "#15803d",
+                    color: "white",
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "500",
+                    transition: "background-color 0.3s"
+                  }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = "#ca8a04"}
+                  onMouseOut={(e) => e.target.style.backgroundColor = "#15803d"}
                 >
                   ➕ Ajouter
                 </button>
                 <button
                   onClick={exportToCSV}
-                  className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors duration-300"
+                  style={{
+                    backgroundColor: "#16a34a",
+                    color: "white",
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "500",
+                    transition: "background-color 0.3s"
+                  }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = "#15803d"}
+                  onMouseOut={(e) => e.target.style.backgroundColor = "#16a34a"}
                 >
                   📊 Exporter CSV
                 </button>
@@ -176,10 +234,28 @@ const EventManagement = () => {
           </div>
 
           {/* Barre de recherche et filtres */}
-          <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "24px",
+            marginBottom: "24px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0"
+          }}>
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
+              gap: "16px",
+              marginBottom: "16px"
+            }}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label style={{
+                  display: "block",
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                  color: "#374151",
+                  marginBottom: "4px"
+                }}>
                   🔍 Recherche
                 </label>
                 <input
@@ -187,18 +263,54 @@ const EventManagement = () => {
                   placeholder="Titre, description, lieu..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "8px",
+                    outline: "none",
+                    transition: "border-color 0.3s, box-shadow 0.3s"
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#ca8a04";
+                    e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#d1d5db";
+                    e.target.style.boxShadow = "none";
+                  }}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label style={{
+                  display: "block",
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                  color: "#374151",
+                  marginBottom: "4px"
+                }}>
                   🎭 Type
                 </label>
                 <select
                   value={typeFilter}
                   onChange={(e) => setTypeFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "8px",
+                    outline: "none",
+                    transition: "border-color 0.3s, box-shadow 0.3s"
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#ca8a04";
+                    e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#d1d5db";
+                    e.target.style.boxShadow = "none";
+                  }}
                 >
                   <option value="all">Tous les types</option>
                   <option value="concert">Concert</option>
@@ -209,13 +321,34 @@ const EventManagement = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label style={{
+                  display: "block",
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                  color: "#374151",
+                  marginBottom: "4px"
+                }}>
                   📊 Statut
                 </label>
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "8px",
+                    outline: "none",
+                    transition: "border-color 0.3s, box-shadow 0.3s"
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#ca8a04";
+                    e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#d1d5db";
+                    e.target.style.boxShadow = "none";
+                  }}
                 >
                   <option value="all">Tous les statuts</option>
                   <option value="planifié">Planifié</option>
@@ -226,7 +359,13 @@ const EventManagement = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label style={{
+                  display: "block",
+                  fontSize: "0.875rem",
+                  fontWeight: "500",
+                  color: "#374151",
+                  marginBottom: "4px"
+                }}>
                   📄 Affichage
                 </label>
                 <select
@@ -235,7 +374,22 @@ const EventManagement = () => {
                     setItemsPerPage(Number(e.target.value));
                     setCurrentPage(1);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    border: "1px solid #d1d5db",
+                    borderRadius: "8px",
+                    outline: "none",
+                    transition: "border-color 0.3s, box-shadow 0.3s"
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = "#ca8a04";
+                    e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = "#d1d5db";
+                    e.target.style.boxShadow = "none";
+                  }}
                 >
                   <option value="5">5 par page</option>
                   <option value="10">10 par page</option>
@@ -246,84 +400,232 @@ const EventManagement = () => {
               </div>
             </div>
 
-            <div className="flex justify-between items-center">
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
               <button
                 onClick={resetFilters}
-                className="text-gray-600 hover:text-gray-800 text-sm flex items-center"
+                style={{
+                  color: "#6b7280",
+                  background: "none",
+                  border: "none",
+                  cursor: "pointer",
+                  fontSize: "0.875rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  transition: "color 0.3s"
+                }}
+                onMouseOver={(e) => e.target.style.color = "#374151"}
+                onMouseOut={(e) => e.target.style.color = "#6b7280"}
               >
                 🔄 Réinitialiser les filtres
               </button>
-              <div className="text-sm text-gray-600">
+              <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
                 {filteredEvents.length} événement(s) trouvé(s)
-                {searchTerm || typeFilter !== 'all' || statusFilter !== 'all' ? ` (sur ${events.length} au total)` : ''}
+                {(searchTerm || typeFilter !== 'all' || statusFilter !== 'all') && 
+                 ` (sur ${events.length} au total)`}
               </div>
             </div>
           </div>
 
           {/* Tableau des événements */}
-          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0",
+            overflow: "hidden"
+          }}>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ 
+                minWidth: "100%",
+                borderCollapse: "collapse"
+              }}>
+                <thead style={{ backgroundColor: "#f9fafb" }}>
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
                       Événement
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
                       Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
                       Lieu
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
                       Type
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
                       Statut
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody style={{ backgroundColor: "white" }}>
                   {paginatedEvents.map((event) => (
-                    <tr key={event.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <div className="text-sm font-medium text-gray-900">{event.title}</div>
-                        <div className="text-sm text-gray-500">{event.description}</div>
+                    <tr key={event.id} style={{ 
+                      borderBottom: "1px solid #e5e7eb",
+                      transition: "background-color 0.3s"
+                    }} 
+                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#f9fafb"}
+                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = "white"}>
+                      <td style={{ padding: "16px 24px" }}>
+                        <div style={{ 
+                          fontSize: "0.875rem", 
+                          fontWeight: "500", 
+                          color: "#111827" 
+                        }}>
+                          {event.title}
+                        </div>
+                        <div style={{ 
+                          fontSize: "0.875rem", 
+                          color: "#6b7280",
+                          marginTop: "4px"
+                        }}>
+                          {event.description}
+                        </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td style={{ 
+                        padding: "16px 24px",
+                        fontSize: "0.875rem",
+                        color: "#111827",
+                        whiteSpace: "nowrap"
+                      }}>
                         {event.date}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td style={{ 
+                        padding: "16px 24px",
+                        fontSize: "0.875rem",
+                        color: "#111827",
+                        whiteSpace: "nowrap"
+                      }}>
                         {event.location}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                      <td style={{ padding: "16px 24px", whiteSpace: "nowrap" }}>
+                        <span style={{
+                          display: "inline-flex",
+                          padding: "4px 8px",
+                          fontSize: "0.75rem",
+                          fontWeight: "600",
+                          borderRadius: "9999px",
+                          backgroundColor: "#dbeafe",
+                          color: "#1e40af"
+                        }}>
                           {event.type}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          event.status === 'confirme' ? 'bg-green-100 text-green-800' :
-                          event.status === 'annule' ? 'bg-red-100 text-red-800' :
-                          event.status === 'termine' ? 'bg-gray-100 text-gray-800' :
-                          'bg-yellow-100 text-yellow-800'
-                        }`}>
+                      <td style={{ padding: "16px 24px", whiteSpace: "nowrap" }}>
+                        <span style={{
+                          display: "inline-flex",
+                          padding: "4px 8px",
+                          fontSize: "0.75rem",
+                          fontWeight: "600",
+                          borderRadius: "9999px",
+                          backgroundColor: 
+                            event.status === 'confirme' ? "#dcfce7" :
+                            event.status === 'annule' ? "#fecaca" :
+                            event.status === 'termine' ? "#f3f4f6" :
+                            "#fef3c7",
+                          color:
+                            event.status === 'confirme' ? "#166534" :
+                            event.status === 'annule' ? "#991b1b" :
+                            event.status === 'termine' ? "#374151" :
+                            "#92400e"
+                        }}>
                           {event.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
+                      <td style={{ 
+                        padding: "16px 24px",
+                        whiteSpace: "nowrap",
+                        fontSize: "0.875rem",
+                        fontWeight: "500"
+                      }}>
                         <button
                           onClick={() => handleEditEvent(event)}
-                          className="text-cast-green hover:text-cast-gold transition-colors"
+                          style={{
+                            color: "#15803d",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            marginRight: "8px",
+                            transition: "color 0.3s"
+                          }}
+                          onMouseOver={(e) => e.target.style.color = "#ca8a04"}
+                          onMouseOut={(e) => e.target.style.color = "#15803d"}
                         >
                           ✏️ Modifier
                         </button>
                         <button
                           onClick={() => handleDeleteEvent(event.id)}
-                          className="text-red-600 hover:text-red-800 transition-colors"
+                          style={{
+                            color: "#dc2626",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            transition: "color 0.3s"
+                          }}
+                          onMouseOver={(e) => e.target.style.color = "#991b1b"}
+                          onMouseOut={(e) => e.target.style.color = "#dc2626"}
                         >
                           🗑️ Supprimer
                         </button>
@@ -335,28 +637,68 @@ const EventManagement = () => {
             </div>
 
             {filteredEvents.length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-4xl mb-4">🎭</div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun événement trouvé</h3>
-                <p className="text-gray-500">Commencez par ajouter votre premier événement.</p>
+              <div style={{ 
+                textAlign: "center", 
+                padding: "48px 24px" 
+              }}>
+                <div style={{ fontSize: "2.25rem", marginBottom: "16px" }}>🎭</div>
+                <h3 style={{ 
+                  fontSize: "1.125rem", 
+                  fontWeight: "500", 
+                  color: "#111827",
+                  marginBottom: "8px"
+                }}>
+                  Aucun événement trouvé
+                </h3>
+                <p style={{ color: "#6b7280" }}>
+                  Commencez par ajouter votre premier événement.
+                </p>
               </div>
             )}
           </div>
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="bg-white rounded-lg shadow-sm p-6 mt-6">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-700">
+            <div style={{
+              backgroundColor: "white",
+              borderRadius: "12px",
+              padding: "24px",
+              marginTop: "24px",
+              boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+              border: "1px solid #e2e8f0"
+            }}>
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between"
+              }}>
+                <div style={{ fontSize: "0.875rem", color: "#6b7280" }}>
                   Page {currentPage} sur {totalPages} • 
                   Affichage de {startIndex + 1} à {Math.min(startIndex + itemsPerPage, filteredEvents.length)} 
                   sur {filteredEvents.length} événements
                 </div>
-                <div className="flex space-x-2">
+                <div style={{ display: "flex", gap: "8px" }}>
                   <button
                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                     disabled={currentPage === 1}
-                    className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      padding: "8px 12px",
+                      border: "1px solid #d1d5db",
+                      borderRadius: "6px",
+                      fontSize: "0.875rem",
+                      fontWeight: "500",
+                      color: "#374151",
+                      backgroundColor: "white",
+                      cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                      opacity: currentPage === 1 ? 0.5 : 1,
+                      transition: "background-color 0.3s"
+                    }}
+                    onMouseOver={(e) => {
+                      if (currentPage !== 1) e.target.style.backgroundColor = "#f9fafb";
+                    }}
+                    onMouseOut={(e) => {
+                      if (currentPage !== 1) e.target.style.backgroundColor = "white";
+                    }}
                   >
                     ← Précédent
                   </button>
@@ -377,11 +719,27 @@ const EventManagement = () => {
                       <button
                         key={pageNum}
                         onClick={() => setCurrentPage(pageNum)}
-                        className={`px-3 py-2 border text-sm font-medium rounded-md ${
-                          currentPage === pageNum
-                            ? 'bg-cast-green text-white border-cast-green'
-                            : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                        }`}
+                        style={{
+                          padding: "8px 12px",
+                          border: "1px solid #d1d5db",
+                          borderRadius: "6px",
+                          fontSize: "0.875rem",
+                          fontWeight: "500",
+                          backgroundColor: currentPage === pageNum ? "#15803d" : "white",
+                          color: currentPage === pageNum ? "white" : "#374151",
+                          cursor: "pointer",
+                          transition: "background-color 0.3s, color 0.3s"
+                        }}
+                        onMouseOver={(e) => {
+                          if (currentPage !== pageNum) {
+                            e.target.style.backgroundColor = "#f9fafb";
+                          }
+                        }}
+                        onMouseOut={(e) => {
+                          if (currentPage !== pageNum) {
+                            e.target.style.backgroundColor = "white";
+                          }
+                        }}
                       >
                         {pageNum}
                       </button>
@@ -391,7 +749,24 @@ const EventManagement = () => {
                   <button
                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                     disabled={currentPage === totalPages}
-                    className="px-3 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      padding: "8px 12px",
+                      border: "1px solid #d1d5db",
+                      borderRadius: "6px",
+                      fontSize: "0.875rem",
+                      fontWeight: "500",
+                      color: "#374151",
+                      backgroundColor: "white",
+                      cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                      opacity: currentPage === totalPages ? 0.5 : 1,
+                      transition: "background-color 0.3s"
+                    }}
+                    onMouseOver={(e) => {
+                      if (currentPage !== totalPages) e.target.style.backgroundColor = "#f9fafb";
+                    }}
+                    onMouseOut={(e) => {
+                      if (currentPage !== totalPages) e.target.style.backgroundColor = "white";
+                    }}
                   >
                     Suivant →
                   </button>
@@ -438,73 +813,203 @@ const EventModal = ({ event, onSave, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
-        <h2 className="text-xl font-bold text-cast-green mb-4">
+    <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "16px",
+      zIndex: 50
+    }}>
+      <div style={{
+        backgroundColor: "white",
+        borderRadius: "12px",
+        maxWidth: "28rem",
+        width: "100%",
+        padding: "24px"
+      }}>
+        <h2 style={{
+          fontSize: "1.25rem",
+          fontWeight: "bold",
+          color: "#15803d",
+          marginBottom: "16px"
+        }}>
           {event ? 'Modifier l\'événement' : 'Nouvel événement'}
         </h2>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label style={{
+              display: "block",
+              fontSize: "0.875rem",
+              fontWeight: "500",
+              color: "#374151",
+              marginBottom: "4px"
+            }}>
               Titre
             </label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                border: "1px solid #d1d5db",
+                borderRadius: "8px",
+                outline: "none",
+                transition: "border-color 0.3s, box-shadow 0.3s"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#ca8a04";
+                e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label style={{
+              display: "block",
+              fontSize: "0.875rem",
+              fontWeight: "500",
+              color: "#374151",
+              marginBottom: "4px"
+            }}>
               Description
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                border: "1px solid #d1d5db",
+                borderRadius: "8px",
+                outline: "none",
+                resize: "vertical",
+                minHeight: "80px",
+                transition: "border-color 0.3s, box-shadow 0.3s"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#ca8a04";
+                e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
               rows="3"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label style={{
+              display: "block",
+              fontSize: "0.875rem",
+              fontWeight: "500",
+              color: "#374151",
+              marginBottom: "4px"
+            }}>
               Date
             </label>
             <input
               type="datetime-local"
               value={formData.date}
               onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                border: "1px solid #d1d5db",
+                borderRadius: "8px",
+                outline: "none",
+                transition: "border-color 0.3s, box-shadow 0.3s"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#ca8a04";
+                e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label style={{
+              display: "block",
+              fontSize: "0.875rem",
+              fontWeight: "500",
+              color: "#374151",
+              marginBottom: "4px"
+            }}>
               Lieu
             </label>
             <input
               type="text"
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                border: "1px solid #d1d5db",
+                borderRadius: "8px",
+                outline: "none",
+                transition: "border-color 0.3s, box-shadow 0.3s"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#ca8a04";
+                e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
               required
             />
           </div>
 
-          <div className="flex space-x-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div style={{ display: "flex", gap: "16px" }}>
+            <div style={{ flex: 1 }}>
+              <label style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "#374151",
+                marginBottom: "4px"
+              }}>
                 Type
               </label>
               <select
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "8px",
+                  outline: "none",
+                  transition: "border-color 0.3s, box-shadow 0.3s"
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = "#ca8a04";
+                  e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "#d1d5db";
+                  e.target.style.boxShadow = "none";
+                }}
               >
                 <option value="concert">Concert</option>
                 <option value="repetition">Répétition</option>
@@ -513,14 +1018,35 @@ const EventModal = ({ event, onSave, onClose }) => {
               </select>
             </div>
 
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div style={{ flex: 1 }}>
+              <label style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "#374151",
+                marginBottom: "4px"
+              }}>
                 Statut
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "8px",
+                  outline: "none",
+                  transition: "border-color 0.3s, box-shadow 0.3s"
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = "#ca8a04";
+                  e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "#d1d5db";
+                  e.target.style.boxShadow = "none";
+                }}
               >
                 <option value="planifié">Planifié</option>
                 <option value="confirme">Confirmé</option>
@@ -530,17 +1056,43 @@ const EventModal = ({ event, onSave, onClose }) => {
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4">
+          <div style={{ 
+            display: "flex", 
+            justifyContent: "flex-end", 
+            gap: "12px",
+            paddingTop: "16px"
+          }}>
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              style={{
+                padding: "8px 16px",
+                color: "#6b7280",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontWeight: "500",
+                transition: "color 0.3s"
+              }}
+              onMouseOver={(e) => e.target.style.color = "#374151"}
+              onMouseOut={(e) => e.target.style.color = "#6b7280"}
             >
               Annuler
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-cast-green text-white rounded-lg hover:bg-cast-gold transition-colors"
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#15803d",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontWeight: "500",
+                transition: "background-color 0.3s"
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = "#ca8a04"}
+              onMouseOut={(e) => e.target.style.backgroundColor = "#15803d"}
             >
               {event ? 'Sauvegarder' : 'Créer'}
             </button>

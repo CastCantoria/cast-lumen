@@ -156,9 +156,12 @@ const Spiritualite = () => {
                     </div>
                   </div>
                   <p className="text-gray-600 mb-4">{event.description}</p>
-                  <button className="w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition font-semibold">
+                  <Link 
+                    to="/contact"
+                    className="block w-full bg-purple-600 text-white py-2 px-4 rounded-lg hover:bg-purple-700 transition font-semibold text-center"
+                  >
                     S'inscrire
-                  </button>
+                  </Link>
                 </div>
               </div>
             ))}

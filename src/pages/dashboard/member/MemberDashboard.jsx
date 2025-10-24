@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
+import { Link } from 'react-router-dom';
 
 const MemberDashboard = () => {
   const { userProfile, currentUser } = useAuth();
@@ -74,9 +75,12 @@ const MemberDashboard = () => {
                   <p className="text-sm text-gray-600">
                     📅 {event.date} • 📍 {event.location}
                   </p>
-                  <button className="mt-2 bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition">
+                  <Link 
+                    to={`/events/${event.id}`}
+                    className="inline-block mt-2 bg-green-600 text-white px-3 py-1 rounded text-sm hover:bg-green-700 transition"
+                  >
                     Voir les détails
-                  </button>
+                  </Link>
                 </div>
               ))}
             </div>
@@ -105,25 +109,69 @@ const MemberDashboard = () => {
           </div>
         </div>
 
-        {/* Actions Membres */}
+        {/* Actions Membres - CORRIGÉ AVEC LIENS FONCTIONNELS */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-          <button className="bg-blue-600 text-white p-6 rounded-lg hover:bg-blue-700 transition text-center">
+          <Link 
+            to="/repertoire" 
+            className="bg-blue-600 text-white p-6 rounded-lg hover:bg-blue-700 transition text-center block"
+          >
             <div className="text-2xl mb-2">🎵</div>
             <div className="font-semibold">Partitions</div>
             <div className="text-sm opacity-90">Accéder au répertoire</div>
-          </button>
+          </Link>
           
-          <button className="bg-purple-600 text-white p-6 rounded-lg hover:bg-purple-700 transition text-center">
+          <Link 
+            to="/events" 
+            className="bg-purple-600 text-white p-6 rounded-lg hover:bg-purple-700 transition text-center block"
+          >
             <div className="text-2xl mb-2">📅</div>
             <div className="font-semibold">Calendrier</div>
             <div className="text-sm opacity-90">Voir tous les événements</div>
-          </button>
+          </Link>
           
-          <button className="bg-orange-600 text-white p-6 rounded-lg hover:bg-orange-700 transition text-center">
+          <Link 
+            to="/members" 
+            className="bg-orange-600 text-white p-6 rounded-lg hover:bg-orange-700 transition text-center block"
+          >
             <div className="text-2xl mb-2">👥</div>
             <div className="font-semibold">Annuaire</div>
             <div className="text-sm opacity-90">Contacter les membres</div>
-          </button>
+          </Link>
+        </div>
+
+        {/* Section Actions Rapides Additionnelles */}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Link 
+            to="/profile/edit"
+            className="bg-green-600 text-white p-4 rounded-lg hover:bg-green-700 transition text-center block"
+          >
+            <div className="text-xl mb-1">👤</div>
+            <div className="font-medium text-sm">Mon Profil</div>
+          </Link>
+          
+          <Link 
+            to="/messages"
+            className="bg-indigo-600 text-white p-4 rounded-lg hover:bg-indigo-700 transition text-center block"
+          >
+            <div className="text-xl mb-1">💬</div>
+            <div className="font-medium text-sm">Messages</div>
+          </Link>
+          
+          <Link 
+            to="/documents"
+            className="bg-red-600 text-white p-4 rounded-lg hover:bg-red-700 transition text-center block"
+          >
+            <div className="text-xl mb-1">📋</div>
+            <div className="font-medium text-sm">Documents</div>
+          </Link>
+          
+          <Link 
+            to="/settings"
+            className="bg-gray-600 text-white p-4 rounded-lg hover:bg-gray-700 transition text-center block"
+          >
+            <div className="text-xl mb-1">⚙️</div>
+            <div className="font-medium text-sm">Paramètres</div>
+          </Link>
         </div>
       </div>
     </div>

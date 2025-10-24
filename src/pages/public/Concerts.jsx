@@ -133,12 +133,18 @@ const Concerts = () => {
                   </div>
                   <p className="text-gray-600 mb-6">{event.description}</p>
                   <div className="flex space-x-3">
-                    <button className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition font-semibold">
+                    <Link 
+                      to="/contact" 
+                      className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition font-semibold text-center"
+                    >
                       Réserver
-                    </button>
-                    <button className="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:border-green-600 hover:text-green-600 transition font-semibold">
+                    </Link>
+                    <Link 
+                      to={`/events/${event.id}`}
+                      className="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:border-green-600 hover:text-green-600 transition font-semibold text-center"
+                    >
                       Plus d'infos
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

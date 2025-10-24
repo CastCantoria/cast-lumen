@@ -1,6 +1,7 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { db } from '../../config/firebase';
 import { collection, getDocs, doc, updateDoc, deleteDoc, addDoc } from 'firebase/firestore';
+import AdminSidebar from '../../components/layout/AdminSidebar';
 
 const RepertoireManagement = () => {
   const [repertoire, setRepertoire] = useState([]);
@@ -102,161 +103,410 @@ const RepertoireManagement = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cast-green mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement du répertoire...</p>
+      <div style={{ 
+        minHeight: "100vh", 
+        backgroundColor: "#f8fafc",
+        display: "flex"
+      }}>
+        <AdminSidebar />
+        <div style={{ 
+          flex: 1,
+          marginLeft: "256px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}>
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Chargement du répertoire...</p>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-cast-green">Gestion du Répertoire</h1>
-              <p className="text-gray-600 mt-2">Administrez le répertoire musical</p>
-            </div>
-            <div className="flex space-x-3 mt-4 md:mt-0">
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="bg-cast-green text-white py-2 px-4 rounded-lg hover:bg-cast-gold transition-colors duration-300"
-              >
-                ➕ Ajouter
-              </button>
-              <button
-                onClick={exportToCSV}
-                className="bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors duration-300"
-              >
-                📊 Exporter CSV
-              </button>
+    <div style={{ 
+      minHeight: "100vh", 
+      backgroundColor: "#f8fafc",
+      display: "flex"
+    }}>
+      {/* Sidebar de navigation */}
+      <AdminSidebar />
+      
+      {/* Contenu principal */}
+      <div style={{ 
+        flex: 1,
+        marginLeft: "256px",
+        padding: "80px 20px 40px 20px"
+      }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "24px",
+            marginBottom: "24px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0"
+          }}>
+            <div style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "16px"
+            }}>
+              <div>
+                <h1 style={{
+                  fontSize: "1.875rem",
+                  fontWeight: "bold",
+                  color: "#15803d"
+                }}>
+                  Gestion du Répertoire
+                </h1>
+                <p style={{ color: "#64748b", marginTop: "8px" }}>
+                  Administrez le répertoire musical
+                </p>
+              </div>
+              <div style={{
+                display: "flex",
+                gap: "12px",
+                flexWrap: "wrap"
+              }}>
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  style={{
+                    backgroundColor: "#15803d",
+                    color: "white",
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "500",
+                    transition: "background-color 0.3s"
+                  }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = "#ca8a04"}
+                  onMouseOut={(e) => e.target.style.backgroundColor = "#15803d"}
+                >
+                  ➕ Ajouter
+                </button>
+                <button
+                  onClick={exportToCSV}
+                  style={{
+                    backgroundColor: "#16a34a",
+                    color: "white",
+                    padding: "8px 16px",
+                    borderRadius: "8px",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: "500",
+                    transition: "background-color 0.3s"
+                  }}
+                  onMouseOver={(e) => e.target.style.backgroundColor = "#15803d"}
+                  onMouseOut={(e) => e.target.style.backgroundColor = "#16a34a"}
+                >
+                  📊 Exporter CSV
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Barre de recherche */}
-        <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-          <input
-            type="text"
-            placeholder="🔍 Rechercher un morceau..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full md:w-80 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
-          />
-        </div>
+          {/* Barre de recherche */}
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "24px",
+            marginBottom: "24px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0"
+          }}>
+            <input
+              type="text"
+              placeholder="🔍 Rechercher un morceau..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{
+                width: "100%",
+                maxWidth: "320px",
+                padding: "8px 16px",
+                border: "1px solid #d1d5db",
+                borderRadius: "8px",
+                outline: "none",
+                transition: "border-color 0.3s, box-shadow 0.3s"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#ca8a04";
+                e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
+            />
+          </div>
 
-        {/* Tableau du répertoire */}
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Morceau
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Compositeur
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Genre
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Durée
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Difficulté
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Statut
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredRepertoire.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4">
-                      <div className="text-sm font-medium text-gray-900">{item.title}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {item.composer}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
-                        {item.genre}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {item.duration}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        item.difficulty === 'facile' ? 'bg-green-100 text-green-800' :
-                        item.difficulty === 'moyen' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-red-100 text-red-800'
-                      }`}>
-                        {item.difficulty}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        item.status === 'appris' ? 'bg-green-100 text-green-800' :
-                        item.status === 'en-cours' ? 'bg-blue-100 text-blue-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                      <button
-                        onClick={() => handleEditItem(item)}
-                        className="text-cast-green hover:text-cast-gold transition-colors"
-                      >
-                        ✏️ Modifier
-                      </button>
-                      <button
-                        onClick={() => handleDeleteItem(item.id)}
-                        className="text-red-600 hover:text-red-800 transition-colors"
-                      >
-                        🗑️ Supprimer
-                      </button>
-                    </td>
+          {/* Tableau du répertoire */}
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0",
+            overflow: "hidden"
+          }}>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ 
+                minWidth: "100%",
+                borderCollapse: "collapse"
+              }}>
+                <thead style={{ backgroundColor: "#f9fafb" }}>
+                  <tr>
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
+                      Morceau
+                    </th>
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
+                      Compositeur
+                    </th>
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
+                      Genre
+                    </th>
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
+                      Durée
+                    </th>
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
+                      Difficulté
+                    </th>
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
+                      Statut
+                    </th>
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody style={{ backgroundColor: "white" }}>
+                  {filteredRepertoire.map((item) => (
+                    <tr key={item.id} style={{ 
+                      borderBottom: "1px solid #e5e7eb",
+                      transition: "background-color 0.3s"
+                    }} 
+                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#f9fafb"}
+                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = "white"}>
+                      <td style={{ 
+                        padding: "16px 24px",
+                        fontSize: "0.875rem",
+                        fontWeight: "500",
+                        color: "#111827"
+                      }}>
+                        {item.title}
+                      </td>
+                      <td style={{ 
+                        padding: "16px 24px",
+                        fontSize: "0.875rem",
+                        color: "#111827",
+                        whiteSpace: "nowrap"
+                      }}>
+                        {item.composer}
+                      </td>
+                      <td style={{ padding: "16px 24px", whiteSpace: "nowrap" }}>
+                        <span style={{
+                          display: "inline-flex",
+                          padding: "4px 8px",
+                          fontSize: "0.75rem",
+                          fontWeight: "600",
+                          borderRadius: "9999px",
+                          backgroundColor: "#e9d5ff",
+                          color: "#7c3aed"
+                        }}>
+                          {item.genre}
+                        </span>
+                      </td>
+                      <td style={{ 
+                        padding: "16px 24px",
+                        fontSize: "0.875rem",
+                        color: "#111827",
+                        whiteSpace: "nowrap"
+                      }}>
+                        {item.duration}
+                      </td>
+                      <td style={{ padding: "16px 24px", whiteSpace: "nowrap" }}>
+                        <span style={{
+                          display: "inline-flex",
+                          padding: "4px 8px",
+                          fontSize: "0.75rem",
+                          fontWeight: "600",
+                          borderRadius: "9999px",
+                          backgroundColor: 
+                            item.difficulty === 'facile' ? "#dcfce7" :
+                            item.difficulty === 'moyen' ? "#fef3c7" :
+                            "#fecaca",
+                          color:
+                            item.difficulty === 'facile' ? "#166534" :
+                            item.difficulty === 'moyen' ? "#92400e" :
+                            "#991b1b"
+                        }}>
+                          {item.difficulty}
+                        </span>
+                      </td>
+                      <td style={{ padding: "16px 24px", whiteSpace: "nowrap" }}>
+                        <span style={{
+                          display: "inline-flex",
+                          padding: "4px 8px",
+                          fontSize: "0.75rem",
+                          fontWeight: "600",
+                          borderRadius: "9999px",
+                          backgroundColor: 
+                            item.status === 'appris' ? "#dcfce7" :
+                            item.status === 'en-cours' ? "#dbeafe" :
+                            "#f3f4f6",
+                          color:
+                            item.status === 'appris' ? "#166534" :
+                            item.status === 'en-cours' ? "#1e40af" :
+                            "#374151"
+                        }}>
+                          {item.status}
+                        </span>
+                      </td>
+                      <td style={{ 
+                        padding: "16px 24px",
+                        whiteSpace: "nowrap",
+                        fontSize: "0.875rem",
+                        fontWeight: "500"
+                      }}>
+                        <button
+                          onClick={() => handleEditItem(item)}
+                          style={{
+                            color: "#15803d",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            marginRight: "8px",
+                            transition: "color 0.3s"
+                          }}
+                          onMouseOver={(e) => e.target.style.color = "#ca8a04"}
+                          onMouseOut={(e) => e.target.style.color = "#15803d"}
+                        >
+                          ✏️ Modifier
+                        </button>
+                        <button
+                          onClick={() => handleDeleteItem(item.id)}
+                          style={{
+                            color: "#dc2626",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            transition: "color 0.3s"
+                          }}
+                          onMouseOver={(e) => e.target.style.color = "#991b1b"}
+                          onMouseOut={(e) => e.target.style.color = "#dc2626"}
+                        >
+                          🗑️ Supprimer
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {filteredRepertoire.length === 0 && (
+              <div style={{ 
+                textAlign: "center", 
+                padding: "48px 24px" 
+              }}>
+                <div style={{ fontSize: "2.25rem", marginBottom: "16px" }}>🎵</div>
+                <h3 style={{ 
+                  fontSize: "1.125rem", 
+                  fontWeight: "500", 
+                  color: "#111827",
+                  marginBottom: "8px"
+                }}>
+                  Aucun morceau trouvé
+                </h3>
+                <p style={{ color: "#6b7280" }}>
+                  Commencez par ajouter votre premier morceau au répertoire.
+                </p>
+              </div>
+            )}
           </div>
 
-          {filteredRepertoire.length === 0 && (
-            <div className="text-center py-12">
-              <div className="text-4xl mb-4">🎵</div>
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun morceau trouvé</h3>
-              <p className="text-gray-500">Commencez par ajouter votre premier morceau au répertoire.</p>
-            </div>
+          {/* Modals pour ajouter/modifier */}
+          {showAddModal && (
+            <RepertoireModal
+              onSave={handleAddItem}
+              onClose={() => setShowAddModal(false)}
+            />
+          )}
+
+          {editingItem && (
+            <RepertoireModal
+              item={editingItem}
+              onSave={handleSaveItem}
+              onClose={() => setEditingItem(null)}
+            />
           )}
         </div>
-
-        {/* Modals pour ajouter/modifier */}
-        {showAddModal && (
-          <RepertoireModal
-            onSave={handleAddItem}
-            onClose={() => setShowAddModal(false)}
-          />
-        )}
-
-        {editingItem && (
-          <RepertoireModal
-            item={editingItem}
-            onSave={handleSaveItem}
-            onClose={() => setEditingItem(null)}
-          />
-        )}
       </div>
     </div>
   );
@@ -279,48 +529,134 @@ const RepertoireModal = ({ item, onSave, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
-        <h2 className="text-xl font-bold text-cast-green mb-4">
+    <div style={{
+      position: "fixed",
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "16px",
+      zIndex: 50
+    }}>
+      <div style={{
+        backgroundColor: "white",
+        borderRadius: "12px",
+        maxWidth: "28rem",
+        width: "100%",
+        padding: "24px"
+      }}>
+        <h2 style={{
+          fontSize: "1.25rem",
+          fontWeight: "bold",
+          color: "#15803d",
+          marginBottom: "16px"
+        }}>
           {item ? 'Modifier le morceau' : 'Nouveau morceau'}
         </h2>
         
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label style={{
+              display: "block",
+              fontSize: "0.875rem",
+              fontWeight: "500",
+              color: "#374151",
+              marginBottom: "4px"
+            }}>
               Titre
             </label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                border: "1px solid #d1d5db",
+                borderRadius: "8px",
+                outline: "none",
+                transition: "border-color 0.3s, box-shadow 0.3s"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#ca8a04";
+                e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
               required
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label style={{
+              display: "block",
+              fontSize: "0.875rem",
+              fontWeight: "500",
+              color: "#374151",
+              marginBottom: "4px"
+            }}>
               Compositeur
             </label>
             <input
               type="text"
               value={formData.composer}
               onChange={(e) => setFormData({ ...formData, composer: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+              style={{
+                width: "100%",
+                padding: "8px 12px",
+                border: "1px solid #d1d5db",
+                borderRadius: "8px",
+                outline: "none",
+                transition: "border-color 0.3s, box-shadow 0.3s"
+              }}
+              onFocus={(e) => {
+                e.target.style.borderColor = "#ca8a04";
+                e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+              }}
+              onBlur={(e) => {
+                e.target.style.borderColor = "#d1d5db";
+                e.target.style.boxShadow = "none";
+              }}
               required
             />
           </div>
 
-          <div className="flex space-x-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div style={{ display: "flex", gap: "16px" }}>
+            <div style={{ flex: 1 }}>
+              <label style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "#374151",
+                marginBottom: "4px"
+              }}>
                 Genre
               </label>
               <select
                 value={formData.genre}
                 onChange={(e) => setFormData({ ...formData, genre: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "8px",
+                  outline: "none",
+                  transition: "border-color 0.3s, box-shadow 0.3s"
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = "#ca8a04";
+                  e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "#d1d5db";
+                  e.target.style.boxShadow = "none";
+                }}
               >
                 <option value="classique">Classique</option>
                 <option value="sacree">Sacrée</option>
@@ -330,29 +666,71 @@ const RepertoireModal = ({ item, onSave, onClose }) => {
               </select>
             </div>
 
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div style={{ flex: 1 }}>
+              <label style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "#374151",
+                marginBottom: "4px"
+              }}>
                 Durée
               </label>
               <input
                 type="text"
                 value={formData.duration}
                 onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "8px",
+                  outline: "none",
+                  transition: "border-color 0.3s, box-shadow 0.3s"
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = "#ca8a04";
+                  e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "#d1d5db";
+                  e.target.style.boxShadow = "none";
+                }}
                 placeholder="Ex: 3:45"
               />
             </div>
           </div>
 
-          <div className="flex space-x-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+          <div style={{ display: "flex", gap: "16px" }}>
+            <div style={{ flex: 1 }}>
+              <label style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "#374151",
+                marginBottom: "4px"
+              }}>
                 Difficulté
               </label>
               <select
                 value={formData.difficulty}
                 onChange={(e) => setFormData({ ...formData, difficulty: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "8px",
+                  outline: "none",
+                  transition: "border-color 0.3s, box-shadow 0.3s"
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = "#ca8a04";
+                  e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "#d1d5db";
+                  e.target.style.boxShadow = "none";
+                }}
               >
                 <option value="facile">Facile</option>
                 <option value="moyen">Moyen</option>
@@ -360,14 +738,35 @@ const RepertoireModal = ({ item, onSave, onClose }) => {
               </select>
             </div>
 
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+            <div style={{ flex: 1 }}>
+              <label style={{
+                display: "block",
+                fontSize: "0.875rem",
+                fontWeight: "500",
+                color: "#374151",
+                marginBottom: "4px"
+              }}>
                 Statut
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold"
+                style={{
+                  width: "100%",
+                  padding: "8px 12px",
+                  border: "1px solid #d1d5db",
+                  borderRadius: "8px",
+                  outline: "none",
+                  transition: "border-color 0.3s, box-shadow 0.3s"
+                }}
+                onFocus={(e) => {
+                  e.target.style.borderColor = "#ca8a04";
+                  e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = "#d1d5db";
+                  e.target.style.boxShadow = "none";
+                }}
               >
                 <option value="en-cours">En cours</option>
                 <option value="appris">Appris</option>
@@ -376,17 +775,43 @@ const RepertoireModal = ({ item, onSave, onClose }) => {
             </div>
           </div>
 
-          <div className="flex justify-end space-x-3 pt-4">
+          <div style={{ 
+            display: "flex", 
+            justifyContent: "flex-end", 
+            gap: "12px",
+            paddingTop: "16px"
+          }}>
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+              style={{
+                padding: "8px 16px",
+                color: "#6b7280",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontWeight: "500",
+                transition: "color 0.3s"
+              }}
+              onMouseOver={(e) => e.target.style.color = "#374151"}
+              onMouseOut={(e) => e.target.style.color = "#6b7280"}
             >
               Annuler
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-cast-green text-white rounded-lg hover:bg-cast-gold transition-colors"
+              style={{
+                padding: "8px 16px",
+                backgroundColor: "#15803d",
+                color: "white",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontWeight: "500",
+                transition: "background-color 0.3s"
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = "#ca8a04"}
+              onMouseOut={(e) => e.target.style.backgroundColor = "#15803d"}
             >
               {item ? 'Sauvegarder' : 'Créer'}
             </button>

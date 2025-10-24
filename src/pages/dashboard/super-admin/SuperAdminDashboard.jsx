@@ -5,6 +5,7 @@ import PermissionGuard from '../../../components/auth/PermissionGuard';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../../config/firebase';
 import { ROLES, PERMISSIONS } from '../../../config/roles';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Import des nouveaux composants
 import UserManagement from '../../../components/admin/UserManagement';
@@ -19,6 +20,7 @@ import MemberInviter from '../../../components/admin/MemberInviter';
 const SuperAdminDashboard = () => {
   const { userProfile, currentUser } = useAuth();
   const { can, currentRole } = useAuthorization();
+  const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalUsers: 0,
     totalAdmins: 0,
@@ -71,6 +73,11 @@ const SuperAdminDashboard = () => {
     setActiveComponent('dashboard');
   };
 
+  // Navigation vers l'accueil du site
+  const handleGoToHome = () => {
+    navigate('/');
+  };
+
   // Rendu conditionnel basé sur le composant actif
   const renderActiveComponent = () => {
     switch (activeComponent) {
@@ -121,12 +128,12 @@ const SuperAdminDashboard = () => {
               </div>
               <div className="flex items-center gap-4">
                 {/* Bouton pour retourner à l'accueil du site */}
-                <a 
-                  href="/#/" 
+                <button
+                  onClick={handleGoToHome}
                   className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center gap-2"
                 >
                   🏠 Accueil du Site
-                </a>
+                </button>
                 <div className="bg-purple-600 px-3 py-1 rounded-full text-sm font-medium">
                   👑 Super-Admin
                 </div>
@@ -136,32 +143,50 @@ const SuperAdminDashboard = () => {
         </div>
 
         <div className="max-w-7xl mx-auto p-6">
-          {/* Statistiques */}
+          {/* Statistiques avec liens fonctionnels */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+            <Link 
+              to="/admin/users" 
+              className="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition cursor-pointer block"
+            >
               <div className="text-3xl font-bold text-purple-600">{stats.totalUsers}</div>
               <div className="text-gray-600">Utilisateurs Total</div>
-            </div>
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+            </Link>
+            <Link 
+              to="/admin/users?role=admin" 
+              className="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition cursor-pointer block"
+            >
               <div className="text-3xl font-bold text-blue-600">{stats.totalAdmins}</div>
               <div className="text-gray-600">Administrateurs</div>
-            </div>
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+            </Link>
+            <Link 
+              to="/admin/users?role=core-team" 
+              className="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition cursor-pointer block"
+            >
               <div className="text-3xl font-bold text-pink-600">{stats.totalCoreTeam}</div>
               <div className="text-gray-600">Core Team</div>
-            </div>
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+            </Link>
+            <Link 
+              to="/admin/users?role=membre" 
+              className="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition cursor-pointer block"
+            >
               <div className="text-3xl font-bold text-green-600">{stats.totalMembers}</div>
               <div className="text-gray-600">Membres Actifs</div>
-            </div>
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+            </Link>
+            <Link 
+              to="/admin/events" 
+              className="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition cursor-pointer block"
+            >
               <div className="text-3xl font-bold text-orange-600">{stats.totalEvents}</div>
               <div className="text-gray-600">Événements</div>
-            </div>
-            <div className="bg-white rounded-lg shadow-lg p-6 text-center">
+            </Link>
+            <Link 
+              to="/admin/analytics" 
+              className="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition cursor-pointer block"
+            >
               <div className="text-3xl font-bold text-teal-600">{stats.activeUsers}</div>
               <div className="text-gray-600">Utilisateurs Actifs</div>
-            </div>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -181,12 +206,12 @@ const SuperAdminDashboard = () => {
                 >
                   ✅ Gérer les Admissions
                 </button>
-                <button 
-                  onClick={() => setActiveComponent('MemberInviter')}
-                  className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition flex items-center gap-2"
+                <Link 
+                  to="/admin/messages"
+                  className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2 block text-center"
                 >
-                  📧 Inviter un Membre
-                </button>
+                  💬 Envoyer un Message
+                </Link>
               </div>
             </div>
 
@@ -206,9 +231,12 @@ const SuperAdminDashboard = () => {
                 >
                   📅 Calendrier des Concerts
                 </button>
-                <button className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2">
+                <Link 
+                  to="/admin/statistics"
+                  className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2 block text-center"
+                >
                   📊 Statistiques de Participation
-                </button>
+                </Link>
               </div>
             </div>
           </div>
@@ -249,16 +277,25 @@ const SuperAdminDashboard = () => {
             <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-xl font-bold mb-4 text-gray-800">🎭 Gestion des Rôles</h2>
               <div className="space-y-3">
-                <button className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition flex items-center justify-between">
+                <Link 
+                  to="/admin/roles/super-admins"
+                  className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 transition flex items-center justify-between block"
+                >
                   <span>👑 Gérer les Super-Admins</span>
                   <span className="text-xs bg-purple-800 px-2 py-1 rounded">Permission requise</span>
-                </button>
-                <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition">
+                </Link>
+                <Link 
+                  to="/admin/roles/admins"
+                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition block text-center"
+                >
                   ⚙️ Gérer les Admins
-                </button>
-                <button className="w-full bg-pink-600 text-white py-3 px-4 rounded-lg hover:bg-pink-700 transition">
+                </Link>
+                <Link 
+                  to="/admin/roles/core-team"
+                  className="w-full bg-pink-600 text-white py-3 px-4 rounded-lg hover:bg-pink-700 transition block text-center"
+                >
                   🎵 Gérer la Core Team
-                </button>
+                </Link>
               </div>
             </div>
           </PermissionGuard>
@@ -268,7 +305,8 @@ const SuperAdminDashboard = () => {
             <h2 className="text-xl font-bold mb-4 text-gray-800">📈 Activité Récente</h2>
             <div className="space-y-3">
               {recentActivity.map((user, index) => (
-                <div key={user.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <div key={user.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition cursor-pointer"
+                  onClick={() => navigate(`/admin/users/${user.id}`)}>
                   <div className="flex items-center">
                     <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">
                       {user.displayName?.charAt(0) || 'U'}
@@ -287,6 +325,14 @@ const SuperAdminDashboard = () => {
                 </div>
               ))}
             </div>
+            <div className="mt-4 text-center">
+              <Link 
+                to="/admin/activity-logs"
+                className="text-purple-600 hover:text-purple-800 font-medium"
+              >
+                Voir tous les logs d'activité →
+              </Link>
+            </div>
           </div>
 
           {/* Section Sécurité */}
@@ -294,18 +340,58 @@ const SuperAdminDashboard = () => {
             <div className="mt-8 bg-white rounded-lg shadow-lg p-6 border-l-4 border-red-500">
               <h2 className="text-xl font-bold mb-4 text-gray-800">🛡️ Sécurité Critique</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button className="bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition">
+                <Link 
+                  to="/admin/maintenance"
+                  className="bg-red-600 text-white py-3 px-4 rounded-lg hover:bg-red-700 transition text-center block"
+                >
                   🔧 Maintenance Système
-                </button>
-                <button className="bg-yellow-600 text-white py-3 px-4 rounded-lg hover:bg-yellow-700 transition">
+                </Link>
+                <Link 
+                  to="/admin/security-logs"
+                  className="bg-yellow-600 text-white py-3 px-4 rounded-lg hover:bg-yellow-700 transition text-center block"
+                >
                   📋 Logs d'Activité
-                </button>
-                <button className="bg-gray-800 text-white py-3 px-4 rounded-lg hover:bg-gray-900 transition">
+                </Link>
+                <Link 
+                  to="/admin/advanced-settings"
+                  className="bg-gray-800 text-white py-3 px-4 rounded-lg hover:bg-gray-900 transition text-center block"
+                >
                   ⚙️ Paramètres Avancés
-                </button>
+                </Link>
               </div>
             </div>
           </PermissionGuard>
+
+          {/* Section Rapports */}
+          <div className="mt-8 bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-bold mb-4 text-gray-800">📊 Rapports et Analytics</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Link 
+                to="/admin/reports/users"
+                className="bg-blue-500 text-white p-4 rounded-lg hover:bg-blue-600 transition text-center block"
+              >
+                <div className="text-lg font-semibold">📈 Rapport Utilisateurs</div>
+              </Link>
+              <Link 
+                to="/admin/reports/events"
+                className="bg-green-500 text-white p-4 rounded-lg hover:bg-green-600 transition text-center block"
+              >
+                <div className="text-lg font-semibold">🎭 Rapport Événements</div>
+              </Link>
+              <Link 
+                to="/admin/reports/financial"
+                className="bg-purple-500 text-white p-4 rounded-lg hover:bg-purple-600 transition text-center block"
+              >
+                <div className="text-lg font-semibold">💰 Rapport Financier</div>
+              </Link>
+              <Link 
+                to="/admin/reports/performance"
+                className="bg-orange-500 text-white p-4 rounded-lg hover:bg-orange-600 transition text-center block"
+              >
+                <div className="text-lg font-semibold">⚡ Performance</div>
+              </Link>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -331,12 +417,12 @@ const SuperAdminDashboard = () => {
                 </h1>
               </div>
               <div className="flex items-center gap-4">
-                <a 
-                  href="/#/" 
+                <button
+                  onClick={handleGoToHome}
                   className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center gap-2"
                 >
                   🏠 Accueil du Site
-                </a>
+                </button>
                 <div className="bg-purple-600 px-3 py-1 rounded-full text-sm font-medium text-white">
                   👑 Super-Admin
                 </div>

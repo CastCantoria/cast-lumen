@@ -8,7 +8,13 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "deploy": "vercel --prod"
+    "deploy": "vercel --prod",
+    "update-admin": "node scripts/update-admin-components.cjs",
+    "update-admin:backup": "bash scripts/update-admin.sh",
+    "check-imports": "node scripts/check-imports.cjs",
+    "clean": "rm -rf node_modules/.vite dist",
+    "dev:clean": "npm run clean && npm run dev",
+    "test:auth": "echo \"✅ Tests d'authentification - Vérifiez: 1) Redirection super-admin 2) Permissions 3) Menu mobile\""
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

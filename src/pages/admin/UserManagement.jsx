@@ -1,4 +1,5 @@
 ﻿import React, { useState } from 'react';
+import AdminSidebar from '../../components/layout/AdminSidebar';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([
@@ -32,84 +33,256 @@ const UserManagement = () => {
     ));
   };
 
+  const handleDeleteUser = (userId) => {
+    if (window.confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+      setUsers(prev => prev.filter(user => user.id !== userId));
+    }
+  };
+
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Gestion des Utilisateurs</h2>
+    <div style={{ 
+      minHeight: "100vh", 
+      backgroundColor: "#f8fafc",
+      display: "flex"
+    }}>
+      {/* Sidebar de navigation */}
+      <AdminSidebar />
       
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Utilisateur
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Rôle
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Statut
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date d'adhésion
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {users.map(user => (
-                <tr key={user.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">
-                        {user.name.charAt(0)}
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900">
-                          {user.name}
+      {/* Contenu principal */}
+      <div style={{ 
+        flex: 1,
+        marginLeft: "256px",
+        padding: "80px 20px 40px 20px"
+      }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+          
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            padding: "24px",
+            marginBottom: "24px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0"
+          }}>
+            <h1 style={{
+              fontSize: "1.875rem",
+              fontWeight: "bold",
+              color: "#15803d",
+              marginBottom: "8px"
+            }}>
+              Gestion des Utilisateurs
+            </h1>
+            <p style={{ color: "#64748b" }}>
+              Gérez les membres et leurs permissions
+            </p>
+          </div>
+
+          {/* Tableau des utilisateurs */}
+          <div style={{
+            backgroundColor: "white",
+            borderRadius: "12px",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+            border: "1px solid #e2e8f0",
+            overflow: "hidden"
+          }}>
+            <div style={{ overflowX: "auto" }}>
+              <table style={{ 
+                minWidth: "100%",
+                borderCollapse: "collapse"
+              }}>
+                <thead style={{ backgroundColor: "#f9fafb" }}>
+                  <tr>
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
+                      Utilisateur
+                    </th>
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
+                      Rôle
+                    </th>
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
+                      Statut
+                    </th>
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
+                      Date d'adhésion
+                    </th>
+                    <th style={{
+                      padding: "12px 24px",
+                      textAlign: "left",
+                      fontSize: "0.75rem",
+                      fontWeight: "500",
+                      color: "#6b7280",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                      borderBottom: "1px solid #e5e7eb"
+                    }}>
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody style={{ backgroundColor: "white" }}>
+                  {users.map(user => (
+                    <tr key={user.id} style={{ 
+                      borderBottom: "1px solid #e5e7eb",
+                      transition: "background-color 0.3s"
+                    }} 
+                    onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#f9fafb"}
+                    onMouseOut={(e) => e.currentTarget.style.backgroundColor = "white"}>
+                      <td style={{ padding: "16px 24px" }}>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <div style={{
+                            width: "40px",
+                            height: "40px",
+                            backgroundColor: "#dcfce7",
+                            borderRadius: "50%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            color: "#15803d",
+                            fontWeight: "bold",
+                            fontSize: "1rem",
+                            marginRight: "16px"
+                          }}>
+                            {user.name.charAt(0)}
+                          </div>
+                          <div>
+                            <div style={{ 
+                              fontSize: "0.875rem", 
+                              fontWeight: "500", 
+                              color: "#111827" 
+                            }}>
+                              {user.name}
+                            </div>
+                            <div style={{ 
+                              fontSize: "0.875rem", 
+                              color: "#6b7280",
+                              marginTop: "2px"
+                            }}>
+                              {user.email}
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-sm text-gray-500">
-                          {user.email}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <select
-                      value={user.role}
-                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                      className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                      <option value="membre">Membre</option>
-                      <option value="admin">Admin</option>
-                      <option value="super-admin">Super Admin</option>
-                    </select>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <select
-                      value={user.status}
-                      onChange={(e) => handleStatusChange(user.id, e.target.value)}
-                      className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                      <option value="active">Actif</option>
-                      <option value="inactive">Inactif</option>
-                      <option value="suspended">Suspendu</option>
-                    </select>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(user.joinDate).toLocaleDateString('fr-FR')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button className="text-red-600 hover:text-red-900">
-                      Supprimer
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      </td>
+                      <td style={{ padding: "16px 24px" }}>
+                        <select
+                          value={user.role}
+                          onChange={(e) => handleRoleChange(user.id, e.target.value)}
+                          style={{
+                            fontSize: "0.875rem",
+                            border: "1px solid #d1d5db",
+                            borderRadius: "6px",
+                            padding: "4px 8px",
+                            outline: "none",
+                            transition: "border-color 0.3s, box-shadow 0.3s"
+                          }}
+                          onFocus={(e) => {
+                            e.target.style.borderColor = "#ca8a04";
+                            e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.borderColor = "#d1d5db";
+                            e.target.style.boxShadow = "none";
+                          }}
+                        >
+                          <option value="membre">Membre</option>
+                          <option value="admin">Admin</option>
+                          <option value="super-admin">Super Admin</option>
+                        </select>
+                      </td>
+                      <td style={{ padding: "16px 24px" }}>
+                        <select
+                          value={user.status}
+                          onChange={(e) => handleStatusChange(user.id, e.target.value)}
+                          style={{
+                            fontSize: "0.875rem",
+                            border: "1px solid #d1d5db",
+                            borderRadius: "6px",
+                            padding: "4px 8px",
+                            outline: "none",
+                            transition: "border-color 0.3s, box-shadow 0.3s"
+                          }}
+                          onFocus={(e) => {
+                            e.target.style.borderColor = "#ca8a04";
+                            e.target.style.boxShadow = "0 0 0 3px rgba(202, 138, 4, 0.1)";
+                          }}
+                          onBlur={(e) => {
+                            e.target.style.borderColor = "#d1d5db";
+                            e.target.style.boxShadow = "none";
+                          }}
+                        >
+                          <option value="active">Actif</option>
+                          <option value="inactive">Inactif</option>
+                          <option value="suspended">Suspendu</option>
+                        </select>
+                      </td>
+                      <td style={{ 
+                        padding: "16px 24px",
+                        fontSize: "0.875rem",
+                        color: "#6b7280",
+                        whiteSpace: "nowrap"
+                      }}>
+                        {new Date(user.joinDate).toLocaleDateString('fr-FR')}
+                      </td>
+                      <td style={{ 
+                        padding: "16px 24px",
+                        fontSize: "0.875rem",
+                        fontWeight: "500"
+                      }}>
+                        <button
+                          onClick={() => handleDeleteUser(user.id)}
+                          style={{
+                            color: "#dc2626",
+                            background: "none",
+                            border: "none",
+                            cursor: "pointer",
+                            transition: "color 0.3s"
+                          }}
+                          onMouseOver={(e) => e.target.style.color = "#991b1b"}
+                          onMouseOut={(e) => e.target.style.color = "#dc2626"}
+                        >
+                          Supprimer
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>

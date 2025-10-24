@@ -192,9 +192,12 @@ const Repertoire = () => {
                     <span className="bg-indigo-100 text-indigo-600 px-3 py-1 rounded-full text-sm capitalize">
                       {piece.era}
                     </span>
-                    <button className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
+                    <Link 
+                      to="/gallery"
+                      className="text-indigo-600 hover:text-indigo-700 font-semibold text-sm"
+                    >
                       Partition →
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

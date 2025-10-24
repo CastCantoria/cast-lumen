@@ -1,4 +1,5 @@
 ﻿import React from 'react';
+import { Link } from 'react-router-dom';
 import './Events.css';
 
 const Events = () => {
@@ -85,9 +86,12 @@ const Events = () => {
                     <p className="text-green-700 mb-4">
                       {event.description}
                     </p>
-                    <button className="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors">
+                    <Link 
+                      to="/contact"
+                      className="block w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors text-center"
+                    >
                       Réserver maintenant
-                    </button>
+                    </Link>
                   </div>
                 </div>
               ))}
@@ -205,9 +209,15 @@ const Events = () => {
                 </div>
               </div>
               
-              <p className="text-lg">
+              <p className="text-lg mb-6">
                 Pour toute information sur nos événements ou pour réserver pour nos concerts
               </p>
+              <Link 
+                to="/contact"
+                className="inline-block bg-white text-green-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition"
+              >
+                Nous Contacter
+              </Link>
             </div>
           </div>
         </section>
