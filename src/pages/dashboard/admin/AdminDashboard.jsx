@@ -14,6 +14,13 @@ const AdminDashboard = () => {
   });
   const [loading, setLoading] = useState(true);
 
+  // 🔍 AJOUT: Logs de débogage
+  useEffect(() => {
+    console.log("🔍 AdminDashboard - userProfile:", userProfile);
+    console.log("🔍 AdminDashboard - current path:", window.location.hash);
+    console.log("🔍 AdminDashboard - currentUser:", currentUser?.email);
+  }, [userProfile, currentUser]);
+
   useEffect(() => {
     fetchDashboardData();
   }, []);
@@ -63,7 +70,7 @@ const AdminDashboard = () => {
       minHeight: "100vh",
       background: "linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #0ea5e9 100%)"
     }}>
-      {/* Header */}
+      {/* Header avec informations admin */}
       <div style={{
         backgroundColor: "rgba(0, 0, 0, 0.5)",
         color: "white",
@@ -71,16 +78,135 @@ const AdminDashboard = () => {
       }}>
         <div style={{
           maxWidth: "80rem",
+          margin: "0 auto",
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center"
+        }}>
+          <div>
+            <h1 style={{
+              fontSize: "1.875rem",
+              fontWeight: "bold",
+              marginBottom: "0.5rem"
+            }}>
+              Administration C.A.S.T.
+            </h1>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <div>
+                <p style={{ 
+                  fontSize: "1.125rem",
+                  fontWeight: "500",
+                  margin: 0
+                }}>
+                  Bonjour, {userProfile?.displayName || currentUser?.displayName || 'Administrateur'}
+                </p>
+                <p style={{ 
+                  color: "#bfdbfe",
+                  margin: 0,
+                  fontSize: "0.875rem"
+                }}>
+                  Administrateur C.A.S.T.
+                </p>
+              </div>
+              <div style={{
+                width: "40px",
+                height: "40px",
+                borderRadius: "50%",
+                backgroundColor: "#3b82f6",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+                fontWeight: "bold",
+                fontSize: "1.125rem"
+              }}>
+                {userProfile?.displayName?.charAt(0) || currentUser?.email?.charAt(0).toUpperCase() || 'A'}
+              </div>
+            </div>
+          </div>
+          
+          {/* Menu de navigation */}
+          <div style={{
+            display: "flex",
+            gap: "1rem",
+            alignItems: "center"
+          }}>
+            <Link 
+              to="/admin"
+              style={{
+                color: "white",
+                textDecoration: "none",
+                padding: "0.5rem 1rem",
+                borderRadius: "0.375rem",
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                transition: "background-color 0.3s"
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = "rgba(255, 255, 255, 0.3)"}
+              onMouseOut={(e) => e.target.style.backgroundColor = "rgba(255, 255, 255, 0.2)"}
+            >
+              📊 Tableau de Bord
+            </Link>
+            
+            <Link 
+              to="/profile"
+              style={{
+                color: "white",
+                textDecoration: "none",
+                padding: "0.5rem 1rem",
+                borderRadius: "0.375rem",
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                transition: "background-color 0.3s"
+              }}
+              onMouseOver={(e) => e.target.style.backgroundColor = "rgba(255, 255, 255, 0.3)"}
+              onMouseOut={(e) => e.target.style.backgroundColor = "rgba(255, 255, 255, 0.2)"}
+            >
+              👤 Mon Profil
+            </Link>
+            
+            <div style={{
+              color: "white",
+              padding: "0.5rem 1rem",
+              borderRadius: "0.375rem",
+              backgroundColor: "rgba(255, 255, 255, 0.2)",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              cursor: "pointer"
+            }}>
+              ⚙️ Administration
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Titre du dashboard */}
+      <div style={{
+        backgroundColor: "rgba(255, 255, 255, 0.1)",
+        color: "white",
+        padding: "1rem 1.5rem"
+      }}>
+        <div style={{
+          maxWidth: "80rem",
           margin: "0 auto"
         }}>
-          <h1 style={{
-            fontSize: "1.875rem",
+          <h2 style={{
+            fontSize: "1.5rem",
             fontWeight: "bold",
-            marginBottom: "0.5rem"
+            margin: 0
           }}>
             Tableau de Bord Administrateur
-          </h1>
-          <p style={{ color: "#bfdbfe" }}>
+          </h2>
+          <p style={{ 
+            color: "#bfdbfe", 
+            margin: "0.25rem 0 0 0",
+            fontSize: "0.875rem"
+          }}>
             Gestion des membres et activités de C.A.S.T.
           </p>
         </div>

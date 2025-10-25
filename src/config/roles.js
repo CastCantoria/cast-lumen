@@ -138,14 +138,23 @@ export const RACI_MATRIX = {
 // Fonction utilitaire améliorée pour la transition
 export const getCompatibleRole = (oldRole) => {
   if (!oldRole) return ROLES.VISITOR;
-  
+
+  // Normalize common variations: trim, lowercase, replace spaces/underscores with hyphens
+  const normalized = String(oldRole).trim().toLowerCase().replace(/\s+/g, '-').replace(/_+/g, '-');
+
   // Si le rôle existe déjà dans les nouveaux rôles, le garder
-  if (Object.values(ROLES).includes(oldRole)) {
-    return oldRole;
+  if (Object.values(ROLES).includes(normalized)) {
+    return normalized;
   }
-  
-  // Sinon, utiliser le mapping de compatibilité
-  return ROLE_MAPPING[oldRole] || ROLES.REGISTERED_USER;
+
+  // Essayer mapping de compatibilité avec la clé normalisée
+  if (ROLE_MAPPING[normalized]) return ROLE_MAPPING[normalized];
+
+  // Fallback: tenter une correspondance sans transformations (ancienne clé exacte)
+  if (ROLE_MAPPING[oldRole]) return ROLE_MAPPING[oldRole];
+
+  // Par défaut, considérer comme utilisateur enregistré
+  return ROLES.REGISTERED_USER;
 };
 
 // Helper pour vérifier les permissions avec compatibilité

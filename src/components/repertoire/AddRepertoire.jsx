@@ -20,9 +20,9 @@ const AddRepertoire = ({ onSubmit, onCancel }) => {
   const [videoFile, setVideoFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  const styles = ['Sacré', 'Classique', 'Contemporain', 'Jazz', 'Traditionnel'];
-  const periods = ['Médiéval', 'Renaissance', 'Baroque', 'Classique', 'Romantique', 'Moderne', 'Contemporain'];
-  const languages = ['Latin', 'Français', 'Allemand', 'Italien', 'Anglais', 'Espagnol'];
+  const styles = ['Sacrï¿½', 'Classique', 'Contemporain', 'Jazz', 'Traditionnel'];
+  const periods = ['Mï¿½diï¿½val', 'Renaissance', 'Baroque', 'Classique', 'Romantique', 'Moderne', 'Contemporain'];
+  const languages = ['Latin', 'Franï¿½ais', 'Allemand', 'Italien', 'Anglais', 'Espagnol'];
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -51,13 +51,13 @@ const AddRepertoire = ({ onSubmit, onCancel }) => {
         audioUrl = await repertoireService.uploadAudio(audioFile, `audio_${Date.now()}.mp3`);
       }
 
-      // Préparation des données finales
+      // Prï¿½paration des donnï¿½es finales
       const repertoireData = {
         ...formData,
         difficulty: parseInt(formData.difficulty),
         pdfUrl,
         audioUrl,
-        videoUrl: videoFile ? URL.createObjectURL(videoFile) : '' // Pour les URLs vidéo externes
+        videoUrl: videoFile ? URL.createObjectURL(videoFile) : '' // Pour les URLs vidï¿½o externes
       };
 
       await onSubmit(repertoireData);
@@ -80,7 +80,7 @@ const AddRepertoire = ({ onSubmit, onCancel }) => {
 
     } catch (error) {
       console.error('Erreur soumission:', error);
-      alert('Erreur lors de l\'ajout de l\'œuvre');
+      alert('Erreur lors de l\'ajout de l\'ï¿½uvre');
     } finally {
       setUploading(false);
     }
@@ -88,13 +88,13 @@ const AddRepertoire = ({ onSubmit, onCancel }) => {
 
   return (
     <div className="add-repertoire-form">
-      <h3>Ajouter une nouvelle œuvre</h3>
+      <h3>Ajouter une nouvelle ï¿½uvre</h3>
       
       <form onSubmit={handleSubmit}>
         <div className="form-grid">
           {/* Titre et Compositeur */}
           <div className="form-group">
-            <label>Titre de l'œuvre *</label>
+            <label>Titre de l'ï¿½uvre *</label>
             <input
               type="text"
               name="title"
@@ -115,7 +115,7 @@ const AddRepertoire = ({ onSubmit, onCancel }) => {
             />
           </div>
 
-          {/* Style et Période */}
+          {/* Style et Pï¿½riode */}
           <div className="form-group">
             <label>Style musical *</label>
             <select
@@ -124,7 +124,7 @@ const AddRepertoire = ({ onSubmit, onCancel }) => {
               onChange={handleInputChange}
               required
             >
-              <option value="">Sélectionnez un style</option>
+              <option value="">Sï¿½lectionnez un style</option>
               {styles.map(style => (
                 <option key={style} value={style}>{style}</option>
               ))}
@@ -132,23 +132,23 @@ const AddRepertoire = ({ onSubmit, onCancel }) => {
           </div>
 
           <div className="form-group">
-            <label>Période *</label>
+            <label>Pï¿½riode *</label>
             <select
               name="period"
               value={formData.period}
               onChange={handleInputChange}
               required
             >
-              <option value="">Sélectionnez une période</option>
+              <option value="">Sï¿½lectionnez une pï¿½riode</option>
               {periods.map(period => (
                 <option key={period} value={period}>{period}</option>
               ))}
             </select>
           </div>
 
-          {/* Difficulté et Langue */}
+          {/* Difficultï¿½ et Langue */}
           <div className="form-group">
-            <label>Difficulté (1-5)</label>
+            <label>Difficultï¿½ (1-5)</label>
             <select
               name="difficulty"
               value={formData.difficulty}
@@ -169,16 +169,16 @@ const AddRepertoire = ({ onSubmit, onCancel }) => {
               value={formData.language}
               onChange={handleInputChange}
             >
-              <option value="">Sélectionnez une langue</option>
+              <option value="">Sï¿½lectionnez une langue</option>
               {languages.map(language => (
                 <option key={language} value={language}>{language}</option>
               ))}
             </select>
           </div>
 
-          {/* Durée */}
+          {/* Durï¿½e */}
           <div className="form-group">
-            <label>Durée (ex: 3:45)</label>
+            <label>Durï¿½e (ex: 3:45)</label>
             <input
               type="text"
               name="duration"
@@ -208,7 +208,7 @@ const AddRepertoire = ({ onSubmit, onCancel }) => {
           </div>
 
           <div className="form-group">
-            <label>URL Vidéo (optionnel)</label>
+            <label>URL Vidï¿½o (optionnel)</label>
             <input
               type="url"
               name="videoUrl"
@@ -225,7 +225,7 @@ const AddRepertoire = ({ onSubmit, onCancel }) => {
               value={formData.lyrics}
               onChange={handleInputChange}
               rows="4"
-              placeholder="Entrez les paroles de l'œuvre..."
+              placeholder="Entrez les paroles de l'ï¿½uvre..."
             />
           </div>
 
@@ -238,7 +238,7 @@ const AddRepertoire = ({ onSubmit, onCancel }) => {
                 checked={formData.featured}
                 onChange={handleInputChange}
               />
-              Œuvre mise en avant
+              ï¿½uvre mise en avant
             </label>
           </div>
         </div>
@@ -256,7 +256,7 @@ const AddRepertoire = ({ onSubmit, onCancel }) => {
             disabled={uploading}
             className="btn-submit"
           >
-            {uploading ? 'Ajout en cours...' : 'Ajouter l\'œuvre'}
+            {uploading ? 'Ajout en cours...' : 'Ajouter l\'ï¿½uvre'}
           </button>
         </div>
       </form>

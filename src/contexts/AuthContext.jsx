@@ -1,4 +1,4 @@
-﻿import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import { 
   signInWithPopup, 
   signOut as firebaseSignOut,
@@ -29,7 +29,7 @@ const createUserProfile = async (user) => {
       email: user.email,
       displayName: user.displayName || user.email.split('@')[0],
       photoURL: user.photoURL || null,
-      role: 'public',
+      role: 'registered-user', // Rôle par défaut
       createdAt: serverTimestamp(),
       lastLogin: serverTimestamp(),
       isActive: true
@@ -53,18 +53,10 @@ const updateUserLastLogin = async (uid) => {
   }
 };
 
-// FONCTION CORRIGÉE POUR HashRouter - AJOUT DU #
+// FONCTION DE REDIRECTION SIMPLIFIÉE - TOUJOURS VERS LE DASHBOARD UNIQUE
 const getRedirectPath = (role) => {
-  switch (role) {
-    case 'super-admin':
-      return '/#/super-admin';
-    case 'admin':
-      return '/#/admin';
-    case 'membre':
-      return '/#/member';
-    default:
-      return '/#/dashboard';
-  }
+  console.log('🎯 Redirection vers dashboard unique pour rôle:', role);
+  return '/dashboard'; // TOUJOURS le même dashboard
 };
 
 export const useAuth = () => {
@@ -79,18 +71,41 @@ export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // FONCTION DE REDIRECTION CORRIGÉE
-  const redirectUser = (profile) => {
-    if (!profile) return;
+  const redirectToDashboard = () => {
+    const redirectPath = getRedirectPath(userProfile?.role);
+    console.log(`🔄 Redirection automatique vers: ${redirectPath}`);
     
-    const redirectPath = getRedirectPath(profile.role);
-    console.log(`🔄 Redirection automatique HashRouter vers: ${redirectPath}`);
-    
-    // Utiliser window.location avec le # pour HashRouter
+    // Utiliser window.location.hash pour HashRouter
     setTimeout(() => {
-      window.location.href = redirectPath;
-    }, 1500); // Augmenté à 1.5s pour laisser le temps à l'UI de s'afficher
+      window.location.hash = redirectPath;
+    }, 1000); // 1 seconde pour voir le message de succès
+  };
+
+  // GESTIONNAIRE DE CONNEXION RÉUSSIE
+  const handleLoginSuccess = async (user, existingProfile = null) => {
+    console.log('✅ Connexion réussie pour:', user.email);
+    
+    let profile = existingProfile;
+    
+    // Créer le profil si inexistant
+    if (!profile) {
+      profile = await createUserProfile(user);
+    } else {
+      await updateUserLastLogin(user.uid);
+    }
+    
+    setCurrentUser(user);
+    setUserProfile(profile);
+    setIsAuthenticated(true);
+    
+    // REDIRECTION SIMPLE VERS LE DASHBOARD UNIQUE
+    console.log('🚀 Redirection vers /dashboard');
+    redirectToDashboard();
+    
+    return { user, profile };
   };
 
   // Connexion Google
@@ -101,23 +116,8 @@ export const AuthProvider = ({ children }) => {
       
       // Vérifier/Créer le profil en base
       let profile = await getUserProfile(user.uid);
-      if (!profile) {
-        profile = await createUserProfile(user);
-      } else {
-        await updateUserLastLogin(user.uid);
-      }
       
-      setCurrentUser(user);
-      setUserProfile(profile);
-      
-      console.log('🎉 Connexion Google réussie ! Bienvenue sur C.A.S.T.');
-      
-      // Redirection automatique AVEC SUCCÈS VISUEL
-      setTimeout(() => {
-        redirectUser(profile);
-      }, 2000); // Laisser 2s pour voir le message de succès
-      
-      return { user, profile };
+      return await handleLoginSuccess(user, profile);
     } catch (error) {
       console.error('Erreur connexion Google:', error);
       throw error;
@@ -132,37 +132,11 @@ export const AuthProvider = ({ children }) => {
       
       // Récupérer le profil utilisateur
       const profile = await getUserProfile(user.uid);
-      if (profile) {
-        await updateUserLastLogin(user.uid);
-        setCurrentUser(user);
-        setUserProfile(profile);
-        
-        console.log('🎉 Connexion réussie ! Bienvenue sur C.A.S.T.');
-        
-        // Redirection automatique AVEC SUCCÈS VISUEL
-        setTimeout(() => {
-          redirectUser(profile);
-        }, 2000);
-        
-        return { success: true, user, profile };
-      } else {
-        // Créer un profil si inexistant
-        const newProfile = await createUserProfile(user);
-        setCurrentUser(user);
-        setUserProfile(newProfile);
-        
-        console.log('🎉 Connexion réussie ! Profil créé.');
-        
-        // Redirection automatique
-        setTimeout(() => {
-          redirectUser(newProfile);
-        }, 2000);
-        
-        return { success: true, user, profile: newProfile };
-      }
+      
+      return await handleLoginSuccess(user, profile);
     } catch (error) {
       console.error('Erreur connexion:', error);
-      return { success: false, error: error.message };
+      throw new Error(error.message);
     }
   };
 
@@ -173,11 +147,12 @@ export const AuthProvider = ({ children }) => {
       await firebaseSignOut(auth);
       setCurrentUser(null);
       setUserProfile(null);
+      setIsAuthenticated(false);
       
-      // Redirection vers la page d'accueil AVEC #
+      // Redirection vers la page d'accueil
       setTimeout(() => {
-        window.location.href = '/#/';
-      }, 1000);
+        window.location.hash = '/';
+      }, 500);
     } catch (error) {
       console.error('Erreur déconnexion:', error);
       throw error;
@@ -191,15 +166,14 @@ export const AuthProvider = ({ children }) => {
         const profile = await getUserProfile(user.uid);
         setCurrentUser(user);
         setUserProfile(profile);
+        setIsAuthenticated(true);
         
-        // NE PAS rediriger automatiquement depuis la page d'accueil
-        // Laisser l'utilisateur voir la page et naviguer manuellement
-        // ou utiliser un bouton de redirection explicite
-        console.log('✅ Utilisateur connecté:', profile?.email);
+        console.log('✅ Utilisateur connecté:', profile?.email, '- Rôle:', profile?.role);
         
       } else {
         setCurrentUser(null);
         setUserProfile(null);
+        setIsAuthenticated(false);
       }
       setLoading(false);
     });
@@ -223,7 +197,7 @@ export const AuthProvider = ({ children }) => {
     
     // États
     loading,
-    isAuthenticated: !!currentUser,
+    isAuthenticated,
     isAdmin: userProfile?.role === 'admin',
     isMember: ['admin', 'membre', 'registered-user'].includes(userProfile?.role),
     isSuperAdmin: userProfile?.role === 'super-admin',

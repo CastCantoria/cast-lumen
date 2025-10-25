@@ -75,8 +75,8 @@ const Unauthorized = () => {
         <div className="mt-6 pt-6 border-t border-gray-200">
           <p className="text-sm text-gray-500">
             Besoin d'aide ? Contactez l'équipe technique à{' '}
-            <a href="mailto:support@cast-tana.org" className="text-blue-600 hover:underline">
-              support@cast-tana.org
+            <a href="mailto:castcantoria@gmail.com" className="text-blue-600 hover:underline">
+              castcantoria@gmail.com
             </a>
           </p>
         </div>

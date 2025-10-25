@@ -35,10 +35,10 @@ const Header = () => {
 
   // Obtenir le dashboard selon le rôle
   const getDashboardPath = () => {
-    if (isSuperAdmin) return '/super-admin';
-    if (isAdmin) return '/admin';
-    if (isMember) return '/member';
-    return '/dashboard';
+    if (isSuperAdmin) return '/app/super-admin';
+    if (isAdmin) return '/app/admin';
+    if (isMember) return '/app/member';
+    return '/app/dashboard';
   };
 
   // Obtenir le label du dashboard selon le rôle
@@ -75,31 +75,71 @@ const Header = () => {
               src="/images/logo-cantoria.png" 
               alt="C.A.S.T. Cantoria" 
               className="logo-image"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
             />
+            <div className="logo-fallback">
+              🎵
+            </div>
           </div>
           <div className="brand-text">
-            <h1>C.A.S.T.</h1>
-            <p>Chœur Artistique & Spirituel de Tana</p>
+            <h1>𝕮.𝕬.𝕾.𝕿.</h1>
+            <p className="gothic-unicode">𝕮𝖍𝖔𝖊𝖚𝖗 𝕬𝖗𝖙𝖎𝖘𝖎𝖙𝖎𝖖𝖚𝖊 & 𝕾𝖕𝖎𝖗𝖎𝖙𝖚𝖊𝖑 𝖉𝖊 𝕿𝖆𝖓𝖆</p>
           </div>
         </div>
 
         {/* Navigation Desktop */}
         <nav className="sacred-navigation">
-          <Link to="/" className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
-            Accueil
-          </Link>
-          <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>
-            À Propos
-          </Link>
-          <Link to="/events" className={`nav-link ${location.pathname === '/events' ? 'active' : ''}`}>
-            Événements
-          </Link>
-          <Link to="/gallery" className={`nav-link ${location.pathname === '/gallery' ? 'active' : ''}`}>
-            Galerie
-          </Link>
-          <Link to="/contact" className={`nav-link ${location.pathname === '/contact' ? 'active' : ''}`}>
-            Contact
-          </Link>
+          <a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); }} className={`nav-link ${location.pathname === '/' ? 'active' : ''}`}>
+            <span>🏠</span> Accueil
+          </a>
+          
+          {/* DROPDOWN DÉCOUVERTE */}
+          <div className="nav-dropdown">
+            <button className="dropdown-toggle">
+              <span>🌟</span> Découverte
+              <span className="dropdown-arrow">▼</span>
+            </button>
+            <div className="dropdown-menu">
+              <a href="/about" onClick={(e) => { e.preventDefault(); navigate('/about'); }}>
+                <span>ℹ️</span> À Propos
+              </a>
+              <a href="/repertoire" onClick={(e) => { e.preventDefault(); navigate('/repertoire'); }}>
+                <span>📜</span> Répertoire
+              </a>
+              <a href="/gallery" onClick={(e) => { e.preventDefault(); navigate('/gallery'); }}>
+                <span>🖼️</span> Galerie
+              </a>
+              <a href="/join" onClick={(e) => { e.preventDefault(); navigate('/join'); }} className="join-dropdown-item">
+                <span>👥</span> Nous Rejoindre
+              </a>
+            </div>
+          </div>
+
+          {/* DROPDOWN ACTIVITÉS */}
+          <div className="nav-dropdown">
+            <button className="dropdown-toggle">
+              <span>🎭</span> Activités
+              <span className="dropdown-arrow">▼</span>
+            </button>
+            <div className="dropdown-menu">
+              <a href="/events" onClick={(e) => { e.preventDefault(); navigate('/events'); }}>
+                <span>🎵</span> Concerts
+              </a>
+              <a href="/blog" onClick={(e) => { e.preventDefault(); navigate('/blog'); }}>
+                <span>📰</span> Blog
+              </a>
+              <a href="/spirituality" onClick={(e) => { e.preventDefault(); navigate('/spirituality'); }}>
+                <span>🙏</span> Spiritualité
+              </a>
+            </div>
+          </div>
+
+          <a href="/contact" onClick={(e) => { e.preventDefault(); navigate('/contact'); }} className="nav-link">
+            <span>📞</span> Contact
+          </a>
         </nav>
 
         {/* Section Utilisateur Desktop */}
@@ -107,102 +147,91 @@ const Header = () => {
           {isAuthenticated ? (
             <div className="user-info-desktop">
               <span className="user-greeting">
-                Bonjour, {currentUser?.displayName || 'Utilisateur'}
+                Bonjour, {currentUser?.displayName || currentUser?.email?.split('@')[0] || 'Utilisateur'}
               </span>
               <span className="user-role-badge">
                 {getRoleLabel()}
               </span>
-              <Link to={getDashboardPath()} className="btn btn-primary">
-                {getDashboardLabel()}
-              </Link>
+              <a href={getDashboardPath()} onClick={(e) => { e.preventDefault(); navigate(getDashboardPath()); }} className="btn btn-primary">
+                {getDashboardIcon()} {getDashboardLabel()}
+              </a>
+              <button onClick={handleLogout} className="btn btn-secondary">
+                🚪 Déco
+              </button>
             </div>
           ) : (
             <div className="auth-buttons">
-              <Link to="/join" className="btn btn-secondary">
-                Nous Rejoindre
-              </Link>
-              <Link to="/login" className="btn btn-primary">
-                Connexion
-              </Link>
+              <a href="/join" onClick={(e) => { e.preventDefault(); navigate('/join'); }} className="btn btn-secondary">
+                👥 Rejoindre
+              </a>
+              <a href="/login" onClick={(e) => { e.preventDefault(); navigate('/login'); }} className="btn btn-primary">
+                🔐 Connexion
+              </a>
             </div>
           )}
         </div>
 
-        {/* Menu Burger */}
+        {/* Menu Burger Musical */}
         <button 
-          className="menu-burger"
+          className={`menu-burger-music ${isMenuOpen ? 'active' : ''}`}
           onClick={toggleMenu}
           aria-label="Menu"
         >
-          <span></span>
-          <span></span>
-          <span></span>
+          <span className="music-icon closed">🎵</span>
+          <span className="music-icon open">🎶</span>
         </button>
       </div>
 
       {/* Menu Mobile */}
-      <div className={`mobile-menu ${isMenuOpen ? 'active' : ''}`}>
-        <nav className="mobile-nav">
-          <Link to="/" className="mobile-nav-item" onClick={closeMenu}>
-            <span>🏠</span>
-            <span>Accueil</span>
-          </Link>
+      <nav className={`sacred-navigation-mobile ${isMenuOpen ? 'active' : ''}`}>
+        <a href="/" onClick={(e) => { e.preventDefault(); navigate('/'); closeMenu(); }} className="mobile-nav-item">
+          <span>🏠</span> Accueil
+        </a>
 
-          <Link to="/about" className="mobile-nav-item" onClick={closeMenu}>
-            <span>🌟</span>
-            <span>À Propos</span>
-          </Link>
+        <a href="/about" onClick={(e) => { e.preventDefault(); navigate('/about'); closeMenu(); }} className="mobile-nav-item">
+          <span>🌟</span> À Propos
+        </a>
 
-          <Link to="/events" className="mobile-nav-item" onClick={closeMenu}>
-            <span>🎵</span>
-            <span>Événements</span>
-          </Link>
+        <a href="/events" onClick={(e) => { e.preventDefault(); navigate('/events'); closeMenu(); }} className="mobile-nav-item">
+          <span>🎵</span> Concerts
+        </a>
 
-          <Link to="/gallery" className="mobile-nav-item" onClick={closeMenu}>
-            <span>🖼️</span>
-            <span>Galerie</span>
-          </Link>
+        <a href="/gallery" onClick={(e) => { e.preventDefault(); navigate('/gallery'); closeMenu(); }} className="mobile-nav-item">
+          <span>🖼️</span> Galerie
+        </a>
 
-          <Link to="/contact" className="mobile-nav-item" onClick={closeMenu}>
-            <span>📞</span>
-            <span>Contact</span>
-          </Link>
+        <a href="/contact" onClick={(e) => { e.preventDefault(); navigate('/contact'); closeMenu(); }} className="mobile-nav-item">
+          <span>📞</span> Contact
+        </a>
 
-          <div className="mobile-divider"></div>
+        <div className="nav-divider"></div>
 
-          {isAuthenticated ? (
-            <>
-              <Link to={getDashboardPath()} className="mobile-nav-item dashboard-item" onClick={closeMenu}>
-                <span>{getDashboardIcon()}</span>
-                <span>{getDashboardLabel()}</span>
-              </Link>
-              <Link to="/profile" className="mobile-nav-item" onClick={closeMenu}>
-                <span>👤</span>
-                <span>Profil</span>
-              </Link>
-              <div className="mobile-nav-item" style={{ opacity: 0.7, fontStyle: 'italic' }}>
-                <span>🎭</span>
-                <span>Connecté en tant que {getRoleLabel()}</span>
-              </div>
-              <button onClick={handleLogout} className="mobile-nav-item logout-item">
-                <span>🚪</span>
-                <span>Déconnexion</span>
-              </button>
-            </>
-          ) : (
-            <>
-              <Link to="/join" className="mobile-nav-item" onClick={closeMenu}>
-                <span>👥</span>
-                <span>Nous Rejoindre</span>
-              </Link>
-              <Link to="/login" className="mobile-nav-item" onClick={closeMenu}>
-                <span>🔐</span>
-                <span>Connexion</span>
-              </Link>
-            </>
-          )}
-        </nav>
-      </div>
+        {isAuthenticated ? (
+          <>
+            <a href={getDashboardPath()} onClick={(e) => { e.preventDefault(); navigate(getDashboardPath()); closeMenu(); }} className="mobile-nav-item dashboard-item">
+              <span>{getDashboardIcon()}</span> {getDashboardLabel()}
+            </a>
+            <a href="/app/profile" onClick={(e) => { e.preventDefault(); navigate('/app/profile'); closeMenu(); }} className="mobile-nav-item">
+              <span>👤</span> Profil
+            </a>
+            <div className="mobile-nav-item" style={{ opacity: 0.7, fontStyle: 'italic' }}>
+              <span>🎭</span> {getRoleLabel()}
+            </div>
+            <button onClick={handleLogout} className="mobile-nav-item logout-item">
+              <span>🚪</span> Déconnexion
+            </button>
+          </>
+        ) : (
+          <>
+            <a href="/join" onClick={(e) => { e.preventDefault(); navigate('/join'); closeMenu(); }} className="mobile-nav-item">
+              <span>👥</span> Nous Rejoindre
+            </a>
+            <a href="/login" onClick={(e) => { e.preventDefault(); navigate('/login'); closeMenu(); }} className="mobile-nav-item">
+              <span>🔐</span> Connexion
+            </a>
+          </>
+        )}
+      </nav>
 
       {/* Overlay */}
       {isMenuOpen && (

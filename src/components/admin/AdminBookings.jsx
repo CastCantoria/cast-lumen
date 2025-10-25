@@ -17,11 +17,11 @@ const AdminBookings = () => {
     try {
       setLoading(true);
       
-      // Charger tous les événements
+      // Charger tous les ï¿½vï¿½nements
       const eventsData = await eventsService.getAllEvents();
       setEvents(eventsData);
 
-      // Charger les réservations pour chaque événement
+      // Charger les rï¿½servations pour chaque ï¿½vï¿½nement
       const bookingsPromises = eventsData.map(async (event) => {
         const eventBookings = await eventsService.getEventBookings(event.id);
         return eventBookings.map(booking => ({
@@ -38,7 +38,7 @@ const AdminBookings = () => {
       setAllBookings(flattenedBookings);
 
     } catch (error) {
-      console.error('Erreur chargement données:', error);
+      console.error('Erreur chargement donnï¿½es:', error);
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,7 @@ const AdminBookings = () => {
     return (
       <div className="admin-bookings-loading">
         <div className="loading-spinner"></div>
-        <p>Chargement des réservations...</p>
+        <p>Chargement des rï¿½servations...</p>
       </div>
     );
   }
@@ -72,11 +72,11 @@ const AdminBookings = () => {
       <div className="bookings-global-stats">
         <div className="global-stat-card">
           <div className="stat-number">{stats.totalBookings}</div>
-          <div className="stat-label">Réservations Total</div>
+          <div className="stat-label">Rï¿½servations Total</div>
         </div>
         <div className="global-stat-card">
           <div className="stat-number">{stats.totalSeats}</div>
-          <div className="stat-label">Places Réservées</div>
+          <div className="stat-label">Places Rï¿½servï¿½es</div>
         </div>
         <div className="global-stat-card">
           <div className="stat-number">{stats.uniqueAttendees}</div>
@@ -90,10 +90,10 @@ const AdminBookings = () => {
           onChange={(e) => setFilterEvent(e.target.value)}
           className="event-filter"
         >
-          <option value="all">Tous les événements</option>
+          <option value="all">Tous les ï¿½vï¿½nements</option>
           {events.map(event => (
             <option key={event.id} value={event.id}>
-              {event.title} ({event.bookedSeats} rés.)
+              {event.title} ({event.bookedSeats} rï¿½s.)
             </option>
           ))}
         </select>
@@ -102,16 +102,16 @@ const AdminBookings = () => {
       <div className="global-bookings-list">
         {filteredBookings.length === 0 ? (
           <div className="no-bookings-global">
-            <p>Aucune réservation trouvée</p>
+            <p>Aucune rï¿½servation trouvï¿½e</p>
           </div>
         ) : (
           <div className="bookings-table-global">
             <div className="table-header">
-              <div className="col-event">Événement</div>
+              <div className="col-event">ï¿½vï¿½nement</div>
               <div className="col-attendee">Participant</div>
               <div className="col-contact">Contact</div>
               <div className="col-seats">Places</div>
-              <div className="col-date">Date Réservation</div>
+              <div className="col-date">Date Rï¿½servation</div>
             </div>
 
             <div className="table-body">

@@ -23,13 +23,6 @@ const About = () => {
       description: "Ancien soliste de l'Opéra de Paris, il supervise la qualité artistique des productions",
       image: "/images/jules-ran.jpg",
       specialties: ["Technique Vocale", "Arrangements", "Production"]
-    },
-    {
-      name: "Tovoniaina Rahendrison, LeMizoo",
-      role: "Responsable Technique",
-      description: "Passionné par les technologies nouvelles, veut montrer que tout vient de Dieu. Par l'art évangélique, la voix collective du Chœur Artistique & Spirituel de Tanà (C.A.S.T.), et une mission d'évangélisation portée par l'unité et le talent reçus de Dieu, ce site internet est né pour glorifier et diffuser cette vocation.",
-      image: "/images/Me.jpg",
-      specialties: ["Conception du site", "Technique Vocale", "Arrangements", "Production"]
     }
   ];
 
