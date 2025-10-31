@@ -1,0 +1,410 @@
+﻿@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&display=swap');
+
+/* Variables CSS personnalisées */
+:root {
+  --cast-green: #2C5530;
+  --cast-gold: #D4AF37;
+  --cast-green-light: #4ade80;
+  --cast-green-dark: #1e3a23;
+}
+
+/* Reset et styles de base */
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Styles pour le header fixe */
+body.has-fixed-header {
+  padding-top: 70px;
+}
+
+/* Polices */
+.font-serif {
+  font-family: 'Playfair Display', serif;
+}
+
+.font-cormorant {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--cast-green);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--cast-green-dark);
+}
+
+/* Couleurs personnalisées pour CAST */
+.cast-green {
+  color: var(--cast-green);
+}
+
+.bg-cast-green {
+  background-color: var(--cast-green);
+}
+
+.cast-gold {
+  color: var(--cast-gold);
+}
+
+.bg-cast-gold {
+  background-color: var(--cast-gold);
+}
+
+.border-cast-green {
+  border-color: var(--cast-green);
+}
+
+.border-cast-gold {
+  border-color: var(--cast-gold);
+}
+
+/* ===== STYLES CRITIQUES POUR LE HEADER MOBILE ===== */
+
+/* Header fixe */
+.sacred-header {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  z-index: 10000 !important; /* Très élevé */
+}
+
+/* Menu mobile - STYLES CRITIQUES */
+.mobile-menu {
+  position: fixed !important;
+  top: 70px !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: linear-gradient(135deg, #1e3c1e 0%, #2c5530 100%) !important;
+  transform: translateX(-100%) !important;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  z-index: 9999 !important; /* Au-dessus de tout */
+  overflow-y: auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+
+.mobile-menu.active {
+  transform: translateX(0) !important;
+}
+
+/* Overlay */
+.menu-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background: rgba(0, 0, 0, 0.5) !important;
+  z-index: 9998 !important; /* Juste en dessous du menu */
+  display: none !important;
+}
+
+/* Afficher l'overlay sur mobile */
+@media (max-width: 768px) {
+  .menu-overlay {
+    display: block !important;
+  }
+}
+
+/* Bouton menu burger */
+.menu-burger {
+  display: none !important;
+  z-index: 10001 !important; /* Au-dessus du header */
+}
+
+@media (max-width: 1024px) {
+  .menu-burger {
+    display: flex !important;
+  }
+}
+
+/* ===== FIN DES STYLES CRITIQUES ===== */
+
+/* Focus states améliorés */
+.focus\:ring-cast-gold:focus {
+  --tw-ring-color: var(--cast-gold);
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus\:border-cast-gold:focus {
+  border-color: var(--cast-gold);
+}
+
+.focus\:ring-cast-green:focus {
+  --tw-ring-color: var(--cast-green);
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(3px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+}
+
+.focus\:border-cast-green:focus {
+  border-color: var(--cast-green);
+}
+
+/* Styles pour le dashboard responsive */
+.sidebar-transition {
+  transition: all 0.3s ease-in-out;
+}
+
+/* Scrollbar personnalisée pour le sidebar */
+.sidebar-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: #f8fafc;
+  border-radius: 2px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 2px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Layout avec sidebar */
+.main-with-sidebar {
+  margin-left: 16rem; /* 256px */
+  transition: margin-left 0.3s ease-in-out;
+}
+
+/* Styles responsives */
+@media (max-width: 1023px) {
+  .main-with-sidebar {
+    margin-left: 0;
+  }
+}
+
+/* Empêcher le scroll du body quand le menu mobile est ouvert */
+body.menu-open {
+  overflow: hidden;
+}
+
+/* Amélioration du touch sur mobile */
+@media (max-width: 768px) {
+  button, 
+  [role="button"],
+  .btn {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Padding safe area pour iOS */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* Animations personnalisées */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Loading states */
+.loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* États de hover améliorés */
+.hover-lift {
+  transition: all 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Gradients personnalisés */
+.gradient-cast {
+  background: linear-gradient(135deg, var(--cast-green) 0%, var(--cast-gold) 100%);
+}
+
+.gradient-cast-reverse {
+  background: linear-gradient(135deg, var(--cast-gold) 0%, var(--cast-green) 100%);
+}
+
+/* Utilitaires personnalisés */
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.backdrop-blur {
+  backdrop-filter: blur(8px);
+}
+
+/* Styles pour les formulaires */
+.form-input:focus {
+  border-color: var(--cast-green);
+  box-shadow: 0 0 0 3px rgba(44, 85, 48, 0.1);
+}
+
+/* Styles pour les cartes */
+.card-hover {
+  transition: all 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Responsive text */
+@media (max-width: 640px) {
+  .responsive-text {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-break {
+    page-break-before: always;
+  }
+}
+
+/* Styles pour les onglets du dashboard en responsive */
+.dashboard-tabs-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.dashboard-tab-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  min-width: 100px;
+  text-align: center;
+}
+
+.dashboard-tab-button.active {
+  background-color: #15803d; /* cast-green */
+  color: white;
+  transform: scale(1.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-tab-button:not(.active) {
+  color: #4b5563; /* gray-600 */
+  background-color: transparent;
+}
+
+.dashboard-tab-button:not(.active):hover {
+  background-color: #f3f4f6; /* gray-100 */
+  color: #111827; /* gray-900 */
+}
+
+.dashboard-tab-icon {
+  font-size: 1.125rem;
+  margin-bottom: 0.25rem;
+}
+
+.dashboard-tab-label {
+  font-size: 0.75rem;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Sur très petits écrans */
+@media (max-width: 480px) {
+  .dashboard-tab-button {
+    min-width: 80px;
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .dashboard-tab-icon {
+    font-size: 1rem;
+  }
+  
+  .dashboard-tab-label {
+    font-size: 0.7rem;
+  }
+}
+
+/* Sur écrans moyens et grands */
+@media (min-width: 769px) {
+  .dashboard-tabs-container {
+    flex-wrap: nowrap;
+    gap: 0.25rem;
+  }
+  
+  .dashboard-tab-button {
+    flex-direction: row;
+    min-width: auto;
+    padding: 0.75rem 1rem;
+  }
+  
+  .dashboard-tab-icon {
+    margin-bottom: 0;
+    margin-right: 0.5rem;
+  }
+  
+  .dashboard-tab-label {
+    font-size: 0.875rem;
+  }
+}
