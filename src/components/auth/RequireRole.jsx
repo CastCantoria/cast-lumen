@@ -1,33 +1,35 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+// src/components/auth/RequireRole.jsx
 import { useAuth } from '../../contexts/AuthContext';
-import LoadingSpinner from '../ui/LoadingSpinner';
+import { Navigate, useLocation } from 'react-router-dom';
+import { hasMinRole } from '../../../config/roles';
 
-const RequireRole = ({ children, role }) => {
+const RequireRole = ({ role, children }) => {
   const { currentUser, userProfile, loading } = useAuth();
-  
-  console.log('🎭 RequireRole - Rôle requis:', role);
-  console.log('🎭 RequireRole - UserProfile:', userProfile);
-  
+  const location = useLocation();
+
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Chargement...</div>
+      </div>
+    );
   }
-  
+
   if (!currentUser) {
-    console.log('🚫 RequireRole - Non connecté, redirection login');
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
-  
-  if (!userProfile) {
-    console.log('⏳ RequireRole - Profil en chargement');
-    return <LoadingSpinner />;
+
+  // Vérifier le rôle en tenant compte de la hiérarchie
+  const userRole = userProfile?.role || 'visitor';
+  // Si aucun rôle requis explicitement, autoriser
+  if (role) {
+    // Vérifier que l'utilisateur possède au moins le rôle requis
+    const allowed = hasMinRole(userRole, role);
+    if (!allowed) {
+      return <Navigate to="/unauthorized" replace />;
+    }
   }
-  
-  if (userProfile.role !== role) {
-    console.log('🚫 RequireRole - Rôle insuffisant, redirection unauthorized');
-    return <Navigate to="/unauthorized" replace />;
-  }
-  
+
   return children;
 };
 

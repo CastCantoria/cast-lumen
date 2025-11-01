@@ -1,23 +1,24 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
+// src/components/auth/RequireAuth.jsx
 import { useAuth } from '../../contexts/AuthContext';
-import LoadingSpinner from '../ui/LoadingSpinner';
+import { Navigate, useLocation } from 'react-router-dom';
 
 const RequireAuth = ({ children }) => {
   const { currentUser, loading } = useAuth();
-  
-  console.log('🔐 RequireAuth - Loading:', loading);
-  console.log('🔐 RequireAuth - CurrentUser:', currentUser?.email);
-  
+  const location = useLocation();
+
   if (loading) {
-    return <LoadingSpinner />;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-lg">Chargement...</div>
+      </div>
+    );
   }
-  
+
   if (!currentUser) {
-    console.log('🚫 RequireAuth - Non authentifié, redirection vers /login');
-    return <Navigate to="/login" replace />;
+    // Rediriger vers /login en sauvegardant l'emplacement d'origine
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
-  
+
   return children;
 };
 

@@ -50,3 +50,5 @@ temp/
 .vercel
 serviceAccountKey.json
 *.json
+
+.vercel

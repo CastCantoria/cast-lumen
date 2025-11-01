@@ -1,5 +1,6 @@
 ﻿import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
+import { hasMinRole } from '../../config/roles';
 
 const RequireRole = ({ children, role }) => {
   const { userProfile, loading } = useAuth();
@@ -12,18 +13,18 @@ const RequireRole = ({ children, role }) => {
     );
   }
 
-  // Si pas de profil utilisateur ou rôle insuffisant
+  // Si pas de profil utilisateur
   if (!userProfile || !userProfile.role) {
     return <Navigate to="/login" replace />;
   }
 
-  // Vérification des rôles
-  const hasAccess = 
-    role === 'admin' && (userProfile.role === 'admin' || userProfile.role === 'super-admin') ||
-    role === 'super-admin' && userProfile.role === 'super-admin' ||
-    role === 'membre' && (userProfile.role === 'membre' || userProfile.role === 'admin' || userProfile.role === 'super-admin');
+  // Si aucun rôle requis, autoriser
+  if (!role) return children;
 
-  if (!hasAccess) {
+  // Vérifier en utilisant la hiérarchie des rôles : un rôle supérieur (admin) accède aux pages nécessitant un rôle inférieur
+  const allowed = hasMinRole(userProfile.role, role);
+
+  if (!allowed) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center">
         <div className="text-6xl mb-4">⚠️</div>

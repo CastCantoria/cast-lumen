@@ -1,26 +1,29 @@
-﻿// src/config/roles.js - VERSION COMPLÈTEMENT COMPATIBLE
+﻿// src/config/roles.js
 export const ROLES = {
   SUPER_ADMIN: 'super-admin',
   ADMIN: 'admin',
-  CORE_TEAM: 'core-team',
-  REGISTERED_USER: 'registered-user',
-  MEMBER: 'membre', // ← Gardé pour compatibilité
+  MEMBER: 'member',
+  USER: 'user',
   VISITOR: 'visitor'
 };
 
-// Mapping complet pour transition en douceur
+// Mapping des rôles et leurs niveaux d'accès
+export const ROLE_HIERARCHY = {
+  'super-admin': 4, // Accès total
+  'admin': 3,      // Tout sauf super-admin
+  'member': 2,     // Accès membre
+  'user': 1,       // Accès utilisateur de base
+  'visitor': 0     // Accès public
+};
+
+// Mapping des anciens rôles vers les nouveaux
 export const ROLE_MAPPING = {
-  // Anciens rôles → Nouveaux rôles
   'super-admin': 'super-admin',
   'admin': 'admin',
-  'membre': 'registered-user',
-  'public': 'visitor',
-  'core-team': 'core-team',
-  
-  // Compatibilité bidirectionnelle
-  'super_admin': 'super-admin',
-  'registered_user': 'registered-user', 
-  'core_team': 'core-team'
+  'membre': 'member',
+  'registered-user': 'user',
+  'core-team': 'member',
+  'public': 'visitor'
 };
 
 export const PERMISSIONS = {
@@ -31,23 +34,38 @@ export const PERMISSIONS = {
   CMS_DECISIONS: 'cms_decisions',
   EXTERNAL_RELATIONS: 'external_relations',
   
-  // Gestion Opérationnelle (Admin)
+  // Gestion Super Admin
+  PROMOTE_SUPER_ADMIN: 'promote_super_admin',
+  MANAGE_ADMIN_ROLES: 'manage_admin_roles',
+  MANAGE_ALL_CONTENT: 'manage_all_content',
+  MANAGE_CRITICAL_SETTINGS: 'manage_critical_settings',
+
+  // Gestion Admin
+  MANAGE_MEMBERS: 'manage_members',
+  MANAGE_EVENTS: 'manage_events',
   MANAGE_CONTENT: 'manage_content',
-  MANAGE_USERS: 'manage_users',
-  MODERATE_COMMUNITY: 'moderate_community',
   VIEW_ANALYTICS: 'view_analytics',
-  TECHNICAL_COORDINATION: 'technical_coordination',
-  
-  // Publication Média (Core Team)
-  PUBLISH_MEDIA: 'publish_media',
-  MANAGE_RESOURCES: 'manage_resources',
-  LIMITED_MODERATION: 'limited_moderation',
-  TASK_MANAGEMENT: 'task_management',
-  USER_SUPPORT: 'user_support',
-  
-  // Interaction (Registered User)
-  ACCESS_PREMIUM_CONTENT: 'access_premium_content',
-  INTERACT_CONTENT: 'interact_content',
+  MANAGE_ROLES: 'manage_roles',
+
+  // Accès Membre
+  ACCESS_SCORES: 'access_scores',
+  ACCESS_REHEARSALS: 'access_rehearsals',
+  ACCESS_MEMBER_CONTENT: 'access_member_content',
+  PARTICIPATE_EVENTS: 'participate_events',
+  // Member-space CRUD
+  CREATE_MEMBER_CONTENT: 'create_member_content',
+  EDIT_MEMBER_CONTENT: 'edit_member_content',
+  DELETE_MEMBER_CONTENT: 'delete_member_content',
+  SAVE_MEMBER_CONTENT: 'save_member_content',
+
+  // Accès Utilisateur
+  ACCESS_BLOG: 'access_blog',
+  ACCESS_CHAT: 'access_chat',
+  ACCESS_NEWSLETTER: 'access_newsletter',
+  ACCESS_SPECIAL: 'access_special',
+
+  // Accès Public
+  VIEW_PUBLIC_CONTENT: 'view_public_content',
   SUBMIT_CONTRIBUTIONS: 'submit_contributions',
   MANAGE_PROFILE: 'manage_profile'
 };
@@ -60,6 +78,11 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.CMS_DECISIONS,
     PERMISSIONS.EXTERNAL_RELATIONS,
     PERMISSIONS.MANAGE_CONTENT,
+    // Full member-space CRUD
+    PERMISSIONS.CREATE_MEMBER_CONTENT,
+    PERMISSIONS.EDIT_MEMBER_CONTENT,
+    PERMISSIONS.DELETE_MEMBER_CONTENT,
+    PERMISSIONS.SAVE_MEMBER_CONTENT,
     PERMISSIONS.MANAGE_USERS,
     PERMISSIONS.MODERATE_COMMUNITY,
     PERMISSIONS.VIEW_ANALYTICS,
@@ -77,7 +100,12 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.PUBLISH_MEDIA,
     PERMISSIONS.MANAGE_RESOURCES,
     PERMISSIONS.LIMITED_MODERATION,
-    PERMISSIONS.TASK_MANAGEMENT
+    PERMISSIONS.TASK_MANAGEMENT,
+    // Allow admins to manage member-space content
+    PERMISSIONS.CREATE_MEMBER_CONTENT,
+    PERMISSIONS.EDIT_MEMBER_CONTENT,
+    PERMISSIONS.DELETE_MEMBER_CONTENT,
+    PERMISSIONS.SAVE_MEMBER_CONTENT
   ],
   
   [ROLES.CORE_TEAM]: [

@@ -24,6 +24,10 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'prefer-const': 'error',
+      'no-unused-imports': 'error',
+      'prefer-promise-reject-errors': 'error',
+      'no-async-promise-executor': 'error',
     },
   },
 ])

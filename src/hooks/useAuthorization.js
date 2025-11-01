@@ -1,4 +1,5 @@
 import { useAuth } from '../contexts/AuthContext';
+import { ROLES, ROLE_HIERARCHY, PERMISSIONS } from '../../config/roles';
 
 export const useAuthorization = () => {
   const { currentUser, userProfile, loading } = useAuth();

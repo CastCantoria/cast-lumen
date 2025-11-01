@@ -1,21 +1,27 @@
+// src/pages/public/Unauthorized.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
 
 const Unauthorized = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="text-center">
-        <h1 className="text-6xl font-bold text-red-600 mb-4">403</h1>
-        <h2 className="text-2xl font-semibold text-gray-900 mb-4">Accès non autorisé</h2>
-        <p className="text-gray-600 mb-8">
-          Vous n'avez pas les permissions nécessaires pour accéder à cette page.
-        </p>
-        <Link 
-          to="/dashboard" 
-          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
-        >
-          Retour au tableau de bord
-        </Link>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8 text-center">
+        <div>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+            Accès non autorisé
+          </h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Vous n'avez pas les permissions nécessaires pour accéder à cette page.
+          </p>
+        </div>
+        <div>
+          <Link
+            to="/"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-cast-green hover:bg-cast-gold hover:text-cast-green transition-all"
+          >
+            Retour à l'accueil
+          </Link>
+        </div>
       </div>
     </div>
   );

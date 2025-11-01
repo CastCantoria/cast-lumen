@@ -1,8 +1,8 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { doc, updateDoc, getDoc, collection } from 'firebase/firestore';
+import { auth, db } from '../../lib/firebase';
 import {
   updateProfile as updateAuthProfile,
   updatePassword,
@@ -47,26 +47,31 @@ const Profile = () => {
       if (!currentUser) return;
 
       try {
-        // Chercher dans users d'abord
-        const userDocRef = doc(db, 'users', currentUser.uid);
-        const userDocSnap = await getDoc(userDocRef);
-        
-        if (userDocSnap.exists()) {
-          const userData = userDocSnap.data();
-          setUserRole(userData.role || 'user');
-          populateForm(userData);
+          setLoading(true);
+          setError('');
+
+          // Vérifier la collection users
+          const userDocRef = doc(collection(db, 'users'), currentUser.uid);
+          const userSnapshot = await getDoc(userDocRef);
+      
+          if (userSnapshot.exists()) {
+            const userData = userSnapshot.data();
+            // S'assurer que les champs requis existent
+            const cleanedData = {
+              displayName: userData.displayName || currentUser.displayName || '',
+              email: userData.email || currentUser.email || '',
+              phone: userData.phone || '',
+              specialite: userData.specialite || '',
+              bio: userData.bio || '',
+              voicePart: userData.voicePart || '',
+              section: userData.section || '',
+              joinDate: userData.joinDate || new Date().toISOString()
+            };
+            setUserRole(userData.role || 'user');
+            populateForm(cleanedData);
         } else {
-          // Chercher dans members
-          const memberDocRef = doc(db, 'members', currentUser.uid);
-          const memberDocSnap = await getDoc(memberDocRef);
-          
-          if (memberDocSnap.exists()) {
-            const memberData = memberDocSnap.data();
-            setUserRole('member');
-            populateForm(memberData);
-          } else {
-            // Profil non trouvé, utiliser les données de base
-            populateForm({
+            // Créer un profil par défaut si aucun n'existe
+            const defaultProfile = {
               displayName: currentUser.displayName || '',
               email: currentUser.email || '',
               phone: '',
@@ -74,13 +79,22 @@ const Profile = () => {
               bio: '',
               voicePart: '',
               section: '',
-              joinDate: ''
-            });
-          }
+              joinDate: new Date().toISOString(),
+              role: 'user'
+            };
+            await updateDoc(userDocRef, defaultProfile);
+            setUserRole('user');
+            populateForm(defaultProfile);
         }
       } catch (err) {
-        console.error('Erreur chargement données:', err);
-        setError('Erreur lors du chargement des données');
+          console.error('Erreur lors du chargement du profil:', err);
+          setError(
+            `Impossible de charger le profil. Erreur: ${
+              err.message || 'Erreur inconnue'
+            }. Veuillez réessayer plus tard.`
+          );
+        } finally {
+          setLoading(false);
       }
     };
 
