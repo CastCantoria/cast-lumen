@@ -1,34 +1,132 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Utilisateurs : lecture/écriture uniquement sur son propre document
-    match /users/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
-      allow create: if request.auth != null;
+    // Fonctions helpers pour les rôles
+    function getRole() {
+      return request.auth.token.role;
+    }
+
+    function hasRole(role) {
+      let roleHierarchy = {
+        'super-admin': 4,
+        'admin': 3,
+        'member': 2,
+        'user': 1,
+        'visitor': 0
+      };
+      return roleHierarchy[getRole()] >= roleHierarchy[role];
+    }
+
+    // Fonctions helpers pour les permissions
+    function hasPermission(permission) {
+      let userRole = getRole();
+      let permissions = get(/databases/$(database)/documents/permissions/$(userRole)).data;
+      return permissions[permission] == true;
+    }
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Collection permissions : stocke les permissions par rôle
+    match /permissions/{role} {
+      allow read: if isAuthenticated();
+      allow write: if hasRole('super-admin');
     }
     
-    // Événements : lecture publique, écriture authentifiée
+    // Collection users : gestion des utilisateurs
+    match /users/{userId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == userId ||
+        hasPermission('manage_members')
+      );
+      allow update: if (
+        request.auth.uid == userId ||
+        hasPermission('manage_members')
+      );
+      allow create: if isAuthenticated() && (
+        request.auth.uid == userId ||
+        hasPermission('manage_members')
+      );
+      allow delete: if hasPermission('manage_members');
+    }
+    
+    // Collection gallery : gestion des images
+    match /gallery/{imageId} {
+      allow read: if true;
+      allow write: if hasPermission('manage_gallery');
+    }
+    
+    // Collection articles : gestion des articles
+    match /articles/{articleId} {
+      allow read: if true;
+      allow write: if hasPermission('manage_articles');
+    }
+    
+    // Collection events : gestion des événements
     match /events/{eventId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow create, update: if hasPermission('manage_events');
+      allow delete: if hasPermission('manage_events');
     }
     
-    // Membres : lecture publique, écriture authentifiée
-    match /members/{memberId} {
-      allow read: if true;
-      allow write: if request.auth != null;
+    // Collection event_participants : inscriptions aux événements
+    match /event_participants/{participationId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (
+        hasPermission('manage_events') ||
+        request.resource.data.userId == request.auth.uid
+      );
+      allow update, delete: if hasPermission('manage_events') || (
+        request.resource.data.userId == request.auth.uid &&
+        ['pending', 'confirmed'].includes(request.resource.data.status)
+      );
     }
     
-    // Répertoire : lecture publique, écriture authentifiée
+    // Collection partitions : gestion des partitions
+    match /partitions/{partitionId} {
+      allow read: if hasPermission('view_partitions');
+      allow write: if hasPermission('manage_partitions');
+    }
+    
+    // Collection messages : gestion des messages
+    match /messages/{messageId} {
+      allow read: if hasPermission('view_member_messages');
+      allow create: if hasPermission('manage_messages') || (
+        isAuthenticated() &&
+        request.resource.data.senderId == request.auth.uid
+      );
+      allow update, delete: if hasPermission('manage_messages');
+    }
+    
+    // Collection invitations : gestion des invitations
+    match /invitations/{inviteId} {
+      allow read: if hasPermission('manage_invitations');
+      allow write: if hasPermission('manage_invitations');
+    }
+    
+    // Collection admissions : gestion des admissions
+    match /admissions/{admissionId} {
+      allow read: if hasPermission('manage_admissions');
+      allow write: if hasPermission('manage_admissions');
+    }
+    
+    // Collection roles : gestion des rôles
+    match /roles/{roleId} {
+      allow read: if hasPermission('manage_roles');
+      allow write: if hasPermission('manage_admin_roles');
+    }
+    
+    // Collection repertoire : gestion du répertoire
     match /repertoire/{songId} {
       allow read: if true;
-      allow write: if request.auth != null;
+      allow write: if hasPermission('manage_content');
     }
     
-    // Règles par défaut pour le développement
-    //  À MODIFIER POUR LA PRODUCTION
-    match /{document=**} {
-      allow read, write: if request.auth != null;
+    // Collection settings : paramètres système
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if hasPermission('manage_critical_settings');
     }
   }
 }

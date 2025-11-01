@@ -1,13 +1,52 @@
 ﻿import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
+import usePermissions from '../../hooks/usePermissions';
 
 const AdminNavigation = () => {
   const { userProfile } = useAuth();
   const location = useLocation();
+  const {
+    hasRole,
+    canManageGallery,
+    canManageArticles,
+    canManageUsers,
+    canManageEvents,
+    canViewAnalytics,
+    canManagePartitions
+  } = usePermissions();
   
   const isActive = (path) => {
     return location.pathname === path || location.hash === `#${path}`;
+  };
+
+  const canAccessItem = (item) => {
+    if (!item.roles?.length) return true;
+    return item.roles.some(role => hasRole(role)) && hasRequiredPermissions(item);
+  };
+
+  const hasRequiredPermissions = (item) => {
+    if (!item.permissions) return true;
+    
+    // Si une liste de permissions est fournie, vérifier que l'utilisateur a toutes les permissions
+    return item.permissions.every(permission => {
+      switch (permission) {
+        case 'manage_gallery':
+          return canManageGallery();
+        case 'manage_articles':
+          return canManageArticles();
+        case 'manage_members':
+          return canManageUsers();
+        case 'manage_events':
+          return canManageEvents();
+        case 'manage_partitions':
+          return canManagePartitions();
+        case 'view_analytics':
+          return canViewAnalytics();
+        default:
+          return true;
+      }
+    });
   };
 
   const navigationItems = [
@@ -16,13 +55,14 @@ const AdminNavigation = () => {
       id: 'dashboard',
       title: '🏠 Accueil du Site',
       path: '/',
-      roles: ['super-admin', 'admin', 'membre']
+      roles: ['super-admin', 'admin', 'member']
     },
     {
       id: 'super-admin',
       title: '👑 Super-Admin',
-      path: '/super-admin',
+      path: '/dashboard/super-admin',
       roles: ['super-admin'],
+      permissions: ['manage_policies', 'manage_critical_settings'],
       description: 'Gestion complète de la plateforme C.A.S.T.'
     },
 
@@ -31,27 +71,31 @@ const AdminNavigation = () => {
       id: 'members-section',
       title: '👥 Gestion des Membres',
       type: 'section',
-      roles: ['super-admin', 'admin']
+      roles: ['super-admin', 'admin'],
+      permissions: ['manage_members']
     },
     {
       id: 'all-members',
       title: '👥 Voir tous les Membres',
-      path: '/super-admin/users',
+      path: '/dashboard/super-admin/users',
       roles: ['super-admin', 'admin'],
+      permissions: ['manage_members'],
       parent: 'members-section'
     },
     {
       id: 'admissions',
       title: '✅ Gérer les Admissions',
-      path: '/super-admin/admissions',
+      path: '/dashboard/super-admin/admissions',
       roles: ['super-admin', 'admin'],
+      permissions: ['manage_admissions'],
       parent: 'members-section'
     },
     {
       id: 'invite-member',
       title: '📧 Inviter un Membre',
-      path: '/super-admin/invite',
+      path: '/dashboard/super-admin/invite',
       roles: ['super-admin', 'admin'],
+      permissions: ['manage_invitations'],
       parent: 'members-section'
     },
 
@@ -60,28 +104,65 @@ const AdminNavigation = () => {
       id: 'events-section',
       title: '🎭 Gestion des Événements',
       type: 'section',
-      roles: ['super-admin', 'admin']
+      roles: ['super-admin', 'admin'],
+      permissions: ['manage_events']
     },
     {
       id: 'create-event',
       title: '🎵 Créer un Événement',
-      path: '/super-admin/events/create',
+      path: '/dashboard/super-admin/events/create',
       roles: ['super-admin', 'admin'],
+      permissions: ['manage_events'],
       parent: 'events-section'
     },
     {
       id: 'event-calendar',
       title: '📅 Calendrier des Concerts',
-      path: '/super-admin/events/calendar',
+      path: '/dashboard/super-admin/events/calendar',
       roles: ['super-admin', 'admin'],
+      permissions: ['manage_events'],
       parent: 'events-section'
     },
     {
       id: 'event-stats',
       title: '📊 Statistiques de Participation',
-      path: '/super-admin/events/stats',
+      path: '/dashboard/super-admin/events/stats',
       roles: ['super-admin', 'admin'],
+      permissions: ['view_analytics', 'manage_events'],
       parent: 'events-section'
+    },
+
+    // Contenu & Média
+    {
+      id: 'content-section',
+      title: '📱 Contenu & Média',
+      type: 'section',
+      roles: ['super-admin', 'admin'],
+      permissions: ['manage_content']
+    },
+    {
+      id: 'gallery',
+      title: '🖼️ Galerie Photos',
+      path: '/dashboard/super-admin/gallery',
+      roles: ['super-admin', 'admin'],
+      permissions: ['manage_gallery'],
+      parent: 'content-section'
+    },
+    {
+      id: 'create-article',
+      title: '📰 Nouvel Article',
+      path: '/dashboard/super-admin/articles/create',
+      roles: ['super-admin', 'admin'],
+      permissions: ['manage_articles'],
+      parent: 'content-section'
+    },
+    {
+      id: 'message-center',
+      title: '💌 Messages',
+      path: '/dashboard/super-admin/messages',
+      roles: ['super-admin', 'admin'],
+      permissions: ['manage_messages'],
+      parent: 'content-section'
     },
 
     // Actions Rapides
@@ -94,29 +175,33 @@ const AdminNavigation = () => {
     {
       id: 'add-partition',
       title: '📝 Ajouter une Partition',
-      path: '/super-admin/partitions/add',
+      path: '/dashboard/super-admin/partitions/add',
       roles: ['super-admin', 'admin'],
+      permissions: ['manage_partitions'],
       parent: 'quick-actions'
     },
     {
       id: 'manage-gallery',
       title: '🖼️ Gérer la Galerie',
-      path: '/super-admin/gallery',
+      path: '/dashboard/super-admin/gallery',
       roles: ['super-admin', 'admin'],
+      permissions: ['manage_gallery'],
       parent: 'quick-actions'
     },
     {
       id: 'publish-article',
       title: '📰 Publier un Article',
-      path: '/super-admin/articles/publish',
+      path: '/dashboard/super-admin/articles/publish',
       roles: ['super-admin', 'admin'],
+      permissions: ['manage_articles'],
       parent: 'quick-actions'
     },
     {
       id: 'quick-invite',
       title: '👥 Inviter un Membre',
-      path: '/super-admin/invite/quick',
+      path: '/dashboard/super-admin/invite/quick',
       roles: ['super-admin', 'admin'],
+      permissions: ['manage_invitations'],
       parent: 'quick-actions'
     },
 
@@ -125,12 +210,13 @@ const AdminNavigation = () => {
       id: 'roles-section',
       title: '🎭 Gestion des Rôles',
       type: 'section',
-      roles: ['super-admin']
+      roles: ['super-admin'],
+      permissions: ['manage_admin_roles']
     },
     {
       id: 'manage-super-admins',
       title: '👑 Gérer les Super-Admins',
-      path: '/super-admin/roles/super-admins',
+      path: '/dashboard/super-admin/roles/super-admins',
       roles: ['super-admin'],
       parent: 'roles-section',
       permission: 'Permission requise'
@@ -138,14 +224,14 @@ const AdminNavigation = () => {
     {
       id: 'manage-admins',
       title: '⚙️ Gérer les Admins',
-      path: '/super-admin/roles/admins',
+      path: '/dashboard/super-admin/roles/admins',
       roles: ['super-admin'],
       parent: 'roles-section'
     },
     {
       id: 'manage-core-team',
       title: '🎵 Gérer la Core Team',
-      path: '/super-admin/roles/core-team',
+      path: '/dashboard/super-admin/roles/core-team',
       roles: ['super-admin'],
       parent: 'roles-section'
     }

@@ -333,7 +333,7 @@ const SuperAdminDashboard = () => {
                       ✅ Gérer les Admissions
                     </button>
                     <Link 
-                      to="/admin/messages"
+                      to="/dashboard/super-admin/messages"
                       className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2 block text-center"
                     >
                       💬 Envoyer un Message
@@ -358,7 +358,7 @@ const SuperAdminDashboard = () => {
                       📅 Calendrier des Concerts
                     </button>
                     <Link 
-                      to="/admin/statistics"
+                      to="/dashboard/super-admin/statistics"
                       className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 transition flex items-center gap-2 block text-center"
                     >
                       📊 Statistiques de Participation
@@ -406,7 +406,7 @@ const SuperAdminDashboard = () => {
                     <div 
                       key={user.id} 
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition cursor-pointer"
-                      onClick={() => navigate(`/admin/users/${user.id}`)}
+                      onClick={() => navigate(`/dashboard/super-admin/users/${user.id}`)}
                     >
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold">

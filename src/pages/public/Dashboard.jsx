@@ -105,7 +105,7 @@ const Dashboard = () => {
             {/* Administration */}
             {(user.role === 'admin' || user.role === 'super-admin') && (
               <Link 
-                to="/admin" 
+                to="/dashboard/admin" 
                 className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-green-600 group"
               >
                 <div className="text-center">

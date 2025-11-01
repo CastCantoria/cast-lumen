@@ -20,12 +20,12 @@ export default defineConfig({
         }
       }
     },
-    minify: 'terser',
-    terserOptions: {
-      compress: {
-        drop_console: true,
-        drop_debugger: true
-      }
+    // Use esbuild for minification in CI (faster and no extra dependency)
+    minify: 'esbuild',
+    // esbuild minify options: drop console/debugger via legalComments or pure functions
+    // Use esbuild's "drop" option to remove console and debugger statements
+    esbuild: {
+      drop: ['console', 'debugger']
     },
     chunkSizeWarningLimit: 1000
   }

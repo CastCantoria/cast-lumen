@@ -17,7 +17,7 @@ const AdminSidebar = () => {
       icon: '🛡️',
       title: 'Gérer les Admins',
       description: 'Ajouter/modifier administrateurs',
-      path: '/admin/users',
+      path: '/dashboard/super-admin/users',
       roles: ['super-admin']
     },
     {
@@ -25,7 +25,7 @@ const AdminSidebar = () => {
       icon: '⚙️',
       title: 'Paramètres Système',
       description: 'Configuration plateforme',
-      path: '/super-admin',
+      path: '/dashboard/super-admin',
       roles: ['super-admin', 'admin']
     },
     {
@@ -33,7 +33,7 @@ const AdminSidebar = () => {
       icon: '📊',
       title: 'Logs & Analytics',
       description: 'Suivi et statistiques',
-      path: '/super-admin',
+      path: '/dashboard/super-admin',
       roles: ['super-admin', 'admin']
     }
   ];
@@ -44,7 +44,7 @@ const AdminSidebar = () => {
       icon: '👥',
       title: 'Utilisateurs',
       description: 'Gérer les membres',
-      path: '/admin/users',
+      path: '/dashboard/super-admin/users',
       roles: ['super-admin', 'admin']
     },
     {
@@ -52,7 +52,7 @@ const AdminSidebar = () => {
       icon: '🎭',
       title: 'Événements',
       description: 'Concerts & activités',
-      path: '/admin/events',
+      path: '/dashboard/super-admin/events',
       roles: ['super-admin', 'admin']
     },
     {
@@ -60,7 +60,7 @@ const AdminSidebar = () => {
       icon: '📜',
       title: 'Répertoire',
       description: 'Chants & partitions',
-      path: '/admin/repertoire',
+      path: '/dashboard/super-admin/repertoire',
       roles: ['super-admin', 'admin']
     }
   ];

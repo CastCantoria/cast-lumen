@@ -246,11 +246,11 @@ const OverviewTab = ({ stats, recentActivity, setActiveTab, navigate }) => (
             <div className="font-medium text-green-900">🛡️ Gérer les Administrateurs</div>
             <div className="text-sm text-green-600">Attribuer les rôles d'administration</div>
           </button>
-          <button onClick={() => navigate('/admin/events')} className="w-full text-left p-4 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors">
+          <button onClick={() => navigate('/dashboard/super-admin/events')} className="w-full text-left p-4 bg-orange-50 hover:bg-orange-100 rounded-lg transition-colors">
             <div className="font-medium text-orange-900">📅 Gérer les Événements</div>
             <div className="text-sm text-orange-600">Créer et modifier les événements</div>
           </button>
-          <button onClick={() => navigate('/admin/users')} className="w-full text-left p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
+          <button onClick={() => navigate('/dashboard/super-admin/users')} className="w-full text-left p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors">
             <div className="font-medium text-purple-900">⚙️ Paramètres Système</div>
             <div className="text-sm text-purple-600">Configuration de la plateforme</div>
           </button>
@@ -436,12 +436,12 @@ const ContentTab = () => (
     <h2 className="text-2xl font-bold text-gray-900 mb-6">📁 Gestion du Contenu</h2>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {[
-        { title: "Événements", description: "Gérer concerts et répétitions", icon: "📅", path: "/admin/events" },
-        { title: "Répertoire", description: "Gérer les partitions", icon: "🎵", path: "/admin/repertoire" },
-        { title: "Médiathèque", description: "Photos et vidéos", icon: "🖼️", path: "/admin/media" },
-        { title: "Articles", description: "Actualités et blogs", icon: "📝", path: "/admin/articles" },
-        { title: "Galerie", description: "Galerie photos", icon: "📸", path: "/admin/gallery" },
-        { title: "Paramètres", description: "Configuration contenu", icon: "⚙️", path: "/admin/content-settings" }
+  { title: "Événements", description: "Gérer concerts et répétitions", icon: "📅", path: "/dashboard/super-admin/events" },
+  { title: "Répertoire", description: "Gérer les partitions", icon: "🎵", path: "/dashboard/super-admin/repertoire" },
+  { title: "Médiathèque", description: "Photos et vidéos", icon: "🖼️", path: "/dashboard/super-admin/media" },
+  { title: "Articles", description: "Actualités et blogs", icon: "📝", path: "/dashboard/super-admin/articles" },
+  { title: "Galerie", description: "Galerie photos", icon: "📸", path: "/dashboard/super-admin/gallery" },
+  { title: "Paramètres", description: "Configuration contenu", icon: "⚙️", path: "/dashboard/super-admin/content-settings" }
       ].map(item => (
         <div key={item.title} className="border border-gray-200 rounded-lg p-6 text-center hover:shadow-md transition-shadow">
           <div className="text-3xl mb-3">{item.icon}</div>
