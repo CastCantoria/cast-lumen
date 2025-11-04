@@ -217,9 +217,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Déconnexion
-  const logout = () => {
-    return signOut(auth);
+  // 🔥 DÉCONNEXION CORRIGÉE AVEC REDIRECTION
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      // 🔥 REDIRECTION IMMÉDIATE APRÈS DÉCONNEXION
+      window.location.href = '/login';
+    } catch (error) {
+      console.error('❌ Erreur déconnexion:', error);
+      // 🔥 REDIRECTION MÊME EN CAS D'ERREUR
+      window.location.href = '/login';
+      throw error;
+    }
   };
 
   // Charger le profil utilisateur depuis Firestore

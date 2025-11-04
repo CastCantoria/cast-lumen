@@ -1,0 +1,80 @@
+.super-admin-layout {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Animation pour la sidebar mobile */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.lg\\:hidden > div:last-child {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Styles pour les liens actifs */
+.bg-gray-50 {
+  background-color: #f9fafb;
+}
+
+.text-blue-600 {
+  color: #2563eb;
+}
+
+/* Responsive improvements */
+@media (max-width: 1023px) {
+  .super-admin-layout {
+    padding-top: 0;
+  }
+}
+/* src/layouts/SuperAdminLayout.css */
+.super-admin-layout {
+  font-family: 'Inter', sans-serif;
+}
+
+/* Animation douce pour la sidebar mobile */
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.lg\\:hidden > div:last-child > div:last-child {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Styles pour les liens actifs */
+.bg-blue-50 {
+  background-color: #eff6ff;
+}
+
+.text-blue-600 {
+  color: #2563eb;
+}
+
+/* Amélioration du hover */
+.hover\\:bg-gray-50:hover {
+  background-color: #f9fafb;
+}
+
+/* Responsive */
+@media (max-width: 1023px) {
+  .super-admin-layout {
+    flex-direction: column;
+  }
+}
+
+/* Assurer que le contenu reste accessible */
+.main-content {
+  width: 100%;
+  min-height: calc(100vh - 4rem);
+}

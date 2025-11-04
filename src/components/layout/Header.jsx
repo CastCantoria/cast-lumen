@@ -1,18 +1,24 @@
+// src/components/layout/Header.jsx
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Header = () => {
   const { currentUser, userProfile, logout } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSubmenuOpen, setIsSubmenuOpen] = useState('');
 
+  // 🔥 FONCTION DE DÉCONNEXION AMÉLIORÉE
   const handleLogout = async () => {
     try {
       await logout();
+      // La redirection est maintenant gérée dans AuthContext
     } catch (error) {
       console.error('Erreur de déconnexion:', error);
+      // 🔥 REDIRECTION DE SECOURS
+      window.location.href = '/login';
     }
   };
 
@@ -152,8 +158,13 @@ const Header = () => {
                     {(userProfile?.displayName || currentUser.email).charAt(0).toUpperCase()}
                   </div>
 
-                  <button onClick={handleLogout} className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition">
-                    Déco
+                  {/* 🔥 BOUTON DÉCONNEXION AMÉLIORÉ */}
+                  <button 
+                    onClick={handleLogout} 
+                    className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition flex items-center gap-1"
+                  >
+                    <span>🚪</span>
+                    <span>Déco</span>
                   </button>
                 </div>
               </>
@@ -231,8 +242,13 @@ const Header = () => {
                     <div className="text-sm text-gray-300">{userProfile?.displayName || currentUser.email}</div>
                     <div className="text-xs text-gray-400 capitalize">{userProfile?.role}</div>
                   </div>
-                  <button onClick={handleLogout} className="w-full mt-2 px-3 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition">
-                    Déconnexion
+                  {/* 🔥 BOUTON DÉCONNEXION MOBILE AMÉLIORÉ */}
+                  <button 
+                    onClick={handleLogout} 
+                    className="w-full mt-2 px-3 py-2 bg-red-600 text-white rounded text-sm hover:bg-red-700 transition flex items-center justify-center gap-2"
+                  >
+                    <span>🚪</span>
+                    <span>Déconnexion</span>
                   </button>
                 </div>
               )}

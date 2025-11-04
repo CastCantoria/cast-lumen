@@ -6,6 +6,13 @@ import { AuthProvider } from './contexts/AuthContext';
 // Composants d'authentification
 import RequireAuth from './components/auth/RequireAuth';
 import RequireRole from './components/auth/RequireRole';
+import RouteGuard from './components/auth/RouteGuard';
+import AuthRedirectHandler from './components/auth/AuthRedirectHandler';
+
+// Layouts
+import SuperAdminLayout from './layouts/SuperAdminLayout';
+import AdminLayout from './layouts/AdminLayout';
+import MemberLayout from './layouts/MemberLayout';
 
 // Pages publiques
 import Home from './pages/public/Home';
@@ -20,23 +27,11 @@ import Join from './pages/public/Join';
 import Spiritualite from './pages/public/Spiritualite';
 import Repertoire from './pages/public/Repertoire';
 import EventList from './pages/public/EventList';
-import EventDetails from './pages/public/EventDetails';
 import Gallery from './pages/public/Gallery';
 import Events from './pages/public/Events';
-import Videos from './pages/public/Videos';
-import Partners from './pages/public/Partners';
-import FAQ from './pages/public/FAQ';
-import Help from './pages/help/Help';
-import Support from './pages/help/Support';
 
 // Pages privées
 import Profile from './pages/private/Profile';
-// ProfileEdit and Settings live under pages/account
-import ProfileEdit from './pages/account/ProfileEdit'; // AJOUT
-import Settings from './pages/account/Settings'; // AJOUT
-// Documents and Messages live under pages/common
-import Documents from './pages/common/Documents'; // AJOUT
-import Messages from './pages/common/Messages'; // AJOUT
 import Blog from './pages/private/Blog';
 import Chat from './pages/private/Chat';
 import Newsletter from './pages/private/Newsletter';
@@ -45,37 +40,32 @@ import Newsletter from './pages/private/Newsletter';
 import Scores from './pages/member/Scores';
 import Rehearsals from './pages/member/Rehearsals';
 
-// Dashboard et sous-pages
+// Dashboard et sous-pages (ancienne structure)
 import Dashboard from './components/dashboard/Dashboard';
 import UserDashboard from './pages/dashboard/user/UserDashboard';
-import MemberDashboard from './pages/dashboard/member/MemberDashboard';
+
+// Nouveaux dashboards (architecture WordPress-like)
+import SuperAdminDashboard from './components/super-admin/SuperAdminDashboard';
 import AdminDashboard from './pages/dashboard/admin/AdminDashboard';
-import SuperAdminDashboard from './pages/dashboard/admin/SuperAdminDashboard';
+import MemberDashboard from './pages/dashboard/member/MemberDashboard';
 
-// Pages admin
-import EventsList from './pages/admin/EventsList';
-import EventCreation from './pages/admin/EventCreation';
-import EventCalendar from './pages/admin/EventCalendar';
-import EventBookings from './pages/admin/EventBookings';
-import RepertoireList from './pages/admin/RepertoireList';
-import PartitionUpload from './pages/admin/PartitionUpload';
-import GalleryList from './pages/admin/GalleryList';
-import GalleryUpload from './pages/admin/GalleryUpload';
-import MediaManager from './pages/admin/MediaManager';
-import NoticesManager from './pages/admin/NoticesManager';
+// Composants Super Admin
+import PlatformSettings from './pages/dashboard/super-admin/components/PlatformSettings';
+import UserManagement from './pages/dashboard/super-admin/components/UserManagement';
+import SystemAnalytics from './pages/dashboard/super-admin/components/SystemAnalytics';
+import BackupRestore from './pages/dashboard/super-admin/components/BackupRestore';
 
-// Member Pages
-import MemberLayout from './components/member/MemberLayout';
-import MemberEvents from './pages/member/MemberEvents';
-import MemberProfile from './pages/member/MemberProfile';
-import MemberMessages from './pages/member/MemberMessages';
-import MemberDocuments from './pages/member/MemberDocuments';
-import VoiceRecorder from './pages/member/VoiceRecorder';
-import Metronome from './pages/member/Metronome';
-import Tuner from './pages/member/Tuner';
-import Attendance from './pages/member/Attendance';
-import Community from './pages/member/Community';
-import Forum from './pages/member/Forum';
+// Composants Admin
+import MemberManagement from './pages/dashboard/admin/components/MemberManagement';
+import EventManagement from './pages/dashboard/admin/components/EventManagement';
+import ContentManagement from './pages/dashboard/admin/components/ContentManagement';
+import QuickStats from './pages/dashboard/admin/components/QuickStats';
+
+// Composants Membre
+import PersonalSchedule from './pages/dashboard/member/components/PersonalSchedule';
+import MyPartitions from './pages/dashboard/member/components/MyPartitions';
+import MyProfile from './pages/dashboard/member/components/MyProfile';
+import EventRSVP from './pages/dashboard/member/components/EventRSVP';
 
 // Layout
 import Header from './components/layout/Header';
@@ -106,57 +96,17 @@ function App() {
               <Route path="/spiritualite" element={<Spiritualite />} />
               <Route path="/repertoire" element={<Repertoire />} />
               <Route path="/events" element={<EventList />} />
-              <Route path="/events/details/:id" element={<EventDetails />} />
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/concerts" element={<Events />} />
-              <Route path="/videos" element={<Videos />} />
-              <Route path="/partenaires" element={<Partners />} />
-              <Route path="/faq" element={<FAQ />} />
-
-              {/* Routes d'assistance */}
-              <Route path="/help" element={<Help />} />
-              <Route path="/support" element={<Support />} />
 
               {/* Routes privées pour les utilisateurs authentifiés */}
-              <Route
-                path="/profile"
+              <Route 
+                path="/profile" 
                 element={
                   <RequireAuth>
                     <Profile />
                   </RequireAuth>
-                }
-              />
-              <Route
-                path="/profile/edit"
-                element={
-                  <RequireAuth>
-                    <ProfileEdit />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="/settings"
-                element={
-                  <RequireAuth>
-                    <Settings />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="/documents"
-                element={
-                  <RequireAuth>
-                    <Documents />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="/messages"
-                element={
-                  <RequireAuth>
-                    <Messages />
-                  </RequireAuth>
-                }
+                } 
               />
 
               {/* Routes utilisateur de base */}
@@ -185,30 +135,25 @@ function App() {
                 } 
               />
 
-              {/* Routes membres */}
-              <Route
-                path="/member/*"
+              {/* Routes membres (ancienne structure) */}
+              <Route 
+                path="/partitions" 
                 element={
                   <RequireRole role="member">
-                    <MemberLayout />
+                    <Scores />
                   </RequireRole>
-                }
-              >
-                <Route index element={<Navigate to="dashboard" replace />} />
-                <Route path="dashboard" element={<MemberDashboard />} />
-                <Route path="events" element={<MemberEvents />} />
-                <Route path="profile" element={<MemberProfile />} />
-                <Route path="attendance" element={<Attendance />} />
-                <Route path="messages" element={<MemberMessages />} />
-                <Route path="documents" element={<MemberDocuments />} />
-                <Route path="voice-recorder" element={<VoiceRecorder />} />
-                <Route path="metronome" element={<Metronome />} />
-                <Route path="tuner" element={<Tuner />} />
-                <Route path="community" element={<Community />} />
-                <Route path="forum" element={<Forum />} />
-              </Route>
+                } 
+              />
+              <Route 
+                path="/repetitions" 
+                element={
+                  <RequireRole role="member">
+                    <Rehearsals />
+                  </RequireRole>
+                } 
+              />
 
-              {/* Route dashboard principal - Redirige vers le bon dashboard */}
+              {/* Route dashboard principal - Redirige vers le bon dashboard (ancienne structure) */}
               <Route 
                 path="/dashboard" 
                 element={
@@ -218,7 +163,7 @@ function App() {
                 } 
               />
 
-              {/* Dashboards spécifiques */}
+              {/* Dashboards spécifiques (ancienne structure) */}
               <Route 
                 path="/dashboard/user" 
                 element={
@@ -227,52 +172,108 @@ function App() {
                   </RequireRole>
                 } 
               />
-              
-              <Route 
-                path="/dashboard/member" 
-                element={
-                  <RequireRole role="member">
-                    <MemberDashboard />
-                  </RequireRole>
-                } 
-              />
-              
-              {/* Routes admin with nested sub-pages */}
-              <Route 
-                path="/dashboard/admin/*" 
-                element={
-                  <RequireRole role="admin">
-                    <AdminDashboard />
-                  </RequireRole>
-                }
-              >
-                <Route path="" element={<EventsList />} />
-                <Route path="events" element={<EventsList />} />
-                <Route path="events/create" element={<EventCreation />} />
-                <Route path="events/calendar" element={<EventCalendar />} />
-                <Route path="events/bookings" element={<EventBookings />} />
-                <Route path="repertoire" element={<RepertoireList />} />
-                <Route path="repertoire/upload" element={<PartitionUpload />} />
-                <Route path="gallery" element={<GalleryList />} />
-                <Route path="gallery/upload" element={<GalleryUpload />} />
-                <Route path="media" element={<MediaManager />} />
-                <Route path="notices" element={<NoticesManager />} />
-              </Route>
 
+              {/* ==================================================================== */}
+              {/* REDIRECTIONS POUR LES ANCIENNES URLS - CORRECTION DU 404 */}
+              {/* ==================================================================== */}
+
+              {/* Redirection pour l'ancienne URL Super Admin */}
               <Route 
                 path="/dashboard/super-admin/*" 
-                element={
-                  <RequireRole role="super-admin">
-                    <SuperAdminDashboard />
-                  </RequireRole>
-                } 
+                element={<Navigate to="/super-admin/dashboard" replace />} 
               />
+
+              {/* Redirection pour l'ancienne URL Admin */}
+              <Route 
+                path="/dashboard/admin/*" 
+                element={<Navigate to="/admin/dashboard" replace />} 
+              />
+
+              {/* ==================================================================== */}
+              {/* NOUVELLE ARCHITECTURE WORDPRESS-LIKE - RÔLES SÉPARÉS */}
+              {/* ==================================================================== */}
+
+              {/* Routes Super Admin - Complètement séparées */}
+              <Route path="/super-admin/*" element={
+                <RouteGuard requiredPermission="platform:manage">
+                  <SuperAdminLayout>
+                    <Routes>
+                      {/* Route par défaut : redirige vers le dashboard */}
+                      <Route index element={<Navigate to="/super-admin/dashboard" replace />} />
+                      <Route path="dashboard" element={<SuperAdminDashboard />} />
+                      <Route path="platform-settings" element={<PlatformSettings />} />
+                      <Route path="user-management" element={<UserManagement />} />
+                      <Route path="system-analytics" element={<SystemAnalytics />} />
+                      <Route path="backup-restore" element={<BackupRestore />} />
+                      
+                      {/* Redirection pour les routes inexistantes */}
+                      <Route path="*" element={<Navigate to="/super-admin/dashboard" replace />} />
+                    </Routes>
+                  </SuperAdminLayout>
+                </RouteGuard>
+              } />
+
+              {/* Routes Admin */}
+              <Route path="/admin/*" element={
+                <RouteGuard requiredPermission="members:manage">
+                  <AdminLayout>
+                    <Routes>
+                      {/* Route par défaut : redirige vers le dashboard */}
+                      <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                      <Route path="dashboard" element={<AdminDashboard />} />
+                      <Route path="members" element={<MemberManagement />} />
+                      <Route path="events" element={<EventManagement />} />
+                      <Route path="content" element={<ContentManagement />} />
+                      <Route path="stats" element={<QuickStats />} />
+                      
+                      {/* Redirection pour les routes inexistantes */}
+                      <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+                    </Routes>
+                  </AdminLayout>
+                </RouteGuard>
+              } />
+
+              {/* Routes Membre - Intégrées au site */}
+              <Route path="/member-dashboard/*" element={
+                <RouteGuard>
+                  <MemberLayout>
+                    <Routes>
+                      {/* Route par défaut : dashboard membre */}
+                      <Route index element={<MemberDashboard />} />
+                      <Route path="schedule" element={<PersonalSchedule />} />
+                      <Route path="partitions" element={<MyPartitions />} />
+                      <Route path="profile" element={<MyProfile />} />
+                      <Route path="events" element={<EventRSVP />} />
+                      
+                      {/* Redirection pour les routes inexistantes */}
+                      <Route path="*" element={<Navigate to="/member-dashboard" replace />} />
+                    </Routes>
+                  </MemberLayout>
+                </RouteGuard>
+              } />
+
+              {/* Redirection automatique après connexion */}
+              <Route path="/redirect" element={<AuthRedirectHandler />} />
 
               {/* Route 404 */}
               <Route path="*" element={
                 <div className="container mx-auto p-8 text-center">
                   <h1 className="text-4xl font-bold mb-4">404</h1>
                   <p className="text-xl">Page non trouvée</p>
+                  <div className="mt-6">
+                    <p className="text-gray-600 mb-4">Essayez ces URLs :</p>
+                    <div className="flex flex-col gap-2 max-w-md mx-auto">
+                      <a href="/super-admin/dashboard" className="text-blue-600 hover:underline">
+                        /super-admin/dashboard
+                      </a>
+                      <a href="/admin/dashboard" className="text-blue-600 hover:underline">
+                        /admin/dashboard
+                      </a>
+                      <a href="/member-dashboard" className="text-blue-600 hover:underline">
+                        /member-dashboard
+                      </a>
+                    </div>
+                  </div>
                 </div>
               } />
             </Routes>

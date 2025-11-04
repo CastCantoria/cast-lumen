@@ -1,5 +1,5 @@
 // src/pages/public/Login.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
@@ -11,10 +11,21 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
   
   const { login, signInWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // 🔥 DÉTECTER SI L'UTILISATEUR VIENT D'UNE DÉCONNEXION
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const fromLogout = searchParams.get('fromLogout');
+    
+    if (fromLogout) {
+      setSuccessMessage('✅ Vous avez été déconnecté avec succès');
+    }
+  }, [location]);
 
   // Récupérer la redirection prévue ou utiliser '/dashboard' par défaut
   const from = location.state?.from?.pathname || '/dashboard';
@@ -22,6 +33,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccessMessage('');
 
     // Validation
     if (!formData.email || !formData.password) {
@@ -52,6 +64,7 @@ const Login = () => {
     try {
       setLoading(true);
       setError('');
+      setSuccessMessage('');
       
       const result = await signInWithGoogle();
       
@@ -89,6 +102,13 @@ const Login = () => {
             Accédez à votre compte C.A.S.T. Cantoria
           </p>
         </div>
+
+        {/* 🔥 MESSAGE DE SUCCÈS APRÈS DÉCONNEXION */}
+        {successMessage && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
+            {successMessage}
+          </div>
+        )}
 
         {/* Bouton Google */}
         <div>
