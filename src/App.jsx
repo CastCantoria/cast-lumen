@@ -48,15 +48,9 @@ import Dashboard from './components/dashboard/Dashboard';
 import UserDashboard from './pages/dashboard/user/UserDashboard';
 
 // Nouveaux dashboards (architecture WordPress-like)
-import SuperAdminDashboard from './components/super-admin/SuperAdminDashboard';
+import SuperAdminDashboard from './pages/dashboard/super-admin/SuperAdminDashboard'; // ✅ Chemin corrigé
 import AdminDashboard from './pages/dashboard/admin/AdminDashboard';
 import MemberDashboard from './pages/dashboard/member/MemberDashboard';
-
-// Composants Super Admin
-import PlatformSettings from './pages/dashboard/super-admin/components/PlatformSettings';
-import UserManagement from './pages/dashboard/super-admin/components/UserManagement';
-import SystemAnalytics from './pages/dashboard/super-admin/components/SystemAnalytics';
-import BackupRestore from './pages/dashboard/super-admin/components/BackupRestore';
 
 // Composants Admin
 import MemberManagement from './pages/dashboard/admin/components/MemberManagement';
@@ -186,7 +180,7 @@ function App() {
               {/* Redirection pour l'ancienne URL Super Admin */}
               <Route 
                 path="/dashboard/super-admin/*" 
-                element={<Navigate to="/super-admin/dashboard" replace />} 
+                element={<Navigate to="/super-admin" replace />} 
               />
 
               {/* Redirection pour l'ancienne URL Admin */}
@@ -199,27 +193,17 @@ function App() {
               {/* NOUVELLE ARCHITECTURE WORDPRESS-LIKE - RÔLES SÉPARÉS */}
               {/* ==================================================================== */}
 
-              {/* Routes Super Admin - Complètement séparées */}
-              <Route path="/super-admin/*" element={
-                <RouteGuard requiredPermission="platform:manage">
-                  <SuperAdminLayout>
-                    <Routes>
-                      {/* Route par défaut : redirige vers le dashboard */}
-                      <Route index element={<Navigate to="/super-admin/dashboard" replace />} />
-                      <Route path="dashboard" element={<SuperAdminDashboard />} />
-                      <Route path="platform-settings" element={<PlatformSettings />} />
-                      <Route path="user-management" element={<UserManagement />} />
-                      <Route path="system-analytics" element={<SystemAnalytics />} />
-                      <Route path="backup-restore" element={<BackupRestore />} />
-                      
-                      {/* Redirection pour les routes inexistantes */}
-                      <Route path="*" element={<Navigate to="/super-admin/dashboard" replace />} />
-                    </Routes>
-                  </SuperAdminLayout>
-                </RouteGuard>
-              } />
+              {/* ✅ NOUVELLE ROUTE SUPER ADMIN SIMPLIFIÉE - SANS SIDEBAR */}
+              <Route 
+                path="/super-admin" 
+                element={
+                  <RouteGuard requiredPermission="platform:manage">
+                    <SuperAdminDashboard />
+                  </RouteGuard>
+                } 
+              />
 
-              {/* Routes Admin */}
+              {/* Routes Admin (gardent le layout avec sidebar) */}
               <Route path="/admin/*" element={
                 <RouteGuard requiredPermission="members:manage">
                   <AdminLayout>
@@ -269,8 +253,8 @@ function App() {
                   <div className="mt-6">
                     <p className="text-gray-600 mb-4">Essayez ces URLs :</p>
                     <div className="flex flex-col gap-2 max-w-md mx-auto">
-                      <a href="/super-admin/dashboard" className="text-blue-600 hover:underline">
-                        /super-admin/dashboard
+                      <a href="/super-admin" className="text-blue-600 hover:underline">
+                        /super-admin
                       </a>
                       <a href="/admin/dashboard" className="text-blue-600 hover:underline">
                         /admin/dashboard
