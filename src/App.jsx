@@ -6,13 +6,6 @@ import { AuthProvider } from './contexts/AuthContext';
 // Composants d'authentification
 import RequireAuth from './components/auth/RequireAuth';
 import RequireRole from './components/auth/RequireRole';
-import RouteGuard from './components/auth/RouteGuard';
-import AuthRedirectHandler from './components/auth/AuthRedirectHandler';
-
-// Layouts
-import SuperAdminLayout from './layouts/SuperAdminLayout';
-import AdminLayout from './layouts/AdminLayout';
-import MemberLayout from './layouts/MemberLayout';
 
 // Pages publiques
 import Home from './pages/public/Home';
@@ -30,7 +23,7 @@ import EventList from './pages/public/EventList';
 import Gallery from './pages/public/Gallery';
 import Events from './pages/public/Events';
 
-// ⭐ IMPORTATION DE LA PAGE SETUP ADMINS
+// Setup Admins
 import SetupAdmins from './pages/admin/SetupAdmins';
 
 // Pages privées
@@ -43,26 +36,17 @@ import Newsletter from './pages/private/Newsletter';
 import Scores from './pages/member/Scores';
 import Rehearsals from './pages/member/Rehearsals';
 
-// Dashboard et sous-pages (ancienne structure)
+// Pages médias et contenu (accessibles aux membres)
+import MediaManager from './pages/admin/MediaManager';
+import PartitionUpload from './pages/admin/PartitionUpload';
+import NoticesManager from './pages/admin/NoticesManager';
+
+// Dashboards
 import Dashboard from './components/dashboard/Dashboard';
 import UserDashboard from './pages/dashboard/user/UserDashboard';
-
-// Nouveaux dashboards (architecture WordPress-like)
-import SuperAdminDashboard from './pages/dashboard/super-admin/SuperAdminDashboard'; // ✅ Chemin corrigé
-import AdminDashboard from './pages/dashboard/admin/AdminDashboard';
 import MemberDashboard from './pages/dashboard/member/MemberDashboard';
-
-// Composants Admin
-import MemberManagement from './pages/dashboard/admin/components/MemberManagement';
-import EventManagement from './pages/dashboard/admin/components/EventManagement';
-import ContentManagement from './pages/dashboard/admin/components/ContentManagement';
-import QuickStats from './pages/dashboard/admin/components/QuickStats';
-
-// Composants Membre
-import PersonalSchedule from './pages/dashboard/member/components/PersonalSchedule';
-import MyPartitions from './pages/dashboard/member/components/MyPartitions';
-import MyProfile from './pages/dashboard/member/components/MyProfile';
-import EventRSVP from './pages/dashboard/member/components/EventRSVP';
+import AdminDashboard from './pages/dashboard/admin/AdminDashboard';
+import SuperAdminDashboard from './pages/dashboard/super-admin/SuperAdminDashboard';
 
 // Layout
 import Header from './components/layout/Header';
@@ -78,15 +62,15 @@ function App() {
           <Header />
           <main className="flex-grow">
             <Routes>
-              {/* Routes publiques */}
+              {/* ==================== */}
+              {/* ROUTES PUBLIQUES */}
+              {/* ==================== */}
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/inscription-pending" element={<InscriptionPending />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
-              
-              {/* ⭐ NOUVELLE ROUTE TEMPORAIRE POUR CRÉER LES COMPTES ADMIN */}
               <Route path="/setup-admins" element={<SetupAdmins />} />
               
               {/* Pages publiques */}
@@ -99,7 +83,10 @@ function App() {
               <Route path="/gallery" element={<Gallery />} />
               <Route path="/concerts" element={<Events />} />
 
-              {/* Routes privées pour les utilisateurs authentifiés */}
+              {/* ==================== */}
+              {/* ROUTES PROTÉGÉES - TOUS LES UTILISATEURS CONNECTÉS */}
+              {/* ==================== */}
+              
               <Route 
                 path="/profile" 
                 element={
@@ -109,51 +96,95 @@ function App() {
                 } 
               />
 
-              {/* Routes utilisateur de base */}
+              {/* ==================== */}
+              {/* ROUTES BLOG ET COMMUNAUTÉ - MEMBRES ET + */}
+              {/* ==================== */}
+
               <Route 
                 path="/blog" 
                 element={
-                  <RequireRole role="user">
+                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
                     <Blog />
                   </RequireRole>
                 } 
               />
+
               <Route 
                 path="/chat" 
                 element={
-                  <RequireRole role="user">
+                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
                     <Chat />
                   </RequireRole>
                 } 
               />
+
               <Route 
                 path="/newsletter" 
                 element={
-                  <RequireRole role="user">
+                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
                     <Newsletter />
                   </RequireRole>
                 } 
               />
 
-              {/* Routes membres (ancienne structure) */}
+              {/* ==================== */}
+              {/* ROUTES MÉDIAS ET PARTITIONS - MEMBRES ET + */}
+              {/* ==================== */}
+
+              <Route 
+                path="/media" 
+                element={
+                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                    <MediaManager />
+                  </RequireRole>
+                } 
+              />
+
+              <Route 
+                path="/upload-partition" 
+                element={
+                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                    <PartitionUpload />
+                  </RequireRole>
+                } 
+              />
+
+              <Route 
+                path="/annonces" 
+                element={
+                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                    <NoticesManager />
+                  </RequireRole>
+                } 
+              />
+
+              {/* ==================== */}
+              {/* ROUTES RÉPERTOIRE ET RÉPÉTITIONS - MEMBRES ET + */}
+              {/* ==================== */}
+
               <Route 
                 path="/partitions" 
                 element={
-                  <RequireRole role="member">
+                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
                     <Scores />
                   </RequireRole>
                 } 
               />
+
               <Route 
                 path="/repetitions" 
                 element={
-                  <RequireRole role="member">
+                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
                     <Rehearsals />
                   </RequireRole>
                 } 
               />
 
-              {/* Route dashboard principal - Redirige vers le bon dashboard (ancienne structure) */}
+              {/* ==================== */}
+              {/* DASHBOARDS PAR RÔLE */}
+              {/* ==================== */}
+
+              {/* Route dashboard principal - Redirige automatiquement */}
               <Route 
                 path="/dashboard" 
                 element={
@@ -163,108 +194,98 @@ function App() {
                 } 
               />
 
-              {/* Dashboards spécifiques (ancienne structure) */}
+              {/* Dashboard Utilisateur (accès: user uniquement) */}
               <Route 
                 path="/dashboard/user" 
                 element={
-                  <RequireRole role="user">
+                  <RequireRole allowedRoles={['user']}>
                     <UserDashboard />
                   </RequireRole>
                 } 
               />
 
-              {/* ==================================================================== */}
-              {/* REDIRECTIONS POUR LES ANCIENNES URLS - CORRECTION DU 404 */}
-              {/* ==================================================================== */}
-
-              {/* Redirection pour l'ancienne URL Super Admin */}
+              {/* Dashboard Membre (accès: member, admin, super-admin) */}
               <Route 
-                path="/dashboard/super-admin/*" 
-                element={<Navigate to="/super-admin" replace />} 
-              />
-
-              {/* Redirection pour l'ancienne URL Admin */}
-              <Route 
-                path="/dashboard/admin/*" 
-                element={<Navigate to="/admin/dashboard" replace />} 
-              />
-
-              {/* ==================================================================== */}
-              {/* NOUVELLE ARCHITECTURE WORDPRESS-LIKE - RÔLES SÉPARÉS */}
-              {/* ==================================================================== */}
-
-              {/* ✅ NOUVELLE ROUTE SUPER ADMIN SIMPLIFIÉE - SANS SIDEBAR */}
-              <Route 
-                path="/super-admin" 
+                path="/dashboard/member" 
                 element={
-                  <RouteGuard requiredPermission="platform:manage">
-                    <SuperAdminDashboard />
-                  </RouteGuard>
+                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                    <MemberDashboard />
+                  </RequireRole>
                 } 
               />
 
-              {/* Routes Admin (gardent le layout avec sidebar) */}
-              <Route path="/admin/*" element={
-                <RouteGuard requiredPermission="members:manage">
-                  <AdminLayout>
-                    <Routes>
-                      {/* Route par défaut : redirige vers le dashboard */}
-                      <Route index element={<Navigate to="/admin/dashboard" replace />} />
-                      <Route path="dashboard" element={<AdminDashboard />} />
-                      <Route path="members" element={<MemberManagement />} />
-                      <Route path="events" element={<EventManagement />} />
-                      <Route path="content" element={<ContentManagement />} />
-                      <Route path="stats" element={<QuickStats />} />
-                      
-                      {/* Redirection pour les routes inexistantes */}
-                      <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
-                    </Routes>
-                  </AdminLayout>
-                </RouteGuard>
-              } />
+              {/* Dashboard Admin (accès: admin, super-admin) */}
+              <Route 
+                path="/dashboard/admin" 
+                element={
+                  <RequireRole allowedRoles={['admin', 'super-admin']}>
+                    <AdminDashboard />
+                  </RequireRole>
+                } 
+              />
 
-              {/* Routes Membre - Intégrées au site */}
-              <Route path="/member-dashboard/*" element={
-                <RouteGuard>
-                  <MemberLayout>
-                    <Routes>
-                      {/* Route par défaut : dashboard membre */}
-                      <Route index element={<MemberDashboard />} />
-                      <Route path="schedule" element={<PersonalSchedule />} />
-                      <Route path="partitions" element={<MyPartitions />} />
-                      <Route path="profile" element={<MyProfile />} />
-                      <Route path="events" element={<EventRSVP />} />
-                      
-                      {/* Redirection pour les routes inexistantes */}
-                      <Route path="*" element={<Navigate to="/member-dashboard" replace />} />
-                    </Routes>
-                  </MemberLayout>
-                </RouteGuard>
-              } />
+              {/* Dashboard Super Admin (accès: super-admin uniquement) */}
+              <Route 
+                path="/dashboard/super-admin" 
+                element={
+                  <RequireRole allowedRoles={['super-admin']}>
+                    <SuperAdminDashboard />
+                  </RequireRole>
+                } 
+              />
+
+              {/* ==================== */}
+              {/* REDIRECTIONS POUR COMPATIBILITÉ */}
+              {/* ==================== */}
+
+              {/* Redirections des anciennes URLs */}
+              <Route path="/super-admin" element={<Navigate to="/dashboard/super-admin" replace />} />
+              <Route path="/admin/*" element={<Navigate to="/dashboard/admin" replace />} />
+              <Route path="/member-dashboard/*" element={<Navigate to="/dashboard/member" replace />} />
+
+              {/* ==================== */}
+              {/* ROUTES FONCTIONNELLES */}
+              {/* ==================== */}
 
               {/* Redirection automatique après connexion */}
-              <Route path="/redirect" element={<AuthRedirectHandler />} />
+              <Route path="/redirect" element={
+                <RequireAuth>
+                  <Dashboard />
+                </RequireAuth>
+              } />
 
-              {/* Route 404 */}
+              {/* Route 404 améliorée */}
               <Route path="*" element={
-                <div className="container mx-auto p-8 text-center">
-                  <h1 className="text-4xl font-bold mb-4">404</h1>
-                  <p className="text-xl">Page non trouvée</p>
-                  <div className="mt-6">
-                    <p className="text-gray-600 mb-4">Essayez ces URLs :</p>
-                    <div className="flex flex-col gap-2 max-w-md mx-auto">
-                      <a href="/super-admin" className="text-blue-600 hover:underline">
-                        /super-admin
-                      </a>
-                      <a href="/admin/dashboard" className="text-blue-600 hover:underline">
-                        /admin/dashboard
-                      </a>
-                      <a href="/member-dashboard" className="text-blue-600 hover:underline">
-                        /member-dashboard
-                      </a>
-                      <a href="/setup-admins" className="text-blue-600 hover:underline">
-                        /setup-admins
-                      </a>
+                <div className="min-h-screen flex items-center justify-center bg-gray-50">
+                  <div className="text-center p-8 max-w-md mx-auto">
+                    <div className="text-6xl mb-4">🔍</div>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-4">Page non trouvée</h1>
+                    <p className="text-gray-600 mb-6">
+                      La page que vous recherchez n'existe pas ou a été déplacée.
+                    </p>
+                    
+                    <div className="space-y-3 mb-6">
+                      <p className="text-sm text-gray-500">Essayer ces pages :</p>
+                      <div className="flex flex-col gap-2">
+                        <a href="/dashboard" className="text-blue-600 hover:text-blue-800 font-medium">
+                          📊 Mon Tableau de Bord
+                        </a>
+                        <a href="/" className="text-blue-600 hover:text-blue-800 font-medium">
+                          🏠 Page d'Accueil
+                        </a>
+                        <a href="/blog" className="text-green-600 hover:text-green-800 font-medium">
+                          ✍️ Blog Communautaire
+                        </a>
+                        <a href="/media" className="text-purple-600 hover:text-purple-800 font-medium">
+                          🎵 Médias Partagés
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
+                      <p className="text-sm text-blue-800">
+                        <strong>Espace Membre :</strong> Les choristes peuvent ajouter des médias, proposer des partitions et participer au blog.
+                      </p>
                     </div>
                   </div>
                 </div>

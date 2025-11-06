@@ -1,7 +1,8 @@
-﻿import React, { useState, useEffect } from 'react';
+﻿// src/pages/private/Profile.jsx
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { doc, updateDoc, getDoc, collection } from 'firebase/firestore';
+import { doc, updateDoc, getDoc } from 'firebase/firestore';
 import { auth, db } from '../../lib/firebase';
 import {
   updateProfile as updateAuthProfile,
@@ -47,54 +48,48 @@ const Profile = () => {
       if (!currentUser) return;
 
       try {
-          setLoading(true);
-          setError('');
+        setLoading(true);
+        setError('');
 
-          // Vérifier la collection users
-          const userDocRef = doc(collection(db, 'users'), currentUser.uid);
-          const userSnapshot = await getDoc(userDocRef);
-      
-          if (userSnapshot.exists()) {
-            const userData = userSnapshot.data();
-            // S'assurer que les champs requis existent
-            const cleanedData = {
-              displayName: userData.displayName || currentUser.displayName || '',
-              email: userData.email || currentUser.email || '',
-              phone: userData.phone || '',
-              specialite: userData.specialite || '',
-              bio: userData.bio || '',
-              voicePart: userData.voicePart || '',
-              section: userData.section || '',
-              joinDate: userData.joinDate || new Date().toISOString()
-            };
-            setUserRole(userData.role || 'user');
-            populateForm(cleanedData);
+        // 🔥 CORRECTION : Toujours utiliser la collection 'users'
+        const userDocRef = doc(db, 'users', currentUser.uid);
+        const userSnapshot = await getDoc(userDocRef);
+    
+        if (userSnapshot.exists()) {
+          const userData = userSnapshot.data();
+          const cleanedData = {
+            displayName: userData.displayName || currentUser.displayName || '',
+            email: userData.email || currentUser.email || '',
+            phone: userData.phone || '',
+            specialite: userData.specialite || '',
+            bio: userData.bio || '',
+            voicePart: userData.voicePart || userData.vocalRange || '',
+            section: userData.section || '',
+            joinDate: userData.joinDate || new Date().toISOString().split('T')[0]
+          };
+          setUserRole(userData.role || 'user');
+          populateForm(cleanedData);
         } else {
-            // Créer un profil par défaut si aucun n'existe
-            const defaultProfile = {
-              displayName: currentUser.displayName || '',
-              email: currentUser.email || '',
-              phone: '',
-              specialite: '',
-              bio: '',
-              voicePart: '',
-              section: '',
-              joinDate: new Date().toISOString(),
-              role: 'user'
-            };
-            await updateDoc(userDocRef, defaultProfile);
-            setUserRole('user');
-            populateForm(defaultProfile);
+          const defaultProfile = {
+            displayName: currentUser.displayName || '',
+            email: currentUser.email || '',
+            phone: '',
+            specialite: '',
+            bio: '',
+            voicePart: '',
+            section: '',
+            joinDate: new Date().toISOString().split('T')[0],
+            role: 'user'
+          };
+          await updateDoc(userDocRef, defaultProfile);
+          setUserRole('user');
+          populateForm(defaultProfile);
         }
       } catch (err) {
-          console.error('Erreur lors du chargement du profil:', err);
-          setError(
-            `Impossible de charger le profil. Erreur: ${
-              err.message || 'Erreur inconnue'
-            }. Veuillez réessayer plus tard.`
-          );
-        } finally {
-          setLoading(false);
+        console.error('Erreur lors du chargement du profil:', err);
+        setError(`Impossible de charger le profil. Erreur: ${err.message || 'Erreur inconnue'}. Veuillez réessayer plus tard.`);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -132,9 +127,8 @@ const Profile = () => {
         });
       }
 
-      // Déterminer la collection en fonction du rôle
-      const collectionName = userRole === 'member' ? 'members' : 'users';
-      const userRef = doc(db, collectionName, currentUser.uid);
+      // 🔥 CORRECTION : Toujours utiliser 'users' comme collection
+      const userRef = doc(db, 'users', currentUser.uid);
 
       // Préparer les données de mise à jour
       const updateData = {
@@ -142,16 +136,13 @@ const Profile = () => {
         phone: formData.phone.trim(),
         specialite: formData.specialite.trim(),
         bio: formData.bio.trim(),
+        vocalRange: formData.voicePart, // Garder la compatibilité
+        voicePart: formData.voicePart,
+        section: formData.section,
+        joinDate: formData.joinDate,
         updatedAt: new Date(),
         lastModifiedBy: currentUser.uid
       };
-
-      // Ajouter les champs spécifiques aux membres
-      if (userRole === 'member') {
-        updateData.voicePart = formData.voicePart;
-        updateData.section = formData.section;
-        updateData.joinDate = formData.joinDate;
-      }
 
       // Mettre à jour Firestore
       await updateDoc(userRef, updateData);
@@ -161,11 +152,6 @@ const Profile = () => {
 
       setMessage('✅ Profil mis à jour avec succès !');
       
-      // Recharger après un délai
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
-
     } catch (err) {
       console.error('Erreur mise à jour profil:', err);
       setError('❌ Erreur lors de la mise à jour : ' + err.message);
@@ -299,12 +285,6 @@ const Profile = () => {
                 >
                   🔑 Mot de passe
                 </button>
-                <Link
-                  to="/profile/edit"
-                  className="block w-full text-left px-4 py-3 rounded-xl font-medium text-gray-700 hover:bg-gray-100 hover:text-blue-600 transition-all duration-200"
-                >
-                  ✏️ Éditer le profil complet
-                </Link>
               </nav>
 
               {/* Informations du compte */}
@@ -363,17 +343,9 @@ const Profile = () => {
           <div className="lg:col-span-3">
             {activeSection === 'profile' && (
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900">
-                    Informations Personnelles
-                  </h2>
-                  <Link
-                    to="/profile/edit"
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                  >
-                    ✏️ Éditer complet
-                  </Link>
-                </div>
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                  Informations Personnelles
+                </h2>
 
                 <form onSubmit={handleUpdateProfile} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -440,7 +412,7 @@ const Profile = () => {
                   </div>
 
                   {/* Champs spécifiques aux membres */}
-                  {userRole === 'member' && (
+                  {(userRole === 'member' || userProfile?.vocalRange) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-200">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -455,9 +427,12 @@ const Profile = () => {
                         >
                           <option value="">Sélectionnez votre voix</option>
                           <option value="soprano">Soprano</option>
+                          <option value="mezzo-soprano">Mezzo-Soprano</option>
                           <option value="alto">Alto</option>
+                          <option value="contralto">Contralto</option>
                           <option value="tenor">Ténor</option>
-                          <option value="basse">Basse</option>
+                          <option value="baritone">Baryton</option>
+                          <option value="bass">Basse</option>
                         </select>
                       </div>
 
@@ -478,8 +453,8 @@ const Profile = () => {
                           <option value="alto2">Alto 2</option>
                           <option value="tenor1">Ténor 1</option>
                           <option value="tenor2">Ténor 2</option>
-                          <option value="basse1">Basse 1</option>
-                          <option value="basse2">Basse 2</option>
+                          <option value="bass1">Basse 1</option>
+                          <option value="bass2">Basse 2</option>
                         </select>
                       </div>
 

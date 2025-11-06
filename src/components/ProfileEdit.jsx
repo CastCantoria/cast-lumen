@@ -1,3 +1,4 @@
+// src/components/ProfileEdit.jsx
 import React, { useState, useEffect } from 'react';
 import { getAuth, updateProfile, updateEmail, updatePassword } from 'firebase/auth';
 
