@@ -1,302 +1,435 @@
 // src/components/layout/Header.jsx
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Header = () => {
   const { currentUser, userProfile, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Erreur de déconnexion:', error);
+      window.location.href = '/';
+    }
+  };
+
+  const closeAllMenus = () => {
+    setIsMenuOpen(false);
+    setIsUserMenuOpen(false);
+  };
+
+  const menuItems = [
+    {
+      label: "La Chorale",
+      items: [
+        { to: "/about", label: "Notre Histoire" },
+        { to: "/spiritualite", label: "Spiritualité" },
+        { to: "/join", label: "Nous Rejoindre" },
+        { to: "/contact", label: "Contact" }
+      ]
+    },
+    {
+      label: "Activités",
+      items: [
+        { to: "/repertoire", label: "Répertoire" },
+        { to: "/events", label: "Événements" },
+        { to: "/gallery", label: "Galerie" },
+        { to: "/concerts", label: "Concerts" }
+      ]
+    }
+  ];
+
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <header className="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
+      <div className="w-full px-4 sm:px-6">
+        
+        {/* BARRE PRINCIPALE */}
+        <div className="flex items-center justify-between h-16">
           
-          {/* ==================== */}
-          {/* PARTIE GAUCHE - LOGO & NAV PRINCIPALE */}
-          {/* ==================== */}
-          <div className="flex items-center space-x-8">
-            
-            {/* Logo */}
-            <Link to="/" className="flex items-center space-x-3 group">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                🎵
+          {/* LOGO C.A.S.T. */}
+          <div className="flex items-center flex-shrink-0">
+            <Link to="/" className="flex items-center space-x-3" onClick={closeAllMenus}>
+              <div className="flex items-center justify-center">
+                <img 
+                  src="/images/logo-cantoria.png" 
+                  alt="C.A.S.T. Cantoria" 
+                  className="h-10 w-auto"
+                  onError={(e) => {
+                    // Fallback si le logo ne charge pas
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+                {/* Fallback visuel */}
+                <div 
+                  className="h-10 w-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-lg"
+                  style={{ display: 'none' }}
+                >
+                  🎵
+                </div>
               </div>
               <div className="hidden sm:block">
-                <h1 className="font-bold text-gray-900 text-lg leading-tight">C.A.S.T. Cantoria</h1>
-                <p className="text-xs text-gray-500 leading-tight">Chorale Artistique Sacrée & Traditionnelle</p>
+                <div className="text-lg font-bold text-white font-serif leading-tight">C.A.S.T.</div>
+                <div className="text-lg font-bold text-blue-400 font-serif leading-tight">Cantoria</div>
+              </div>
+              <div className="sm:hidden text-lg font-bold text-white font-serif">
+                CAST
               </div>
             </Link>
-
-            {/* Navigation Desktop */}
-            <nav className="hidden lg:flex items-center space-x-1">
-              <Link 
-                to="/" 
-                className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors font-medium"
-              >
-                Accueil
-              </Link>
-              <Link 
-                to="/about" 
-                className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors font-medium"
-              >
-                La Chorale
-              </Link>
-              <Link 
-                to="/events" 
-                className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors font-medium"
-              >
-                Activités
-              </Link>
-              <Link 
-                to="/repertoire" 
-                className="px-3 py-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-blue-50 transition-colors font-medium"
-              >
-                Répertoire
-              </Link>
-            </nav>
           </div>
 
-          {/* ==================== */}
-          {/* PARTIE CENTRE - BOUTONS ACTION */}
-          {/* ==================== */}
-          <div className="flex-1 max-w-2xl mx-4">
-            <div className="hidden md:flex items-center justify-center space-x-3">
-              
-              {/* 🔥 BOUTON CHAT - Visible sur tablette+ */}
-              {currentUser && (
-                <Link 
-                  to="/chat" 
-                  className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg group"
-                >
-                  <span className="text-lg group-hover:animate-bounce">💬</span>
-                  <span className="font-medium hidden lg:inline">Chat Live</span>
-                  <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
-                </Link>
-              )}
-
-              {/* Bouton Dashboard - Visible sur tablette+ */}
-              {currentUser && (
-                <Link 
-                  to="/dashboard" 
-                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg group"
-                >
-                  <span className="text-lg">📊</span>
-                  <span className="font-medium hidden lg:inline">Mon Espace</span>
-                </Link>
-              )}
-            </div>
-          </div>
-
-          {/* ==================== */}
-          {/* PARTIE DROITE - PROFIL & MENU MOBILE */}
-          {/* ==================== */}
-          <div className="flex items-center space-x-3">
+          {/* NAVIGATION DESKTOP */}
+          <nav className="hidden lg:flex items-center space-x-1 mx-8">
+            <Link 
+              to="/" 
+              className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
+                location.pathname === '/' 
+                  ? 'text-blue-400 bg-gray-800 shadow-inner' 
+                  : 'text-gray-300 hover:text-white hover:bg-gray-800'
+              }`}
+              onClick={closeAllMenus}
+            >
+              Accueil
+            </Link>
             
-            {/* 🔥 BOUTON CHAT MOBILE - Visible uniquement mobile */}
-            {currentUser && (
-              <Link 
-                to="/chat" 
-                className="md:hidden flex items-center justify-center w-12 h-12 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors relative"
-                title="Chat Live"
-              >
-                <span className="text-xl">💬</span>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-300 rounded-full animate-pulse"></div>
-              </Link>
-            )}
-
-            {/* Menu Utilisateur */}
-            {currentUser ? (
-              <div className="relative">
+            {/* GROUPES EN DROPDOWN */}
+            {menuItems.map((menu) => (
+              <div key={menu.label} className="relative group">
                 <button
-                  onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center space-x-3 bg-gray-50 hover:bg-gray-100 rounded-lg px-3 py-2 transition-colors border border-gray-200"
+                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-1 whitespace-nowrap ${
+                    menu.items.some(item => location.pathname === item.to) 
+                      ? 'text-blue-400 bg-gray-800 shadow-inner' 
+                      : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                  }`}
                 >
-                  {/* Avatar */}
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
-                    userProfile?.role === 'admin' ? 'bg-red-500' : 
-                    userProfile?.role === 'member' ? 'bg-green-500' : 'bg-blue-500'
-                  }`}>
-                    {userProfile?.displayName?.charAt(0) || 'U'}
-                  </div>
-                  
-                  {/* Infos utilisateur - caché sur mobile */}
-                  <div className="hidden sm:block text-left">
-                    <div className="text-sm font-medium text-gray-900 leading-tight max-w-32 truncate">
-                      {userProfile?.displayName || 'Utilisateur'}
-                    </div>
-                    <div className="text-xs text-gray-500 leading-tight capitalize">
-                      {userProfile?.vocalRange || userProfile?.role || 'user'}
-                    </div>
-                  </div>
-
-                  {/* Icône flèche */}
-                  <svg 
-                    className={`w-4 h-4 text-gray-500 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} 
-                    fill="none" 
-                    stroke="currentColor" 
-                    viewBox="0 0 24 24"
-                  >
+                  <span>{menu.label}</span>
+                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
+                
+                {/* DROPDOWN MENU */}
+                <div className="absolute left-0 mt-1 w-56 rounded-lg shadow-xl bg-gray-800 border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                  <div className="py-2">
+                    {menu.items.map((item) => (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        className={`block px-4 py-2 text-sm whitespace-nowrap mx-2 rounded ${
+                          location.pathname === item.to
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                        }`}
+                        onClick={closeAllMenus}
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </nav>
 
-                {/* Menu déroulant utilisateur */}
-                {isUserMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-200 py-2 z-50">
-                    {/* En-tête profil */}
-                    <div className="px-4 py-3 border-b border-gray-100">
-                      <div className="flex items-center space-x-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
-                          userProfile?.role === 'admin' ? 'bg-red-500' : 
-                          userProfile?.role === 'member' ? 'bg-green-500' : 'bg-blue-500'
-                        }`}>
-                          {userProfile?.displayName?.charAt(0) || 'U'}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-gray-900 truncate">
-                            {userProfile?.displayName || 'Utilisateur'}
-                          </p>
-                          <p className="text-sm text-gray-500 truncate">
-                            {userProfile?.email}
-                          </p>
-                        </div>
-                      </div>
+          {/* BOUTONS ACTION ET PROFIL */}
+          <div className="flex items-center space-x-3 flex-shrink-0">
+            
+            {/* BOUTON CHAT - Desktop */}
+            {currentUser && (
+              <div className="hidden md:flex items-center space-x-3">
+                <Link 
+                  to="/chat" 
+                  className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-lg transition-all duration-300 shadow-lg group whitespace-nowrap"
+                  onClick={closeAllMenus}
+                >
+                  <span className="text-lg">💬</span>
+                  <span className="font-medium">Chat Live</span>
+                  <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+                </Link>
+
+                <Link 
+                  to="/dashboard" 
+                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-300 shadow-lg group whitespace-nowrap"
+                  onClick={closeAllMenus}
+                >
+                  <span className="text-lg">📊</span>
+                  <span className="font-medium">Espace</span>
+                </Link>
+              </div>
+            )}
+
+            {/* BOUTON CHAT MOBILE */}
+            {currentUser && (
+              <Link 
+                to="/chat" 
+                className="md:hidden flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors relative"
+                title="Chat Live"
+                onClick={closeAllMenus}
+              >
+                <span className="text-lg">💬</span>
+                <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+              </Link>
+            )}
+
+            {/* PROFIL UTILISATEUR */}
+            {currentUser ? (
+              <div className="flex items-center space-x-3">
+                {/* Version Desktop */}
+                <div className="hidden md:flex items-center space-x-3">
+                  <div className="text-right min-w-0 max-w-[120px]">
+                    <div className="text-sm font-medium text-white truncate">
+                      {userProfile?.displayName || currentUser.email}
                     </div>
-
-                    {/* Navigation rapide */}
-                    <div className="px-2 py-2">
-                      <Link 
-                        to="/dashboard" 
-                        className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors group"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <span className="text-lg group-hover:scale-110 transition-transform">📊</span>
-                        <div>
-                          <div className="font-medium text-gray-900">Mon Tableau de Bord</div>
-                          <div className="text-xs text-gray-500">Accéder à mon espace</div>
-                        </div>
-                      </Link>
-
-                      {/* 🔥 CHAT dans le menu utilisateur */}
-                      <Link 
-                        to="/chat" 
-                        className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors group"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <span className="text-lg group-hover:scale-110 transition-transform">💬</span>
-                        <div>
-                          <div className="font-medium text-gray-900">Chat Communautaire</div>
-                          <div className="text-xs text-gray-500">Discuter avec les membres</div>
-                        </div>
-                        <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse ml-auto"></div>
-                      </Link>
-
-                      <Link 
-                        to="/profile" 
-                        className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-50 transition-colors group"
-                        onClick={() => setIsUserMenuOpen(false)}
-                      >
-                        <span className="text-lg group-hover:scale-110 transition-transform">👤</span>
-                        <div>
-                          <div className="font-medium text-gray-900">Mon Profil</div>
-                          <div className="text-xs text-gray-500">Gérer mon compte</div>
-                        </div>
-                      </Link>
-                    </div>
-
-                    {/* Déconnexion */}
-                    <div className="px-2 py-2 border-t border-gray-100">
-                      <button
-                        onClick={() => {
-                          setIsUserMenuOpen(false);
-                          logout();
-                        }}
-                        className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-red-50 transition-colors group w-full text-left"
-                      >
-                        <span className="text-lg group-hover:scale-110 transition-transform">🚪</span>
-                        <div>
-                          <div className="font-medium text-red-600">Se déconnecter</div>
-                        </div>
-                      </button>
+                    <div className="text-xs text-gray-400 capitalize truncate">
+                      {userProfile?.role}
                     </div>
                   </div>
-                )}
+                  
+                  {/* MENU UTILISATEUR DROPDOWN */}
+                  <div className="relative">
+                    <button
+                      onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                      className="flex items-center space-x-2 bg-gray-800 hover:bg-gray-700 rounded-lg px-3 py-2 transition-colors border border-gray-700"
+                    >
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                        userProfile?.role === 'admin' ? 'bg-red-500' : 
+                        userProfile?.role === 'super-admin' ? 'bg-purple-500' :
+                        'bg-blue-500'
+                      }`}>
+                        {userProfile?.displayName?.charAt(0)?.toUpperCase() || 'U'}
+                      </div>
+                    </button>
+
+                    {/* DROPDOWN MENU UTILISATEUR */}
+                    {isUserMenuOpen && (
+                      <div className="absolute right-0 mt-2 w-64 bg-gray-800 rounded-xl shadow-xl border border-gray-700 py-2 z-50">
+                        <div className="px-4 py-3 border-b border-gray-700">
+                          <div className="flex items-center space-x-3">
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
+                              userProfile?.role === 'admin' ? 'bg-red-500' : 
+                              userProfile?.role === 'super-admin' ? 'bg-purple-500' :
+                              'bg-blue-500'
+                            }`}>
+                              {userProfile?.displayName?.charAt(0)?.toUpperCase() || 'U'}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-medium text-white truncate text-sm">
+                                {userProfile?.displayName || 'Utilisateur'}
+                              </p>
+                              <p className="text-xs text-gray-400 truncate">
+                                {userProfile?.email}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="px-2 py-2 space-y-1">
+                          <Link 
+                            to="/dashboard" 
+                            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors group"
+                            onClick={closeAllMenus}
+                          >
+                            <span className="text-lg">📊</span>
+                            <div className="flex-1">
+                              <div className="font-medium text-white text-sm">Tableau de Bord</div>
+                            </div>
+                          </Link>
+
+                          <Link 
+                            to="/chat" 
+                            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors group"
+                            onClick={closeAllMenus}
+                          >
+                            <span className="text-lg">💬</span>
+                            <div className="flex-1">
+                              <div className="font-medium text-white text-sm">Chat Communautaire</div>
+                            </div>
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                          </Link>
+
+                          <Link 
+                            to="/profile" 
+                            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors group"
+                            onClick={closeAllMenus}
+                          >
+                            <span className="text-lg">👤</span>
+                            <div className="flex-1">
+                              <div className="font-medium text-white text-sm">Mon Profil</div>
+                            </div>
+                          </Link>
+                        </div>
+
+                        <div className="px-2 py-2 border-t border-gray-700">
+                          <button
+                            onClick={handleLogout}
+                            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-red-900 transition-colors group w-full text-left"
+                          >
+                            <span className="text-lg">🚪</span>
+                            <div>
+                              <div className="font-medium text-red-400 text-sm">Se déconnecter</div>
+                            </div>
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Version Mobile */}
+                <div className="md:hidden flex items-center space-x-2">
+                  <div className="text-right min-w-0 max-w-[80px]">
+                    <div className="text-xs font-medium text-white truncate">
+                      {userProfile?.displayName || currentUser.email?.split('@')[0]}
+                    </div>
+                  </div>
+                  
+                  <button 
+                    onClick={handleLogout} 
+                    className="bg-red-600 text-white p-2 rounded text-sm hover:bg-red-700 transition flex items-center"
+                    title="Déconnexion"
+                  >
+                    <span>🚪</span>
+                  </button>
+                </div>
               </div>
             ) : (
               /* Boutons connexion */
-              <div className="flex items-center space-x-2">
+              <div className="hidden md:flex items-center space-x-3">
                 <Link 
                   to="/login" 
-                  className="px-4 py-2 text-gray-700 hover:text-blue-600 transition-colors font-medium"
+                  className="text-gray-300 hover:text-white font-medium transition whitespace-nowrap px-4 py-2 rounded-lg hover:bg-gray-800"
                 >
                   Connexion
                 </Link>
                 <Link 
                   to="/register" 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors font-medium"
+                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-medium whitespace-nowrap"
                 >
                   S'inscrire
                 </Link>
               </div>
             )}
 
-            {/* Menu Burger Mobile */}
-            <button
+            {/* MENU BURGER MOBILE */}
+            <button 
+              className="lg:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors"
             >
-              <span className="text-2xl">☰</span>
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
             </button>
           </div>
         </div>
 
-        {/* ==================== */}
-        {/* MENU MOBILE */}
-        {/* ==================== */}
+        {/* MENU MOBILE - ALIGNÉ À GAUCHE */}
         {isMenuOpen && (
-          <div className="lg:hidden border-t border-gray-200 py-4 bg-white">
-            <nav className="space-y-2">
+          <div className="lg:hidden border-t border-gray-700 bg-gray-800 py-4">
+            <nav className="flex flex-col space-y-3">
+              {/* Accueil */}
               <Link 
                 to="/" 
-                className="block px-4 py-3 rounded-lg hover:bg-blue-50 transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                onClick={closeAllMenus}
               >
-                🏠 Accueil
-              </Link>
-              <Link 
-                to="/about" 
-                className="block px-4 py-3 rounded-lg hover:bg-blue-50 transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                🎵 La Chorale
-              </Link>
-              <Link 
-                to="/events" 
-                className="block px-4 py-3 rounded-lg hover:bg-blue-50 transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                📅 Activités
-              </Link>
-              <Link 
-                to="/repertoire" 
-                className="block px-4 py-3 rounded-lg hover:bg-blue-50 transition-colors font-medium"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                🎼 Répertoire
+                <span className="text-lg mr-3">🏠</span>
+                <span className="font-medium">Accueil</span>
               </Link>
               
-              {/* 🔥 CHAT dans le menu mobile */}
+              {/* GROUPES EN DROPDOWN - MOBILE */}
+              {menuItems.map((menu) => (
+                <div key={menu.label} className="space-y-2">
+                  {/* En-tête du menu */}
+                  <div className="flex items-center px-4 py-3 text-gray-300 bg-gray-750">
+                    <span className="text-lg mr-3">📂</span>
+                    <span className="font-medium">{menu.label}</span>
+                  </div>
+                  
+                  {/* Sous-items */}
+                  <div className="space-y-1">
+                    {menu.items.map((item) => (
+                      <Link
+                        key={item.to}
+                        to={item.to}
+                        className={`flex items-center px-6 py-2 text-sm transition-colors ${
+                          location.pathname === item.to
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                        }`}
+                        onClick={closeAllMenus}
+                      >
+                        <span className="mr-3">•</span>
+                        <span>{item.label}</span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {/* Espace Membre */}
               {currentUser && (
-                <Link 
-                  to="/chat" 
-                  className="block px-4 py-3 rounded-lg hover:bg-green-50 transition-colors font-medium text-green-700"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  💬 Chat Communautaire
-                  <span className="ml-2 w-2 h-2 bg-green-500 rounded-full animate-pulse inline-block"></span>
-                </Link>
+                <>
+                  <div className="border-t border-gray-700 pt-4 mt-2">
+                    {/* Tableau de Bord */}
+                    <Link 
+                      to="/dashboard" 
+                      className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                      onClick={closeAllMenus}
+                    >
+                      <span className="text-lg mr-3">📊</span>
+                      <span className="font-medium">Tableau de Bord</span>
+                    </Link>
+                    
+                    {/* Chat Live */}
+                    <Link 
+                      to="/chat" 
+                      className="flex items-center px-4 py-3 text-green-300 hover:text-white hover:bg-green-900 transition-colors"
+                      onClick={closeAllMenus}
+                    >
+                      <span className="text-lg mr-3">💬</span>
+                      <span className="font-medium">Chat Live</span>
+                      <div className="ml-2 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    </Link>
+                  </div>
+                  
+                  {/* Déconnexion */}
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center px-4 py-3 text-red-400 hover:text-white hover:bg-red-900 transition-colors mt-2 w-full text-left"
+                  >
+                    <span className="text-lg mr-3">🚪</span>
+                    <span className="font-medium">Se déconnecter</span>
+                  </button>
+                </>
+              )}
+
+              {/* Connexion/Inscription */}
+              {!currentUser && (
+                <div className="border-t border-gray-700 pt-4 mt-2 space-y-3">
+                  <Link
+                    to="/login"
+                    className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
+                    onClick={closeAllMenus}
+                  >
+                    <span className="text-lg mr-3">🔑</span>
+                    <span className="font-medium">Connexion</span>
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="flex items-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mx-4"
+                    onClick={closeAllMenus}
+                  >
+                    <span className="text-lg mr-3">📝</span>
+                    <span className="font-medium">S'inscrire</span>
+                  </Link>
+                </div>
               )}
             </nav>
           </div>
