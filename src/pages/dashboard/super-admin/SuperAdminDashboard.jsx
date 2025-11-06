@@ -15,7 +15,7 @@ const SuperAdminDashboard = () => {
     systemHealth: 'optimal'
   });
 
-  // Vérifier l'accès SUPER_ADMIN
+  // 🔐 Vérification des permissions SUPER ADMIN
   if (!hasPermission('platform:manage')) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -36,6 +36,7 @@ const SuperAdminDashboard = () => {
     );
   }
 
+  // 🧭 Définition des onglets
   const tabs = [
     { id: 'overview', name: 'Vue d\'ensemble', icon: '📊', component: SystemAnalytics },
     { id: 'platform', name: 'Plateforme', icon: '⚙️', component: PlatformSettings },
@@ -45,10 +46,9 @@ const SuperAdminDashboard = () => {
   ];
 
   const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component;
-
-  return (
+    return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header Super Admin */}
+      {/* 🎨 Header Super Admin */}
       <div className="bg-gradient-to-r from-purple-900 to-indigo-900 text-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
@@ -70,7 +70,7 @@ const SuperAdminDashboard = () => {
         </div>
       </div>
 
-      {/* Navigation */}
+      {/* 🧭 Navigation par onglets */}
       <div className="bg-white border-b shadow-sm">
         <div className="max-w-7xl mx-auto">
           <nav className="flex overflow-x-auto px-4 sm:px-6 lg:px-8">
@@ -91,8 +91,7 @@ const SuperAdminDashboard = () => {
           </nav>
         </div>
       </div>
-
-      {/* Statistiques rapides */}
+            {/* 📊 Statistiques système */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-lg shadow p-4">
@@ -141,7 +140,7 @@ const SuperAdminDashboard = () => {
           </div>
         </div>
 
-        {/* Contenu principal */}
+        {/* 🧱 Composant actif selon l'onglet */}
         <div className="bg-white rounded-lg shadow">
           {ActiveComponent && <ActiveComponent />}
         </div>

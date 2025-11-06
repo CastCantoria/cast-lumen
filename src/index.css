@@ -408,3 +408,50 @@ body.menu-open {
     font-size: 0.875rem;
   }
 }
+/* src/index.css */
+
+/* Animations pour les notifications */
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.3s ease-out;
+}
+
+/* Animation de pulse pour les chargements */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+/* Supprime toutes les marges et paddings par défaut */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Empêche les conteneurs de limiter la largeur */
+.fullscreen {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}

@@ -30,6 +30,9 @@ import EventList from './pages/public/EventList';
 import Gallery from './pages/public/Gallery';
 import Events from './pages/public/Events';
 
+// ⭐ IMPORTATION DE LA PAGE SETUP ADMINS
+import SetupAdmins from './pages/admin/SetupAdmins';
+
 // Pages privées
 import Profile from './pages/private/Profile';
 import Blog from './pages/private/Blog';
@@ -88,6 +91,9 @@ function App() {
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/inscription-pending" element={<InscriptionPending />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
+              
+              {/* ⭐ NOUVELLE ROUTE TEMPORAIRE POUR CRÉER LES COMPTES ADMIN */}
+              <Route path="/setup-admins" element={<SetupAdmins />} />
               
               {/* Pages publiques */}
               <Route path="/about" element={<About />} />
@@ -271,6 +277,9 @@ function App() {
                       </a>
                       <a href="/member-dashboard" className="text-blue-600 hover:underline">
                         /member-dashboard
+                      </a>
+                      <a href="/setup-admins" className="text-blue-600 hover:underline">
+                        /setup-admins
                       </a>
                     </div>
                   </div>

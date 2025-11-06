@@ -8,8 +8,31 @@ export default defineConfig({
     extensions: ['.js', '.jsx', '.json'],
   },
   server: {
+    host: 'localhost',
+    port: 5173,
+    strictPort: true, // 🔥 Évite le changement de port
     historyApiFallback: true,
-    allowedHosts: ['.vercel.app', 'localhost']
+    allowedHosts: ['.vercel.app', 'localhost', '127.0.0.1'],
+    // 🔥 CONFIGURATION ULTIME POUR FIREBASE AUTH
+    headers: {
+      'Cross-Origin-Opener-Policy': 'unsafe-none',
+      'Cross-Origin-Embedder-Policy': 'unsafe-none',
+      'Cross-Origin-Resource-Policy': 'cross-origin'
+    },
+    // 🔥 DÉSACTIVER COMPLÈTEMENT LES RESTRICTIONS CORS
+    cors: {
+      origin: '*',
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['*']
+    },
+    // 🔥 PROXY POUR LES REQUÊTES FIREBASE
+    proxy: {
+      '/identitytoolkit': {
+        target: 'https://identitytoolkit.googleapis.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/identitytoolkit/, '')
+      }
+    }
   },
   build: {
     rollupOptions: {
@@ -20,12 +43,9 @@ export default defineConfig({
         }
       }
     },
-    // Use esbuild for minification in CI (faster and no extra dependency)
     minify: 'esbuild',
-    // esbuild minify options: drop console/debugger via legalComments or pure functions
-    // Use esbuild's "drop" option to remove console and debugger statements
     esbuild: {
-      drop: ['console', 'debugger']
+      drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : []
     },
     chunkSizeWarningLimit: 1000
   }

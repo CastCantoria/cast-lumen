@@ -1,4 +1,3 @@
-// src/pages/public/Login.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
@@ -13,7 +12,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   
-  const { login, signInWithGoogle } = useAuth();
+  const { login, signInWithGoogle, googleLoading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -62,20 +61,23 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      setLoading(true);
       setError('');
       setSuccessMessage('');
+      
+      console.log('🎯 Début connexion Google...');
       
       const result = await signInWithGoogle();
       
       if (result.success) {
-        navigate(from, { replace: true });
+        console.log('✅ Connexion Google réussie, redirection vers:', from);
+        // Petit délai pour laisser voir la notification
+        setTimeout(() => {
+          navigate(from, { replace: true });
+        }, 1500);
       }
     } catch (error) {
-      console.error('Erreur connexion Google:', error);
+      console.error('❌ Erreur connexion Google:', error);
       setError(error.message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -90,6 +92,8 @@ const Login = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  const isGoogleLoading = googleLoading || loading;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cast-green to-cast-gold flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -114,11 +118,11 @@ const Login = () => {
         <div>
           <button
             onClick={handleGoogleLogin}
-            disabled={loading}
+            disabled={isGoogleLoading}
             className="w-full flex justify-center items-center px-4 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors"
           >
             <img className="w-5 h-5 mr-2" src="/google-icon.svg" alt="Google" />
-            Se connecter avec Google
+            {isGoogleLoading ? 'Connexion en cours...' : 'Se connecter avec Google'}
           </button>
         </div>
 
