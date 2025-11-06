@@ -16,17 +16,7 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // 🔥 DÉTECTER SI L'UTILISATEUR VIENT D'UNE DÉCONNEXION
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const fromLogout = searchParams.get('fromLogout');
-    
-    if (fromLogout) {
-      setSuccessMessage('✅ Vous avez été déconnecté avec succès');
-    }
-  }, [location]);
-
-  // Récupérer la redirection prévue ou utiliser '/dashboard' par défaut
+  // Récupérer la redirection prévue
   const from = location.state?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (e) => {
@@ -43,17 +33,26 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const result = await login(formData.email, formData.password);
-
-      if (result.success) {
-        // Redirection vers la page d'origine ou le dashboard
-        navigate(from, { replace: true });
-      } else {
-        setError(result.error);
-      }
+      console.log('🔐 Tentative de connexion avec:', formData.email);
+      await login(formData.email, formData.password);
+      console.log('✅ Connexion réussie, redirection vers:', from);
+      
+      navigate(from, { replace: true });
     } catch (error) {
-      setError('Une erreur est survenue lors de la connexion');
-      console.error('Erreur connexion:', error);
+      console.error('❌ Erreur de connexion:', error);
+      
+      // Messages d'erreur plus spécifiques
+      if (error.code === 'auth/invalid-email') {
+        setError('Adresse email invalide');
+      } else if (error.code === 'auth/user-not-found') {
+        setError('Aucun compte trouvé avec cette adresse email');
+      } else if (error.code === 'auth/wrong-password') {
+        setError('Mot de passe incorrect');
+      } else if (error.code === 'auth/too-many-requests') {
+        setError('Trop de tentatives échouées. Veuillez réessayer plus tard.');
+      } else {
+        setError('Erreur de connexion: ' + error.message);
+      }
     } finally {
       setLoading(false);
     }
@@ -73,7 +72,7 @@ const Login = () => {
         // Petit délai pour laisser voir la notification
         setTimeout(() => {
           navigate(from, { replace: true });
-        }, 1500);
+        }, 1000);
       }
     } catch (error) {
       console.error('❌ Erreur connexion Google:', error);
@@ -96,10 +95,10 @@ const Login = () => {
   const isGoogleLoading = googleLoading || loading;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cast-green to-cast-gold flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-green-500 to-yellow-500 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-2xl">
         <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-cast-green">
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Connexion
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
@@ -107,22 +106,24 @@ const Login = () => {
           </p>
         </div>
 
-        {/* 🔥 MESSAGE DE SUCCÈS APRÈS DÉCONNEXION */}
-        {successMessage && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg">
-            {successMessage}
-          </div>
-        )}
-
-        {/* Bouton Google */}
+        {/* BOUTON GOOGLE FONCTIONNEL */}
         <div>
           <button
             onClick={handleGoogleLogin}
             disabled={isGoogleLoading}
             className="w-full flex justify-center items-center px-4 py-3 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors"
           >
-            <img className="w-5 h-5 mr-2" src="/google-icon.svg" alt="Google" />
-            {isGoogleLoading ? 'Connexion en cours...' : 'Se connecter avec Google'}
+            {isGoogleLoading ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-700 mr-2"></div>
+                Connexion en cours...
+              </>
+            ) : (
+              <>
+                <img className="w-5 h-5 mr-2" src="/google-icon.svg" alt="Google" />
+                Se connecter avec Google
+              </>
+            )}
           </button>
         </div>
 
@@ -153,7 +154,7 @@ const Login = () => {
               type="email"
               autoComplete="email"
               required
-              className="relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold focus:z-10"
+              className="relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10"
               placeholder="adresse@email.com"
               value={formData.email}
               onChange={handleChange}
@@ -171,14 +172,14 @@ const Login = () => {
                 type={showPassword ? "text" : "password"}
                 autoComplete="current-password"
                 required
-                className="relative block w-full px-3 py-3 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-cast-gold focus:border-cast-gold focus:z-10"
+                className="relative block w-full px-3 py-3 pr-10 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-lg focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 focus:z-10"
                 placeholder="Votre mot de passe"
                 value={formData.password}
                 onChange={handleChange}
               />
               <button
                 type="button"
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-cast-green"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-green-600"
                 onClick={togglePasswordVisibility}
               >
                 {showPassword ? '👁️' : '👁️‍🗨️'}
@@ -192,7 +193,7 @@ const Login = () => {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
-                className="h-4 w-4 text-cast-green focus:ring-cast-gold border-gray-300 rounded"
+                className="h-4 w-4 text-green-600 focus:ring-yellow-500 border-gray-300 rounded"
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
                 Se souvenir de moi
@@ -200,7 +201,7 @@ const Login = () => {
             </div>
 
             <div className="text-sm">
-              <Link to="/forgot-password" className="text-cast-green hover:text-cast-gold transition-colors">
+              <Link to="/forgot-password" className="text-green-600 hover:text-yellow-600 transition-colors">
                 Mot de passe oublié ?
               </Link>
             </div>
@@ -210,9 +211,16 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-cast-green hover:bg-cast-gold hover:text-cast-green transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cast-gold disabled:opacity-50"
+              className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-green-600 hover:bg-yellow-600 hover:text-gray-900 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500 disabled:opacity-50"
             >
-              {loading ? 'Connexion...' : 'Se connecter'}
+              {loading ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Connexion...
+                </>
+              ) : (
+                'Se connecter'
+              )}
             </button>
           </div>
 
@@ -221,11 +229,17 @@ const Login = () => {
               Pas encore de compte ?{' '}
               <Link 
                 to="/register" 
-                className="text-cast-green hover:text-cast-gold transition-colors font-medium"
+                className="text-green-600 hover:text-yellow-600 transition-colors font-medium"
               >
                 S'inscrire
               </Link>
             </span>
+          </div>
+
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              Compte de test: <strong>ad-castcantoria@outlook.fr</strong>
+            </p>
           </div>
         </form>
       </div>
