@@ -29,7 +29,7 @@ import SetupAdmins from './pages/admin/SetupAdmins';
 // Pages privées
 import Profile from './pages/private/Profile';
 import Blog from './pages/private/Blog';
-import Chat from './pages/private/Chat';
+import Chat from './pages/private/Chat'; // ✅ CHAT INTÉGRÉ
 import Newsletter from './pages/private/Newsletter';
 
 // Pages membres
@@ -109,6 +109,7 @@ function App() {
                 } 
               />
 
+              {/* ✅ CHAT COMMUNAUTAIRE - ROUTE PRINCIPALE */}
               <Route 
                 path="/chat" 
                 element={
@@ -276,6 +277,9 @@ function App() {
                         <a href="/blog" className="text-green-600 hover:text-green-800 font-medium">
                           ✍️ Blog Communautaire
                         </a>
+                        <a href="/chat" className="text-emerald-600 hover:text-emerald-800 font-medium">
+                          💬 Chat Communautaire
+                        </a>
                         <a href="/media" className="text-purple-600 hover:text-purple-800 font-medium">
                           🎵 Médias Partagés
                         </a>
@@ -284,7 +288,7 @@ function App() {
 
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-left">
                       <p className="text-sm text-blue-800">
-                        <strong>Espace Membre :</strong> Les choristes peuvent ajouter des médias, proposer des partitions et participer au blog.
+                        <strong>Espace Membre :</strong> Les choristes peuvent ajouter des médias, proposer des partitions, participer au blog et au chat communautaire.
                       </p>
                     </div>
                   </div>
