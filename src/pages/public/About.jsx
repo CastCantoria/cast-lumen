@@ -187,61 +187,71 @@ const About = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 pt-20">
-      {/* Hero Section Magistrale */}
-      <section className="relative py-24 overflow-hidden bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white">
-        <div className="absolute inset-0 bg-black opacity-30"></div>
-        <div className="absolute inset-0 bg-[url('/images/cast-chorale.jpg')] bg-cover bg-center opacity-20"></div>
+      {/* Hero Section Magistrale - Version Améliorée */}
+      <section className="relative py-32 overflow-hidden bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 text-white">
+        <div className="absolute inset-0 bg-black opacity-40"></div>
+        <div className="absolute inset-0 bg-[url('/images/cast-chorale.jpg')] bg-cover bg-center opacity-30"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-900/80 to-purple-900/60"></div>
         
-        <div className="container mx-auto px-4 relative">
-          <div className="flex flex-col lg:flex-row items-center gap-12">
+        <div className="container mx-auto px-6 relative">
+          <div className="flex flex-col lg:flex-row items-center gap-16">
             <div className="lg:w-1/2">
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-3 inline-block mb-6">
-                <span className="text-sm font-semibold">🎵 Chœur Sacré Depuis 2019</span>
+              <div className="bg-white/20 backdrop-blur-lg rounded-2xl p-4 inline-block mb-8 border border-white/30">
+                <span className="text-lg font-semibold text-white flex items-center">
+                  <span className="mr-2 text-2xl">🎵</span> 
+                  Chœur Sacré Depuis 2019 • Excellence Spirituelle
+                </span>
               </div>
               
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 font-serif leading-tight">
-                C.A.S.T. <span className="text-yellow-300">Cantoria</span>
+              <h1 className="text-6xl md:text-7xl font-bold mb-8 font-serif leading-tight">
+                C.A.S.T. <span className="text-yellow-300 block mt-2">Cantoria</span>
               </h1>
               
-              <p className="text-xl md:text-2xl mb-6 leading-relaxed text-blue-100">
+              <p className="text-2xl md:text-3xl mb-8 leading-relaxed text-blue-100 font-light">
                 Chœur Artistique & Spirituel de Tanà
               </p>
               
-              <p className="text-lg text-blue-200 mb-8 leading-relaxed">
-                Fondé en 2019, le <strong className="text-white">C.A.S.T. Cantoria</strong> incarne 
+              <p className="text-xl text-blue-200 mb-10 leading-relaxed max-w-2xl">
+                Fondé en 2019, le <strong className="text-white font-semibold">C.A.S.T. Cantoria</strong> incarne 
                 la rencontre sacrée entre <strong className="text-yellow-300">l'excellence musicale</strong> et 
                 la <strong className="text-yellow-300">profondeur spirituelle</strong>. 
                 Notre mission : transformer le chant en prière, élever les âmes par la beauté, 
                 et bâtir une communauté où chaque voix sert le divin.
               </p>
               
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-6">
                 <Link 
                   to="/join" 
-                  className="bg-yellow-400 text-gray-900 px-8 py-4 rounded-xl font-bold hover:bg-yellow-300 transition transform hover:scale-105 shadow-lg flex items-center"
+                  className="bg-yellow-400 text-gray-900 px-10 py-5 rounded-2xl font-bold hover:bg-yellow-300 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl flex items-center text-lg"
                 >
-                  <span className="mr-2">🎤</span>
+                  <span className="mr-3 text-2xl">🎤</span>
                   Rejoindre la Communion Vocale
                 </Link>
                 <Link 
                   to="/events" 
-                  className="border-2 border-white text-white px-8 py-4 rounded-xl font-bold hover:bg-white hover:text-purple-900 transition transform hover:scale-105 flex items-center"
+                  className="border-2 border-white text-white px-10 py-5 rounded-2xl font-bold hover:bg-white hover:text-purple-900 transition-all duration-300 transform hover:scale-105 flex items-center text-lg backdrop-blur-sm"
                 >
-                  <span className="mr-2">📅</span>
+                  <span className="mr-3 text-2xl">📅</span>
                   Vivre nos Célébrations
                 </Link>
               </div>
             </div>
             
             <div className="lg:w-1/2">
-              <div className="relative">
+              <div className="relative group">
+                <div className="absolute -inset-4 bg-gradient-to-r from-yellow-400 to-purple-600 rounded-3xl opacity-50 group-hover:opacity-80 blur-xl transition-all duration-500"></div>
                 <img 
                   src="/images/cast-chorale.jpg" 
                   alt="C.A.S.T. Cantoria en concert solennel - Chœur sacré unifié"
-                  className="rounded-2xl shadow-2xl w-full h-auto transform rotate-1 hover:rotate-0 transition-transform duration-500"
+                  className="relative rounded-2xl shadow-2xl w-full h-[600px] object-cover transform group-hover:scale-105 transition-all duration-700"
                 />
-                <div className="absolute -bottom-6 -left-6 bg-yellow-400 text-gray-900 px-6 py-3 rounded-xl font-bold shadow-lg">
-                  🏆 Excellence Spirituelle 2024
+                <div className="absolute -bottom-6 -left-6 bg-gradient-to-r from-yellow-400 to-orange-500 text-gray-900 px-8 py-4 rounded-2xl font-bold shadow-2xl border-2 border-white">
+                  <span className="text-2xl mr-2">🏆</span>
+                  Excellence Spirituelle 2024
+                </div>
+                <div className="absolute -top-6 -right-6 bg-white/20 backdrop-blur-lg text-white px-6 py-3 rounded-2xl font-semibold border border-white/30">
+                  <span className="text-xl mr-2">⭐</span>
+                  50+ Membres Actifs
                 </div>
               </div>
             </div>
@@ -249,18 +259,25 @@ const About = () => {
         </div>
       </section>
 
-      {/* Chiffres Clés Témoins */}
-      <section className="py-16 bg-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-purple-50 opacity-50"></div>
-        <div className="container mx-auto px-4 relative">
-          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
+      {/* Chiffres Clés Témoins - Version Améliorée */}
+      <section className="py-20 bg-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-purple-50 to-indigo-50 opacity-70"></div>
+        <div className="container mx-auto px-6 relative">
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold text-gray-900 mb-6 font-serif">Notre Impact Sacré</h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Des chiffres qui témoignent de notre engagement et de notre rayonnement spirituel
+            </p>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-8">
             {stats.map((stat, index) => (
               <div key={index} className="text-center group">
-                <div className="bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2">
-                  <div className="text-3xl mb-2 group-hover:scale-110 transition-transform">{stat.icon}</div>
-                  <div className="text-3xl font-bold mb-1">{stat.number}</div>
-                  <div className="font-semibold text-blue-100 text-sm mb-1">{stat.label}</div>
-                  <div className="text-blue-200 text-xs">{stat.description}</div>
+                <div className="bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-3 relative overflow-hidden">
+                  <div className="absolute inset-0 bg-white/10 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="text-4xl mb-4 group-hover:scale-110 transition-transform duration-300 relative">{stat.icon}</div>
+                  <div className="text-4xl font-bold mb-2 relative">{stat.number}</div>
+                  <div className="font-semibold text-blue-100 text-base mb-2 relative">{stat.label}</div>
+                  <div className="text-blue-200 text-sm relative">{stat.description}</div>
                 </div>
               </div>
             ))}
@@ -268,32 +285,37 @@ const About = () => {
         </div>
       </section>
 
-      {/* Valeurs Fondatrices Sacrées */}
-      <section className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4 font-serif">Notre Colonne Vertébrale Spirituelle</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Les principes sacrés qui animent chaque note, guident chaque prière, et unissent chaque cœur
+      {/* Valeurs Fondatrices Sacrées - Version Améliorée */}
+      <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-72 h-72 bg-purple-200 rounded-full -translate-x-1/2 -translate-y-1/2 opacity-50"></div>
+        <div className="absolute bottom-0 right-0 w-96 h-96 bg-blue-200 rounded-full translate-x-1/3 translate-y-1/3 opacity-50"></div>
+        
+        <div className="container mx-auto px-6 relative">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl font-bold text-gray-900 mb-6 font-serif">Notre Colonne Vertébrale Spirituelle</h2>
+            <p className="text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Les principes sacrés qui animent chaque note, guident chaque prière, et unissent chaque cœur dans une harmonie divine
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
             {values.map((value, index) => (
-              <div key={index} className="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 p-8 group border border-blue-100">
-                <div className="flex items-start space-x-6">
-                  <div className="text-5xl group-hover:scale-110 transition-transform duration-300">
+              <div key={index} className="bg-white rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 p-10 group border border-blue-100 hover:border-blue-200 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full -translate-y-16 translate-x-16 opacity-60"></div>
+                
+                <div className="flex items-start space-x-8 relative">
+                  <div className="text-6xl group-hover:scale-110 transition-transform duration-500 flex-shrink-0">
                     {value.icon}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-4">{value.title}</h3>
-                    <p className="text-gray-700 mb-6 leading-relaxed">{value.description}</p>
+                    <h3 className="text-3xl font-bold text-gray-900 mb-6 font-serif">{value.title}</h3>
+                    <p className="text-lg text-gray-700 mb-8 leading-relaxed">{value.description}</p>
                     
-                    <div className="space-y-3">
+                    <div className="space-y-4">
                       {value.details.map((detail, idx) => (
-                        <div key={idx} className="flex items-start text-gray-600">
-                          <span className="w-2 h-2 bg-blue-500 rounded-full mr-3 mt-2 flex-shrink-0"></span>
-                          <span className="text-sm leading-relaxed">{detail}</span>
+                        <div key={idx} className="flex items-start text-gray-600 group/item">
+                          <span className="w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mr-4 mt-2 flex-shrink-0 group-hover/item:scale-125 transition-transform"></span>
+                          <span className="text-base leading-relaxed font-medium">{detail}</span>
                         </div>
                       ))}
                     </div>
@@ -305,46 +327,78 @@ const About = () => {
         </div>
       </section>
 
-      {/* Âme du C.A.S.T. - Équipe Fondatrice */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4 font-serif">L'Âme Fondatrice du C.A.S.T.</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Rencontrez les visionnaires qui donnent corps et âme à notre mission sacrée
+      {/* Âme du C.A.S.T. - Équipe Fondatrice - VERSION ULTIME */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="absolute top-10 left-10 w-64 h-64 bg-blue-50 rounded-full opacity-60"></div>
+        <div className="absolute bottom-10 right-10 w-80 h-80 bg-purple-50 rounded-full opacity-60"></div>
+        
+        <div className="container mx-auto px-6 relative">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl font-bold text-gray-900 mb-6 font-serif">L'Âme Fondatrice du C.A.S.T.</h2>
+            <p className="text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              Rencontrez les visionnaires qui donnent corps et âme à notre mission sacrée, 
+              unissant leurs talents pour créer une harmonie céleste
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 2xl:grid-cols-2 gap-12">
             {teamMembers.map((member, index) => (
-              <div key={index} className="bg-gradient-to-br from-white to-blue-50 rounded-2xl shadow-xl overflow-hidden hover:shadow-2xl transition-all duration-300 group border border-blue-100">
-                <div className="flex flex-col md:flex-row h-full">
-                  <div className="md:w-2/5 relative">
+              <div key={index} className="group">
+                <div className="bg-gradient-to-br from-white to-blue-50 rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-700 overflow-hidden border border-blue-100 hover:border-blue-200 h-full flex flex-col">
+                  {/* Image en pleine largeur avec overlay amélioré */}
+                  <div className="relative h-96 w-full overflow-hidden">
                     <img 
                       src={member.image} 
                       alt={member.name}
-                      className="w-full h-64 md:h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    <div className="absolute top-4 left-4 bg-white/90 backdrop-blur rounded-full w-12 h-12 flex items-center justify-center text-xl shadow-lg">
+                    {/* Overlay gradient */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+                    
+                    {/* Badge spécialité */}
+                    <div className="absolute top-6 left-6 bg-white/95 backdrop-blur-lg rounded-2xl w-14 h-14 flex items-center justify-center text-2xl font-bold text-blue-600 shadow-lg border border-white/30">
                       {member.specialties[0]?.charAt(0)}
                     </div>
-                  </div>
-                  
-                  <div className="md:w-3/5 p-6 flex flex-col">
-                    <h3 className="text-xl font-bold text-gray-900 mb-2 leading-tight">{member.name}</h3>
-                    <p className="text-blue-600 font-semibold mb-4 text-sm">{member.role}</p>
                     
-                    <p className="text-gray-700 mb-4 text-sm leading-relaxed flex-grow">{member.description}</p>
-                    
-                    <div className="mb-4 p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
-                      <p className="text-blue-800 italic text-sm">"{member.quote}"</p>
+                    {/* Badge rôle avec effet glassmorphism */}
+                    <div className="absolute bottom-6 left-6 bg-white/20 backdrop-blur-lg text-white px-6 py-3 rounded-2xl border border-white/30">
+                      <span className="font-semibold text-lg">{member.role}</span>
                     </div>
                     
-                    <div className="space-y-2">
-                      <h4 className="font-semibold text-gray-800 text-sm">Domaines d'Expertise :</h4>
-                      <div className="flex flex-wrap gap-2">
+                    {/* Effet de brillance au hover */}
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></div>
+                  </div>
+                  
+                  {/* Contenu texte enrichi */}
+                  <div className="p-8 flex flex-col flex-grow">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-4 leading-tight font-serif">
+                      {member.name}
+                    </h3>
+                    
+                    <p className="text-gray-700 mb-6 text-lg leading-relaxed flex-grow">
+                      {member.description}
+                    </p>
+                    
+                    {/* Citation mise en valeur */}
+                    <div className="mb-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border-l-4 border-blue-500 relative">
+                      <div className="text-4xl text-blue-300 absolute -top-2 left-4">"</div>
+                      <p className="text-blue-800 italic text-lg leading-relaxed relative z-10">
+                        "{member.quote}"
+                      </p>
+                    </div>
+                    
+                    {/* Spécialités avec design amélioré */}
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-gray-800 text-xl flex items-center">
+                        <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+                        Domaines d'Expertise :
+                      </h4>
+                      <div className="flex flex-wrap gap-3">
                         {member.specialties.map((specialty, idx) => (
-                          <span key={idx} className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-medium">
+                          <span 
+                            key={idx} 
+                            className="bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 px-4 py-3 rounded-2xl text-base font-semibold border border-blue-200 hover:border-blue-300 transition-all duration-300 hover:scale-105 hover:shadow-lg"
+                          >
                             {specialty}
                           </span>
                         ))}
@@ -358,62 +412,70 @@ const About = () => {
         </div>
       </section>
 
-      {/* Histoire - Chronologie Sacrée */}
-      <section className="py-20 bg-gradient-to-br from-purple-50 to-blue-100">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4 font-serif">Notre Parcours Inspiré</h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Cinq années de croissance bénie, d'excellence sacrée et de rayonnement spirituel
+      {/* Histoire - Chronologie Sacrée - Version Améliorée */}
+      <section className="py-24 bg-gradient-to-br from-purple-50 to-blue-100 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full -translate-y-48 translate-x-48 opacity-40"></div>
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-200 rounded-full translate-y-48 -translate-x-48 opacity-40"></div>
+        
+        <div className="container mx-auto px-6 relative">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl font-bold text-gray-900 mb-6 font-serif">Notre Parcours Inspiré</h2>
+            <p className="text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              Cinq années de croissance bénie, d'excellence sacrée et de rayonnement spirituel, 
+              marquant chaque étape de notre évolution divine
             </p>
           </div>
 
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-7xl mx-auto">
             <div className="relative">
-              {/* Ligne de temps sacrée */}
-              <div className="absolute left-1/2 transform -translate-x-1/2 w-1 bg-blue-200 h-full hidden md:block"></div>
+              {/* Ligne de temps sacrée améliorée */}
+              <div className="absolute left-1/2 transform -translate-x-1/2 w-2 bg-gradient-to-b from-blue-400 to-purple-600 h-full hidden lg:block rounded-full shadow-lg"></div>
               
               {milestones.map((milestone, index) => (
-                <div key={index} className={`flex flex-col md:flex-row items-center mb-16 ${
-                  index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
+                <div key={index} className={`flex flex-col lg:flex-row items-stretch mb-20 ${
+                  index % 2 === 0 ? 'lg:flex-row' : 'lg:flex-row-reverse'
                 }`}>
                   {/* Côté contenu */}
-                  <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:pr-8' : 'md:pl-8'} mb-6 md:mb-0`}>
-                    <div className="bg-white rounded-2xl shadow-xl p-6 hover:shadow-2xl transition-all duration-300 border-l-4 border-blue-500">
-                      <div className="flex items-center mb-4">
-                        <div className="bg-blue-600 text-white w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold mr-4 shadow-lg">
+                  <div className={`lg:w-5/12 ${index % 2 === 0 ? 'lg:pr-12' : 'lg:pl-12'} mb-8 lg:mb-0`}>
+                    <div className="bg-white rounded-3xl shadow-2xl hover:shadow-3xl transition-all duration-500 p-8 border-l-4 border-blue-500 h-full relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full -translate-y-12 translate-x-12 opacity-60"></div>
+                      
+                      <div className="flex items-center mb-6">
+                        <div className="bg-gradient-to-br from-blue-600 to-purple-600 text-white w-20 h-20 rounded-2xl flex items-center justify-center text-xl font-bold mr-6 shadow-lg border-2 border-white">
                           {milestone.year}
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900">{milestone.title}</h3>
+                        <h3 className="text-2xl font-bold text-gray-900 font-serif">{milestone.title}</h3>
                       </div>
                       
-                      <p className="text-gray-700 mb-4 leading-relaxed">{milestone.description}</p>
+                      <p className="text-gray-700 mb-6 text-lg leading-relaxed">{milestone.description}</p>
                       
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         {milestone.achievements.map((achievement, idx) => (
-                          <div key={idx} className="flex items-center text-gray-600 text-sm">
-                            <span className="w-2 h-2 bg-green-500 rounded-full mr-3"></span>
-                            {achievement}
+                          <div key={idx} className="flex items-center text-gray-600 text-base group/achieve">
+                            <span className="w-3 h-3 bg-green-500 rounded-full mr-4 group-hover/achieve:scale-125 transition-transform"></span>
+                            <span className="font-medium">{achievement}</span>
                           </div>
                         ))}
                       </div>
                     </div>
                   </div>
                   
-                  {/* Point central sacré */}
-                  <div className="hidden md:flex w-2/12 justify-center relative">
-                    <div className="w-6 h-6 bg-blue-600 rounded-full border-4 border-white shadow-lg z-10"></div>
+                  {/* Point central sacré amélioré */}
+                  <div className="hidden lg:flex w-2/12 justify-center relative items-center">
+                    <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full border-4 border-white shadow-2xl z-10 transform group-hover:scale-125 transition-transform duration-300"></div>
+                    <div className="absolute w-16 h-16 bg-blue-200 rounded-full opacity-30 group-hover:scale-150 transition-transform duration-500"></div>
                   </div>
                   
-                  {/* Côté image */}
-                  <div className={`md:w-5/12 ${index % 2 === 0 ? 'md:pl-8' : 'md:pr-8'}`}>
-                    <div className="relative group">
+                  {/* Côté image amélioré */}
+                  <div className={`lg:w-5/12 ${index % 2 === 0 ? 'lg:pl-12' : 'lg:pr-12'}`}>
+                    <div className="relative group/image h-full">
+                      <div className="absolute -inset-4 bg-gradient-to-r from-blue-400 to-purple-600 rounded-3xl opacity-20 group-hover/image:opacity-40 blur-xl transition-all duration-500"></div>
                       <img 
                         src={milestone.image} 
                         alt={milestone.title}
-                        className="w-full h-64 object-cover rounded-2xl shadow-lg group-hover:scale-105 transition-transform duration-500"
+                        className="relative w-full h-80 lg:h-96 object-cover rounded-2xl shadow-2xl group-hover/image:scale-105 transition-transform duration-500 border-4 border-white"
                       />
-                      <div className="absolute inset-0 bg-blue-900 opacity-0 group-hover:opacity-20 rounded-2xl transition-opacity duration-300"></div>
+                      <div className="absolute inset-0 bg-blue-900 opacity-0 group-hover/image:opacity-10 rounded-2xl transition-opacity duration-300"></div>
                     </div>
                   </div>
                 </div>
@@ -423,75 +485,102 @@ const About = () => {
         </div>
       </section>
 
-      {/* Vision Prophétique */}
-      <section className="py-20 bg-gradient-to-r from-blue-900 to-purple-900 text-white">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-4xl font-bold mb-6 font-serif">Notre Vision Prophétique</h2>
-          <p className="text-xl mb-8 max-w-3xl mx-auto text-blue-100 leading-relaxed">
+      {/* Vision Prophétique - Version Corrigée */}
+      <section className="py-24 bg-gradient-to-r from-blue-900 via-purple-900 to-indigo-900 text-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-white/10 to-transparent"></div>
+        <div className="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-white/10 to-transparent"></div>
+        
+        <div className="container mx-auto px-6 text-center relative">
+          <h2 className="text-5xl font-bold mb-8 font-serif">Notre Vision Prophétique 2025-2030</h2>
+          <p className="text-2xl mb-12 max-w-4xl mx-auto text-blue-100 leading-relaxed font-light">
             Développer l'Académie C.A.S.T. pour former la nouvelle génération de chantres sacrés, 
             créer un studio d'enregistrement professionnel dédié au répertoire spirituel, 
             et étendre notre rayonnement à travers des collaborations internationales 
             et des tournées sacrées qui porteront la voix malgache aux quatre coins du monde.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
-              <div className="text-4xl mb-4">🎓</div>
-              <h3 className="text-xl font-bold mb-3">Académie Sacrée</h3>
-              <p className="text-blue-200">Former 50 jeunes talents par an d'ici 2026</p>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
-              <div className="text-4xl mb-4">🎼</div>
-              <h3 className="text-xl font-bold mb-3">Création Inspirée</h3>
-              <p className="text-blue-200">Composer et enregistrer 20 nouvelles pièces sacrées</p>
-            </div>
-            
-            <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
-              <div className="text-4xl mb-4">🌍</div>
-              <h3 className="text-xl font-bold mb-3">Rayonnement Mondial</h3>
-              <p className="text-blue-200">Concerts dans 5 pays d'Afrique et d'Europe</p>
-            </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto">
+            {[
+              {
+                icon: "🎓",
+                title: "Académie Sacrée",
+                description: "Former 50 jeunes talents par an d'ici 2026",
+                details: ["Programme de formation complet", "Mentorat spirituel", "Excellence vocale"]
+              },
+              {
+                icon: "🎼",
+                title: "Création Inspirée",
+                description: "Composer et enregistrer 20 nouvelles pièces sacrées",
+                details: ["Studio professionnel", "Compositions originales", "Patrimoine musical"]
+              },
+              {
+                icon: "🌍",
+                title: "Rayonnement Mondial",
+                description: "Concerts dans 5 pays d'Afrique et d'Europe",
+                details: ["Tournées internationales", "Collaborations", "Ambassade culturelle"]
+              }
+            ].map((vision, index) => (
+              <div key={index} className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 border border-white/20 hover:border-white/40 transition-all duration-500 group hover:scale-105">
+                <div className="text-5xl mb-6 group-hover:scale-110 transition-transform duration-300">{vision.icon}</div>
+                <h3 className="text-2xl font-bold mb-4 font-serif">{vision.title}</h3>
+                <p className="text-blue-200 mb-6 text-lg">{vision.description}</p>
+                <div className="space-y-2">
+                  {vision.details.map((detail, idx) => (
+                    <div key={idx} className="flex items-center text-blue-100 text-sm">
+                      <span className="w-2 h-2 bg-yellow-400 rounded-full mr-3"></span>
+                      {detail}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Appel Final Sacré */}
-      <section className="py-20 bg-white">
-        <div className="container mx-auto px-4 text-center">
-          <div className="max-w-4xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 font-serif leading-tight">
-              Votre Voix a une <span className="text-blue-600">Mission Divine</span>
-            </h2>
-            
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Rejoignez une communauté où l'art rencontre la foi, où chaque chant est une prière, 
-              où votre talent sert une beauté qui élève les âmes vers le divin. 
-              Devenez l'instrument d'une harmonie sacrée qui transforme les cœurs et glorifie le Créateur.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link 
-                to="/join"
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-bold hover:from-blue-700 hover:to-purple-700 transition transform hover:scale-105 shadow-lg flex items-center justify-center"
-              >
-                <span className="mr-2">🎤</span>
-                Devenir Membre du C.A.S.T.
-              </Link>
+      {/* Appel Final Sacré - Version Améliorée */}
+      <section className="py-24 bg-white relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-blue-50 to-transparent"></div>
+        <div className="container mx-auto px-6 text-center relative">
+          <div className="max-w-5xl mx-auto">
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-3xl p-16 shadow-2xl border border-blue-100 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100 rounded-full -translate-y-32 translate-x-32 opacity-60"></div>
+              <div className="absolute bottom-0 left-0 w-80 h-80 bg-purple-100 rounded-full translate-y-32 -translate-x-32 opacity-60"></div>
               
-              <Link 
-                to="/spiritualite"
-                className="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-xl font-bold hover:bg-blue-600 hover:text-white transition transform hover:scale-105 flex items-center justify-center"
-              >
-                <span className="mr-2">🕊️</span>
-                Approfondir Notre Spiritualité
-              </Link>
-            </div>
-            
-            <div className="mt-8 text-gray-500">
-              <p className="text-sm">
-                ✨ Une audition musicale et un entretien spirituel vous attendent - Votre voix a une place unique dans notre chœur sacré
+              <h2 className="text-5xl md:text-6xl font-bold text-gray-900 mb-8 font-serif leading-tight relative">
+                Votre Voix a une <span className="text-transparent bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text">Mission Divine</span>
+              </h2>
+              
+              <p className="text-2xl text-gray-600 mb-12 leading-relaxed max-w-3xl mx-auto relative">
+                Rejoignez une communauté où l'art rencontre la foi, où chaque chant est une prière, 
+                où votre talent sert une beauté qui élève les âmes vers le divin. 
+                Devenez l'instrument d'une harmonie sacrée qui transforme les cœurs et glorifie le Créateur.
               </p>
+              
+              <div className="flex flex-col lg:flex-row gap-6 justify-center items-center relative">
+                <Link 
+                  to="/join"
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-12 py-6 rounded-2xl font-bold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl flex items-center justify-center text-lg min-w-64"
+                >
+                  <span className="mr-3 text-2xl">🎤</span>
+                  Devenir Membre du C.A.S.T.
+                </Link>
+                
+                <Link 
+                  to="/spiritualite"
+                  className="border-2 border-blue-600 text-blue-600 px-12 py-6 rounded-2xl font-bold hover:bg-blue-600 hover:text-white transition-all duration-300 transform hover:scale-105 flex items-center justify-center text-lg min-w-64 bg-white/80 backdrop-blur-sm"
+                >
+                  <span className="mr-3 text-2xl">🕊️</span>
+                  Approfondir Notre Spiritualité
+                </Link>
+              </div>
+              
+              <div className="mt-12 text-gray-500 relative">
+                <p className="text-lg flex items-center justify-center">
+                  <span className="text-2xl mr-3">✨</span>
+                  Une audition musicale et un entretien spirituel vous attendent - Votre voix a une place unique dans notre chœur sacré
+                </p>
+              </div>
             </div>
           </div>
         </div>
