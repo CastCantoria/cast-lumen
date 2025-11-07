@@ -1,42 +1,103 @@
+/* src/App.css */
+/* Reset complet pour supprimer tous les cadres blancs */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background-color: #f8fafc; /* Couleur de fond douce */
+}
+
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.App {
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+/* Supprime tous les conteneurs limitants */
+.container {
+  max-width: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+/* Assure que le main prend toute la largeur */
+main {
+  width: 100%;
+  flex: 1;
+  margin: 0;
+  padding: 0;
 }
 
-.card {
-  padding: 2em;
+/* Header fixe sans espace blanc */
+header {
+  width: 100%;
+  margin: 0;
 }
 
-.read-the-docs {
-  color: #888;
+/* Footer sans espace blanc */
+footer {
+  width: 100%;
+  margin: 0;
+}
+
+/* Supprime les bordures et cadres blancs de toutes les pages */
+.page-container {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Styles pour les pages spécifiques */
+.home-page, .about-page, .contact-page {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Assure que les images et médias ne créent pas d'espace blanc */
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Supprime les espaces blancs des composants Tailwind */
+.bg-white {
+  background-color: #ffffff;
+}
+
+/* Améliore le scroll */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }

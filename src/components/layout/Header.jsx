@@ -1,5 +1,5 @@
 // src/components/layout/Header.jsx
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -9,11 +9,54 @@ const Header = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+  
+  const menuRef = useRef(null);
+  const userMenuRef = useRef(null);
+  const mobileMenuRef = useRef(null);
+
+  // Fermer les menus en cliquant à l'extérieur
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Fermer le menu utilisateur
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
+        setIsUserMenuOpen(false);
+      }
+      
+      // Fermer le menu mobile complet
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+        setActiveDropdown(null);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
+
+  // Empêcher le scroll du body quand le menu mobile est ouvert
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
 
   const handleLogout = async () => {
     try {
       await logout();
       navigate('/');
+      closeAllMenus();
     } catch (error) {
       console.error('Erreur de déconnexion:', error);
       window.location.href = '/';
@@ -23,31 +66,58 @@ const Header = () => {
   const closeAllMenus = () => {
     setIsMenuOpen(false);
     setIsUserMenuOpen(false);
+    setActiveDropdown(null);
+    document.body.style.overflow = 'unset';
+  };
+
+  const toggleMenu = () => {
+    const newState = !isMenuOpen;
+    setIsMenuOpen(newState);
+    setIsUserMenuOpen(false);
+    setActiveDropdown(null);
+    
+    if (newState) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  };
+
+  const toggleUserMenu = () => {
+    setIsUserMenuOpen(!isUserMenuOpen);
+    setIsMenuOpen(false);
+    setActiveDropdown(null);
+  };
+
+  const toggleMobileDropdown = (menuLabel) => {
+    setActiveDropdown(activeDropdown === menuLabel ? null : menuLabel);
   };
 
   const menuItems = [
     {
       label: "La Chorale",
+      icon: "🎵",
       items: [
-        { to: "/about", label: "Notre Histoire" },
-        { to: "/spiritualite", label: "Spiritualité" },
-        { to: "/join", label: "Nous Rejoindre" },
-        { to: "/contact", label: "Contact" }
+        { to: "/about", label: "Notre Histoire", icon: "📖" },
+        { to: "/spiritualite", label: "Spiritualité", icon: "🙏" },
+        { to: "/join", label: "Nous Rejoindre", icon: "👥" },
+        { to: "/contact", label: "Contact", icon: "📞" }
       ]
     },
     {
       label: "Activités",
+      icon: "🎭",
       items: [
-        { to: "/repertoire", label: "Répertoire" },
-        { to: "/events", label: "Événements" },
-        { to: "/gallery", label: "Galerie" },
-        { to: "/concerts", label: "Concerts" }
+        { to: "/repertoire", label: "Répertoire", icon: "📜" },
+        { to: "/events", label: "Événements", icon: "📅" },
+        { to: "/gallery", label: "Galerie", icon: "🖼️" },
+        { to: "/concerts", label: "Concerts", icon: "🎶" }
       ]
     }
   ];
 
   return (
-    <header className="bg-gray-900 text-white shadow-lg sticky top-0 z-50">
+    <header className="bg-gray-900 text-white shadow-lg sticky top-0 z-50" ref={menuRef}>
       <div className="w-full px-4 sm:px-6">
         
         {/* BARRE PRINCIPALE */}
@@ -62,9 +132,10 @@ const Header = () => {
                   alt="C.A.S.T. Cantoria" 
                   className="h-10 w-auto"
                   onError={(e) => {
-                    // Fallback si le logo ne charge pas
                     e.target.style.display = 'none';
-                    e.target.nextSibling.style.display = 'flex';
+                    if (e.target.nextSibling) {
+                      e.target.nextSibling.style.display = 'flex';
+                    }
                   }}
                 />
                 {/* Fallback visuel */}
@@ -122,7 +193,7 @@ const Header = () => {
                       <Link
                         key={item.to}
                         to={item.to}
-                        className={`block px-4 py-2 text-sm whitespace-nowrap mx-2 rounded ${
+                        className={`block px-4 py-2 text-sm whitespace-nowrap mx-2 rounded transition-colors ${
                           location.pathname === item.to
                             ? 'bg-blue-600 text-white'
                             : 'text-gray-300 hover:bg-gray-700 hover:text-white'
@@ -193,9 +264,9 @@ const Header = () => {
                   </div>
                   
                   {/* MENU UTILISATEUR DROPDOWN */}
-                  <div className="relative">
+                  <div className="relative" ref={userMenuRef}>
                     <button
-                      onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                      onClick={toggleUserMenu}
                       className="flex items-center space-x-2 bg-gray-800 hover:bg-gray-700 rounded-lg px-3 py-2 transition-colors border border-gray-700"
                     >
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
@@ -319,120 +390,170 @@ const Header = () => {
 
             {/* MENU BURGER MOBILE */}
             <button 
-              className="lg:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-colors relative z-60"
+              onClick={toggleMenu}
+              aria-label="Menu principal"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              {isMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
 
-        {/* MENU MOBILE - ALIGNÉ À GAUCHE */}
-        {isMenuOpen && (
-          <div className="lg:hidden border-t border-gray-700 bg-gray-800 py-4">
-            <nav className="flex flex-col space-y-3">
-              {/* Accueil */}
-              <Link 
-                to="/" 
-                className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-                onClick={closeAllMenus}
-              >
-                <span className="text-lg mr-3">🏠</span>
-                <span className="font-medium">Accueil</span>
-              </Link>
-              
-              {/* GROUPES EN DROPDOWN - MOBILE */}
-              {menuItems.map((menu) => (
-                <div key={menu.label} className="space-y-2">
-                  {/* En-tête du menu */}
-                  <div className="flex items-center px-4 py-3 text-gray-300 bg-gray-750">
-                    <span className="text-lg mr-3">📂</span>
-                    <span className="font-medium">{menu.label}</span>
+        {/* MENU MOBILE - COMPLÈTEMENT REFONDU */}
+        <div 
+          ref={mobileMenuRef}
+          className={`lg:hidden fixed top-16 left-0 right-0 bottom-0 bg-gray-900 transform transition-transform duration-300 ease-in-out z-40 overflow-y-auto ${
+            isMenuOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <div className="p-4 space-y-4">
+            {/* Accueil */}
+            <Link 
+              to="/" 
+              className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-lg font-medium"
+              onClick={closeAllMenus}
+            >
+              <span className="text-xl mr-3">🏠</span>
+              <span>Accueil</span>
+            </Link>
+            
+            {/* GROUPES AVEC DROPDOWN INTERACTIF */}
+            {menuItems.map((menu) => (
+              <div key={menu.label} className="space-y-2">
+                {/* Bouton pour ouvrir/fermer le dropdown */}
+                <button
+                  onClick={() => toggleMobileDropdown(menu.label)}
+                  className="flex items-center justify-between w-full px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-lg font-medium"
+                >
+                  <div className="flex items-center">
+                    <span className="text-xl mr-3">{menu.icon}</span>
+                    <span>{menu.label}</span>
                   </div>
-                  
-                  {/* Sous-items */}
-                  <div className="space-y-1">
+                  <svg 
+                    className={`w-5 h-5 transition-transform duration-200 ${
+                      activeDropdown === menu.label ? 'rotate-180' : ''
+                    }`}
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                
+                {/* Sous-items avec animation */}
+                <div className={`overflow-hidden transition-all duration-200 ${
+                  activeDropdown === menu.label ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                }`}>
+                  <div className="space-y-1 ml-4 border-l-2 border-gray-700 pl-4">
                     {menu.items.map((item) => (
                       <Link
                         key={item.to}
                         to={item.to}
-                        className={`flex items-center px-6 py-2 text-sm transition-colors ${
+                        className={`flex items-center px-3 py-2 text-base transition-colors rounded-lg ${
                           location.pathname === item.to
                             ? 'bg-blue-600 text-white'
-                            : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                            : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                         }`}
                         onClick={closeAllMenus}
                       >
-                        <span className="mr-3">•</span>
+                        <span className="text-lg mr-3">{item.icon}</span>
                         <span>{item.label}</span>
                       </Link>
                     ))}
                   </div>
                 </div>
-              ))}
+              </div>
+            ))}
 
-              {/* Espace Membre */}
-              {currentUser && (
-                <>
-                  <div className="border-t border-gray-700 pt-4 mt-2">
-                    {/* Tableau de Bord */}
-                    <Link 
-                      to="/dashboard" 
-                      className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-                      onClick={closeAllMenus}
-                    >
-                      <span className="text-lg mr-3">📊</span>
-                      <span className="font-medium">Tableau de Bord</span>
-                    </Link>
-                    
-                    {/* Chat Live */}
-                    <Link 
-                      to="/chat" 
-                      className="flex items-center px-4 py-3 text-green-300 hover:text-white hover:bg-green-900 transition-colors"
-                      onClick={closeAllMenus}
-                    >
-                      <span className="text-lg mr-3">💬</span>
-                      <span className="font-medium">Chat Live</span>
-                      <div className="ml-2 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    </Link>
-                  </div>
-                  
-                  {/* Déconnexion */}
-                  <button
-                    onClick={handleLogout}
-                    className="flex items-center px-4 py-3 text-red-400 hover:text-white hover:bg-red-900 transition-colors mt-2 w-full text-left"
-                  >
-                    <span className="text-lg mr-3">🚪</span>
-                    <span className="font-medium">Se déconnecter</span>
-                  </button>
-                </>
-              )}
-
-              {/* Connexion/Inscription */}
-              {!currentUser && (
-                <div className="border-t border-gray-700 pt-4 mt-2 space-y-3">
-                  <Link
-                    to="/login"
-                    className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
-                    onClick={closeAllMenus}
-                  >
-                    <span className="text-lg mr-3">🔑</span>
-                    <span className="font-medium">Connexion</span>
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="flex items-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors mx-4"
-                    onClick={closeAllMenus}
-                  >
-                    <span className="text-lg mr-3">📝</span>
-                    <span className="font-medium">S'inscrire</span>
-                  </Link>
+            {/* ESPACE MEMBRE - Mobile */}
+            {currentUser && (
+              <div className="border-t border-gray-700 pt-4 mt-4 space-y-2">
+                <div className="px-4 py-2 text-sm text-gray-400 font-medium">
+                  Espace Membre
                 </div>
-              )}
-            </nav>
+                
+                <Link 
+                  to="/dashboard" 
+                  className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-lg font-medium"
+                  onClick={closeAllMenus}
+                >
+                  <span className="text-xl mr-3">📊</span>
+                  <span>Tableau de Bord</span>
+                </Link>
+                
+                <Link 
+                  to="/chat" 
+                  className="flex items-center px-4 py-3 text-green-300 hover:text-white hover:bg-green-900 transition-colors rounded-lg text-lg font-medium"
+                  onClick={closeAllMenus}
+                >
+                  <span className="text-xl mr-3">💬</span>
+                  <span>Chat Live</span>
+                  <div className="ml-2 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                </Link>
+
+                <Link 
+                  to="/profile" 
+                  className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-lg font-medium"
+                  onClick={closeAllMenus}
+                >
+                  <span className="text-xl mr-3">👤</span>
+                  <span>Mon Profil</span>
+                </Link>
+                
+                <button
+                  onClick={handleLogout}
+                  className="flex items-center w-full px-4 py-3 text-red-400 hover:text-white hover:bg-red-900 transition-colors rounded-lg text-lg font-medium text-left"
+                >
+                  <span className="text-xl mr-3">🚪</span>
+                  <span>Se déconnecter</span>
+                </button>
+              </div>
+            )}
+
+            {/* CONNEXION/INSCRIPTION - Mobile */}
+            {!currentUser && (
+              <div className="border-t border-gray-700 pt-4 mt-4 space-y-3">
+                <div className="px-4 py-2 text-sm text-gray-400 font-medium">
+                  Connexion
+                </div>
+                
+                <Link
+                  to="/login"
+                  className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-lg font-medium"
+                  onClick={closeAllMenus}
+                >
+                  <span className="text-xl mr-3">🔑</span>
+                  <span>Connexion</span>
+                </Link>
+                
+                <Link
+                  to="/register"
+                  className="flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-medium mx-4"
+                  onClick={closeAllMenus}
+                >
+                  <span className="text-xl mr-3">📝</span>
+                  <span>S'inscrire</span>
+                </Link>
+              </div>
+            )}
           </div>
+        </div>
+
+        {/* OVERLAY POUR FERMER LE MENU */}
+        {isMenuOpen && (
+          <div 
+            className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+            onClick={closeAllMenus}
+          />
         )}
       </div>
     </header>
