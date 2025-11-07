@@ -5,6 +5,12 @@ import usePermissions from '../../../hooks/usePermissions';
 import { collection, getDocs, query, where, doc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
 
+// IMPORT DES DASHBOARDS DEPUIS LE DOSSIER ADMIN - CHEMINS CORRIGÉS
+import EventsDashboard from '../admin/events/EventsDashboard';
+import ContentDashboard from '../admin/content/ContentDashboard';
+import RepertoireDashboard from '../admin/repertoire/RepertoireDashboard';
+import StatisticsDashboard from '../admin/statistics/StatisticsDashboard';
+
 // Icônes identiques à AdminDashboard
 const DashboardIcon = () => <span>📊</span>;
 const UsersIcon = () => <span>👥</span>;
@@ -542,6 +548,7 @@ const SuperAdminDashboard = () => {
     );
   }
 
+  // FONCTION RENDERCONTENT COMPLÉTÉE AVEC LES SECTIONS
   const renderContent = () => {
     switch (activeSection) {
       case 'overview':
@@ -1018,6 +1025,19 @@ const SuperAdminDashboard = () => {
             </div>
           </div>
         );
+
+      // SECTIONS AVEC LES DASHBOARDS IMPORTÉS
+      case 'events':
+        return <EventsDashboard />;
+
+      case 'content':
+        return <ContentDashboard />;
+
+      case 'repertoire':
+        return <RepertoireDashboard />;
+
+      case 'stats':
+        return <StatisticsDashboard />;
 
       default:
         return (

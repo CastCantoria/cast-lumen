@@ -4,6 +4,12 @@ import { useAuth } from "../../../contexts/AuthContext";
 import { collection, getDocs, query, where, doc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { db } from "../../../lib/firebase";
 
+// IMPORT DES DASHBOARDS - AJOUTÉ
+import EventsDashboard from './events/EventsDashboard';
+import ContentDashboard from './content/ContentDashboard';
+import RepertoireDashboard from './repertoire/RepertoireDashboard';
+import StatisticsDashboard from './statistics/StatisticsDashboard';
+
 // Icônes simples
 const DashboardIcon = () => <span>📊</span>;
 const UsersIcon = () => <span>👥</span>;
@@ -508,6 +514,7 @@ const AdminDashboard = () => {
     );
   };
 
+  // FONCTION RENDERCONTENT COMPLÉTÉE AVEC LES SECTIONS
   const renderContent = () => {
     switch (activeSection) {
       case 'overview':
@@ -973,6 +980,19 @@ const AdminDashboard = () => {
             </div>
           </div>
         );
+
+      // SECTIONS AVEC LES DASHBOARDS IMPORTÉS - AJOUTÉ
+      case 'events':
+        return <EventsDashboard />;
+
+      case 'content':
+        return <ContentDashboard />;
+
+      case 'repertoire':
+        return <RepertoireDashboard />;
+
+      case 'stats':
+        return <StatisticsDashboard />;
 
       default:
         return (
