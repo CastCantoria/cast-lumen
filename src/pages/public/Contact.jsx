@@ -33,7 +33,7 @@ const Contact = () => {
     {
       icon: '📞',
       title: 'Téléphone',
-      value: '+261 34 11 361 57 ou +261 32 91 828 83',
+      value: '+261 34 11 316 57 ou +261 32 91 828 83',
       description: 'Lun-Ven 9h-17h'
     },
     {

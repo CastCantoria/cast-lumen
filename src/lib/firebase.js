@@ -1,4 +1,3 @@
-// src/lib/firebase.js
 import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
@@ -14,7 +13,6 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialisation avec gestion d'erreurs
 let app, db, auth, storage;
 
 try {
@@ -22,7 +20,6 @@ try {
   db = getFirestore(app);
   auth = getAuth(app);
   storage = getStorage(app);
-  
   console.log('✅ Firebase initialisé avec succès');
 } catch (error) {
   console.error('❌ Erreur d\'initialisation Firebase:', error);

@@ -2,7 +2,7 @@
 export const CONTACTS = {
   general: {
     email: 'castcantoria@outlook.fr',
-    phone: '+261 34 11 361 57',
+    phone: '+261 34 11 316 57',
     whatsapp: '+261 32 91 828 83',
     address: 'Cantoria, France'
   },

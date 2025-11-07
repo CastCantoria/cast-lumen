@@ -2,7 +2,7 @@
 
 ##  Support Général
 - **Email**: castcantoria@gmail.com
-- **Téléphone**: +261 34 11 361 57
+- **Téléphone**: +261 34 11 316 57
 - **WhatsApp**: +261 32 91 828 83
 
 ##  Contacts Techniques

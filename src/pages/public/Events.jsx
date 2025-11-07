@@ -200,7 +200,7 @@ const Events = () => {
               <div className="flex flex-col sm:flex-row justify-center gap-6 mb-6">
                 <div className="bg-green-700 p-4 rounded-lg">
                   <div className="text-lg font-semibold">📞 Téléphone</div>
-                  <div className="text-xl">+261 34 11 361 57</div>
+                  <div className="text-xl">+261 34 11 316 57</div>
                 </div>
                 
                 <div className="bg-green-700 p-4 rounded-lg">

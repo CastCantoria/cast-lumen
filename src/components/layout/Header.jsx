@@ -93,28 +93,28 @@ const Header = () => {
     setActiveDropdown(activeDropdown === menuLabel ? null : menuLabel);
   };
 
-  const menuItems = [
-    {
-      label: "La Chorale",
-      icon: "🎵",
-      items: [
-        { to: "/about", label: "Notre Histoire", icon: "📖" },
-        { to: "/spiritualite", label: "Spiritualité", icon: "🙏" },
-        { to: "/join", label: "Nous Rejoindre", icon: "👥" },
-        { to: "/contact", label: "Contact", icon: "📞" }
-      ]
-    },
-    {
-      label: "Activités",
-      icon: "🎭",
-      items: [
-        { to: "/repertoire", label: "Répertoire", icon: "📜" },
-        { to: "/events", label: "Événements", icon: "📅" },
-        { to: "/gallery", label: "Galerie", icon: "🖼️" },
-        { to: "/concerts", label: "Concerts", icon: "🎶" }
-      ]
-    }
-  ];
+// Dans le tableau menuItems du Header.jsx, modifiez le groupe "Activités" :
+const menuItems = [
+  {
+    label: "La Chorale",
+    items: [
+      { to: "/about", label: "Notre Histoire" },
+      { to: "/spiritualite", label: "Spiritualité" },
+      { to: "/join", label: "Nous Rejoindre" },
+      { to: "/contact", label: "Contact" }
+    ]
+  },
+  {
+    label: "Activités",
+    items: [
+      { to: "/repertoire", label: "Répertoire" },
+      { to: "/events", label: "Événements" },
+      { to: "/gallery", label: "Galerie" },
+      { to: "/concerts", label: "Concerts" },
+      { to: "/blog", label: "Blog Communautaire", icon: "✍️" } // NOUVEAU
+    ]
+  }
+];
 
   return (
     <header className="bg-gray-900 text-white shadow-lg sticky top-0 z-50" ref={menuRef}>

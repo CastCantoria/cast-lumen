@@ -95,7 +95,7 @@ const Partenaires = () => {
                 📞 Devenir partenaire
               </h3>
               <p className="text-xl mb-4">
-                +261 34 11 361 57 (Yas)
+                +261 34 11 316 57 (Yas)
               </p>
               <p className="text-lg mb-6">
                 Rejoignez notre réseau de partenaires et soutenez la musique sacrée à Madagascar
