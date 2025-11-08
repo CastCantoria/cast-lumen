@@ -1,82 +1,30 @@
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
-    // ==================== //
-    // GALERIE (images publiques)
-    // ==================== //
-    match /gallery/{allPaths=**} {
-      allow read: if true;  // Public read
-      allow write, delete: if request.auth != null 
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super-admin'];
+    match /gallery/{allImages=**} {
+      allow read: if true;
+      allow write: if request.auth != null 
+        && (request.auth.token.role == 'super-admin' || request.auth.token.role == 'admin');
+      allow delete: if request.auth != null 
+        && (request.auth.token.role == 'super-admin' || request.auth.token.role == 'admin');
     }
     
-    // ==================== //
-    // ARTICLES (images publiques)
-    // ==================== //
-    match /articles/{allPaths=**} {
-      allow read: if true;  // Public read
-      allow write, delete: if request.auth != null 
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super-admin'];
+    match /partitions/{allFiles=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+        && (request.auth.token.role == 'super-admin' || request.auth.token.role == 'admin');
+    }
+    
+    match /articles/{allImages=**} {
+      allow read: if true;
+      allow write: if request.auth != null 
+        && (request.auth.token.role == 'super-admin' || request.auth.token.role == 'admin');
     }
 
-    // ==================== //
-    // PARTITIONS (accès membres+)
-    // ==================== //
-    match /partitions/{allPaths=**} {
-      allow read: if request.auth != null 
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['member', 'admin', 'super-admin'];
-      
-      allow write, delete: if request.auth != null 
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super-admin'];
-    }
-
-    // ==================== //
-    // AVATARS DES UTILISATEURS
-    // ==================== //
-    match /avatars/{userId}/{allPaths=**} {
-      allow read: if request.auth != null;  // Tous les utilisateurs authentifiés peuvent voir
-      allow write, delete: if request.auth != null && request.auth.uid == userId;  // Seulement son propre avatar
-    }
-
-    // ==================== //
-    // MÉDIAS DES ÉVÉNEMENTS
-    // ==================== //
-    match /events/{eventId}/{allPaths=**} {
-      allow read: if request.auth != null;  // Tous les utilisateurs authentifiés
-      allow write, delete: if request.auth != null 
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super-admin'];
-    }
-
-    // ==================== //
-    // SCORES/PARTITIONS (alternative naming)
-    // ==================== //
-    match /scores/{scoreId}/{allPaths=**} {
-      allow read: if request.auth != null 
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['member', 'admin', 'super-admin'];
-      
-      allow write, delete: if request.auth != null 
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'super-admin'];
-    }
-
-    // ==================== //
-    // DOCUMENTS PERSONNELS
-    // ==================== //
-    match /user-docs/{userId}/{allPaths=**} {
-      allow read, write, delete: if request.auth != null && request.auth.uid == userId;
-    }
-
-    // ==================== //
-    // RÈGLE PAR DÉFAUT
-    // ==================== //
     match /{allPaths=**} {
-      allow read, write: if false;  // Tout le reste est interdit
+      allow read: if request.auth != null;
+      allow write: if request.auth != null 
+        && (request.auth.token.role == 'super-admin' || request.auth.token.role == 'admin');
     }
   }
 }
