@@ -1,6 +1,10 @@
-﻿import React from 'react';
+﻿import React, { useEffect } from 'react';
 
 const VideosGallery = () => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white py-12">
       <div className="container mx-auto px-6">

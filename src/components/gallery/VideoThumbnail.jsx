@@ -1,16 +1,8 @@
-﻿// src/components/gallery/VideoThumbnail.jsx
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 
 const VideoThumbnail = ({ src, title, className }) => {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
-
-  // Générer une miniature ou utiliser une image de fallback
-  const getThumbnailUrl = (videoUrl) => {
-    // Pour l'instant, on utilise une image de placeholder
-    // Plus tard, tu pourras générer des miniatures réelles
-    return '/images/chorale-1.jpg'; // Image de fallback
-  };
 
   return (
     <div className={`relative ${className}`}>

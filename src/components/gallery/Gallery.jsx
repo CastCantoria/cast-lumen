@@ -1,5 +1,4 @@
-﻿// src/components/gallery/Gallery.jsx
-import React from 'react';
+﻿import React, { useEffect } from 'react';
 import { GalleryProvider } from '../../contexts/GalleryContext';
 import GalleryGrid from './GalleryGrid';
 import FilterTags from './FilterTags';
@@ -15,7 +14,8 @@ const castMedia = [
     title: 'Concert Sacré',
     description: 'Prestation lors du concert annuel',
     tags: ['concert', 'sacré', 'chorale'],
-    category: 'concerts'
+    category: 'concerts',
+    source: 'official'
   },
   {
     id: 2,
@@ -24,7 +24,8 @@ const castMedia = [
     title: 'Répétition Ensemble',
     description: 'Moment de travail en groupe',
     tags: ['repetition', 'ensemble', 'travail'],
-    category: 'repetitions'
+    category: 'repetitions',
+    source: 'official'
   },
   {
     id: 3,
@@ -33,137 +34,82 @@ const castMedia = [
     title: 'Backstage Convivial',
     description: 'Ambiance détendue avant le spectacle',
     tags: ['backstage', 'convivialite', 'detente'],
-    category: 'backstage'
+    category: 'backstage',
+    source: 'official'
   },
-  {
-    id: 4,
-    type: 'image',
-    url: '/images/gallery/galerie4.jpg',
-    title: 'Concert Spiritualité',
-    description: 'Œuvres sacrées interprétées avec ferveur',
-    tags: ['spiritualite', 'concert', 'sacré'],
-    category: 'spiritualite'
-  },
-  {
-    id: 5,
-    type: 'image',
-    url: '/images/gallery/galerie5.jpg',
-    title: 'Portrait Artistique',
-    description: 'Capture artistique des membres',
-    tags: ['portrait', 'artistique', 'membres'],
-    category: 'portraits'
-  },
-  {
-    id: 6,
-    type: 'image',
-    url: '/images/gallery/galerie6.jpg',
-    title: 'Événement Spécial',
-    description: 'Célébration lors d\'un événement marquant',
-    tags: ['evenement', 'celebration', 'special'],
-    category: 'evenements'
-  },
-  {
-    id: 7,
-    type: 'image',
-    url: '/images/gallery/galerie7.jpg',
-    title: 'Concert Lumineux',
-    description: 'Ambiance lumineuse lors du concert',
-    tags: ['concert', 'lumiere', 'ambiance'],
-    category: 'concerts'
-  },
-  {
-    id: 8,
-    type: 'image',
-    url: '/images/gallery/galerie8.jpg',
-    title: 'Moment de Recueillement',
-    description: 'Instant spirituel partagé',
-    tags: ['spiritualite', 'recueillement', 'moment'],
-    category: 'spiritualite'
-  },
+  // ... autres médias officiels existants
 
-  // Photos supplémentaires
+  // MÉDIAS DES MEMBRES - EXEMPLES
   {
-    id: 9,
+    id: 100,
     type: 'image',
-    url: '/images/chorale-1.jpg',
-    title: 'Ensemble C.A.S.T.',
-    description: 'Photo officielle de la chorale',
-    tags: ['ensemble', 'officiel', 'chorale'],
-    category: 'portraits'
+    url: '/images/membres/pcast15.jpg',
+    title: 'Répétition Piano - Partagé par Marie',
+    description: 'Session de travail avec notre pianiste accompagnateur',
+    tags: ['repetition', 'piano', 'membre', 'partage'],
+    category: 'repetitions',
+    source: 'member',
+    author: 'Marie D.',
+    date: '2024-01-15'
   },
   {
-    id: 10,
-    type: 'image',
-    url: '/images/chorale-2.jpg',
-    title: 'Concert d\'Automne',
-    description: 'Prestation saisonnière appréciée',
-    tags: ['concert', 'automne', 'saison'],
-    category: 'concerts'
-  },
-
-  // Audio
-  {
-    id: 11,
+    id: 101,
     type: 'audio',
-    url: '/audio/cantique-1.mp3',
-    title: 'Cantique Sacré',
-    description: 'Interprétation émouvante d\'un cantique traditionnel',
-    tags: ['audio', 'cantique', 'sacré', 'tradition'],
-    category: 'spiritualite'
+    url: '/audio/member-recording-1.mp3',
+    title: 'Improvisation Vocale - Partagé par Jean',
+    description: 'Improvisation lors d\'une séance de travail personnel',
+    tags: ['audio', 'improvisation', 'membre', 'vocale'],
+    category: 'repetitions',
+    source: 'member',
+    author: 'Jean P.',
+    date: '2024-01-20'
   },
   {
-    id: 12,
-    type: 'audio',
-    url: '/audio/intro-cast.mp3',
-    title: 'Introduction C.A.S.T.',
-    description: 'Présentation audio de la chorale',
-    tags: ['audio', 'introduction', 'presentation'],
-    category: 'presentation'
-  },
-
-  // Vidéos
-  {
-    id: 13,
-    type: 'video',
-    url: '/videos/presentation-cast.mp4',
-    title: 'Présentation C.A.S.T.',
-    description: 'Vidéo de présentation de la chorale',
-    tags: ['video', 'presentation', 'chorale'],
-    category: 'presentation'
-  },
-  {
-    id: 14,
-    type: 'video',
-    url: '/videos/message-spirituel.mp4',
-    title: 'Message Spirituel',
-    description: 'Partage d\'un message inspirant',
-    tags: ['video', 'spiritualite', 'message'],
-    category: 'spiritualite'
-  },
-
-  // Ajoute d'autres médias selon tes besoins...
-  {
-    id: 15,
+    id: 102,
     type: 'image',
-    url: '/images/pcast01.jpg',
-    title: 'Répétition Piano',
-    description: 'Session de travail avec accompagnement piano',
-    tags: ['repetition', 'piano', 'travail'],
-    category: 'repetitions'
+    url: '/images/membres/pcast16.jpg',
+    title: 'Concert Communautaire - Partagé par Sophie',
+    description: 'Photo du dernier concert de la communauté',
+    tags: ['concert', 'communauté', 'membre', 'partage'],
+    category: 'concerts',
+    source: 'member',
+    author: 'Sophie L.',
+    date: '2024-02-01'
   },
   {
-    id: 16,
+    id: 103,
+    type: 'video',
+    url: '/videos/member-video-1.mp4',
+    title: 'Tutoriel Vocal - Partagé par Marc',
+    description: 'Partage d\'exercices vocaux pour les choristes',
+    tags: ['video', 'tutoriel', 'vocal', 'membre'],
+    category: 'repetitions',
+    source: 'member',
+    author: 'Marc T.',
+    date: '2024-02-05'
+  },
+  {
+    id: 104,
     type: 'image',
-    url: '/images/pcast03.jpg',
-    title: 'Concert d\'Hiver',
-    description: 'Prestation lors de la saison hivernale',
-    tags: ['concert', 'hiver', 'saison'],
-    category: 'concerts'
+    url: '/images/partitions/member-partition-1.jpg',
+    title: 'Arrangement Personnel - Partagé par Lucie',
+    description: 'Mon arrangement pour le chant du mois',
+    tags: ['partition', 'arrangement', 'membre', 'création'],
+    category: 'partitions',
+    source: 'member',
+    author: 'Lucie M.',
+    date: '2024-02-10'
   }
-  // Tu peux ajouter les 50+ médias restants...
 ];
 
 const Gallery = () => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
+  const memberMediaCount = castMedia.filter(media => media.source === 'member').length;
+  const officialMediaCount = castMedia.filter(media => media.source === 'official').length;
+
   return (
     <GalleryProvider>
       <div className="min-h-screen bg-gradient-to-b from-gray-100 to-white py-8">
@@ -177,6 +123,21 @@ const Gallery = () => {
               Découvrez l'univers musical de la chorale C.A.S.T. à travers {castMedia.length} photos, 
               vidéos et enregistrements audio.
             </p>
+            
+            {/* Statistiques des médias */}
+            <div className="mt-6 flex justify-center gap-6 text-sm">
+              <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full">
+                <strong>{officialMediaCount}</strong> médias officiels
+              </div>
+              <div className="bg-green-100 text-green-800 px-4 py-2 rounded-full">
+                <strong>{memberMediaCount}</strong> médias des membres
+              </div>
+              <div className="bg-purple-100 text-purple-800 px-4 py-2 rounded-full">
+                <a href="#member-uploads" className="hover:underline">
+                  👆 Partager mes médias
+                </a>
+              </div>
+            </div>
           </div>
 
           {/* Filtres et recherche */}
@@ -184,6 +145,78 @@ const Gallery = () => {
 
           {/* Grille de médias */}
           <GalleryGrid media={castMedia} />
+
+          {/* Section Upload des Membres */}
+          <div id="member-uploads" className="mt-16 bg-white rounded-lg shadow-lg p-8">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-cast-green mb-4">
+                👥 Espace Partage des Membres
+              </h2>
+              <p className="text-lg text-gray-600 mb-6">
+                Participez à l'enrichissement de notre galerie en partageant vos photos, vidéos, 
+                enregistrements audio ou partitions.
+              </p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-blue-50 p-4 rounded-lg">
+                  <div className="text-2xl mb-2">📷</div>
+                  <h3 className="font-bold text-blue-800">Photos</h3>
+                  <p className="text-sm text-blue-600">Concert, répétitions, moments</p>
+                </div>
+                <div className="bg-green-50 p-4 rounded-lg">
+                  <div className="text-2xl mb-2">🎬</div>
+                  <h3 className="font-bold text-green-800">Vidéos</h3>
+                  <p className="text-sm text-green-600">Extraits, tutoriels, partages</p>
+                </div>
+                <div className="bg-purple-50 p-4 rounded-lg">
+                  <div className="text-2xl mb-2">🎵</div>
+                  <h3 className="font-bold text-purple-800">Audio</h3>
+                  <p className="text-sm text-purple-600">Enregistrements, exercices</p>
+                </div>
+                <div className="bg-indigo-50 p-4 rounded-lg">
+                  <div className="text-2xl mb-2">🎼</div>
+                  <h3 className="font-bold text-indigo-800">Partitions</h3>
+                  <p className="text-sm text-indigo-600">Arrangements, créations</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Instructions pour l'upload */}
+            <div className="bg-gray-50 rounded-lg p-6 mb-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">Comment partager ?</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                <div className="text-center">
+                  <div className="text-2xl mb-2">1️⃣</div>
+                  <p className="font-semibold">Connectez-vous</p>
+                  <p className="text-gray-600">Accédez à votre espace membre</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl mb-2">2️⃣</div>
+                  <p className="font-semibold">Allez dans "Médias"</p>
+                  <p className="text-gray-600">Section gestion des médias</p>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl mb-2">3️⃣</div>
+                  <p className="font-semibold">Téléversez</p>
+                  <p className="text-gray-600">Photos, vidéos, audio ou partitions</p>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA pour l'upload */}
+            <div className="text-center">
+              <a 
+                href="/media" 
+                className="inline-flex items-center bg-cast-green text-white px-6 py-3 rounded-lg hover:bg-opacity-80 transition-colors font-semibold"
+              >
+                📤 Accéder à l'upload des médias
+                <span className="ml-2">→</span>
+              </a>
+              <p className="text-sm text-gray-600 mt-2">
+                Disponible pour tous les membres connectés
+              </p>
+            </div>
+          </div>
 
           {/* Modal lightbox */}
           <MediaModal />
@@ -194,7 +227,8 @@ const Gallery = () => {
               {castMedia.length} médias disponibles • 
               {castMedia.filter(m => m.type === 'image').length} photos • 
               {castMedia.filter(m => m.type === 'video').length} vidéos • 
-              {castMedia.filter(m => m.type === 'audio').length} enregistrements audio
+              {castMedia.filter(m => m.type === 'audio').length} enregistrements audio •
+              {memberMediaCount} partages membres
             </p>
           </div>
         </div>

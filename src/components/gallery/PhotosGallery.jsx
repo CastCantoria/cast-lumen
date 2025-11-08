@@ -1,6 +1,10 @@
-﻿import React from 'react';
+﻿import React, { useEffect } from 'react';
 
 const PhotosGallery = () => {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, []);
+
   const photos = [
     {
       id: 1,
@@ -11,12 +15,11 @@ const PhotosGallery = () => {
     },
     {
       id: 2,
-      title: "Concert à la Cathédrale",
+      title: "Concert à la Cathédrale", 
       category: "Concerts",
-      date: "2024", 
+      date: "2024",
       image: "/images/concert-cathedrale.jpg"
     },
-    // Ajoutez plus de photos...
   ];
 
   return (

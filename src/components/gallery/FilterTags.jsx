@@ -1,22 +1,27 @@
-﻿// src/components/gallery/FilterTags.jsx
-import React from 'react';
+﻿import React, { useEffect } from 'react';
 import { useGallery } from '../../contexts/GalleryContext';
 
 const FilterTags = () => {
   const { filter, setFilter, searchQuery, setSearchQuery } = useGallery();
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [filter, searchQuery]);
+
   const filters = [
     { key: 'all', label: '🎭 Tous les médias' },
     { key: 'image', label: '🖼️ Photos' },
     { key: 'video', label: '🎬 Vidéos' },
-    { key: 'audio', label: '🎵 Audio' }
+    { key: 'audio', label: '🎵 Audio' },
+    { key: 'member', label: '👥 Médias membres' }
   ];
 
   const categories = [
     { key: 'concerts', label: '🎵 Concerts', color: 'bg-blue-500' },
     { key: 'spiritualite', label: '🙏 Spiritualité', color: 'bg-purple-500' },
     { key: 'repetitions', label: '🎻 Répétitions', color: 'bg-green-500' },
-    { key: 'backstage', label: '🌟 Backstage', color: 'bg-yellow-500' }
+    { key: 'backstage', label: '🌟 Backstage', color: 'bg-yellow-500' },
+    { key: 'partitions', label: '🎼 Partitions', color: 'bg-indigo-500' }
   ];
 
   return (

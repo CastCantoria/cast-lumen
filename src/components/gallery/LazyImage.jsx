@@ -1,5 +1,4 @@
-﻿// src/components/gallery/LazyImage.jsx
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 
 const LazyImage = ({ src, alt, className, ...props }) => {
   const [loaded, setLoaded] = useState(false);

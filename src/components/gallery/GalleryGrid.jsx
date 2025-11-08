@@ -1,5 +1,4 @@
-﻿// src/components/gallery/GalleryGrid.jsx
-import React from 'react';
+﻿import React, { useEffect } from 'react';
 import { useGallery } from '../../contexts/GalleryContext';
 import LazyImage from './LazyImage';
 import AudioPlayer from './AudioPlayer';
@@ -8,9 +7,13 @@ import VideoThumbnail from './VideoThumbnail';
 const GalleryGrid = ({ media }) => {
   const { setSelectedMedia, filter, searchQuery } = useGallery();
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [filter, searchQuery]);
+
   // Filtrage des médias
   const filteredMedia = media.filter(item => {
-    const matchesFilter = filter === 'all' || item.type === filter;
+    const matchesFilter = filter === 'all' || item.type === filter || (filter === 'member' && item.source === 'member');
     const matchesSearch = item.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          item.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     return matchesFilter && (searchQuery === '' || matchesSearch);
@@ -37,6 +40,16 @@ const GalleryGrid = ({ media }) => {
           className="relative group cursor-pointer transform transition-transform hover:scale-105"
           onClick={() => handleMediaClick(item)}
         >
+          {/* Badge Membre */}
+          {item.source === 'member' && (
+            <div className="absolute top-2 left-2 z-10">
+              <span className="bg-green-500 text-white text-xs px-2 py-1 rounded-full font-semibold flex items-center">
+                👤
+                <span className="ml-1">Membre</span>
+              </span>
+            </div>
+          )}
+
           {/* Image */}
           {item.type === 'image' && (
             <div className="relative overflow-hidden rounded-lg shadow-lg">
@@ -50,6 +63,9 @@ const GalleryGrid = ({ media }) => {
                   <p className="font-bold">{item.title}</p>
                   {item.description && (
                     <p className="text-sm mt-1">{item.description}</p>
+                  )}
+                  {item.author && (
+                    <p className="text-xs mt-1 text-gray-300">Par {item.author}</p>
                   )}
                 </div>
               </div>
@@ -71,6 +87,9 @@ const GalleryGrid = ({ media }) => {
                 <div className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 text-white text-center">
                   <p className="font-bold">{item.title}</p>
                   <p className="text-sm mt-1">Cliquez pour lire</p>
+                  {item.author && (
+                    <p className="text-xs mt-1 text-gray-300">Par {item.author}</p>
+                  )}
                 </div>
               </div>
             </div>
@@ -78,12 +97,36 @@ const GalleryGrid = ({ media }) => {
 
           {/* Audio */}
           {item.type === 'audio' && (
-            <div className="bg-gradient-to-br from-cast-green to-cast-gold rounded-lg p-4 shadow-lg">
+            <div className={`rounded-lg p-4 shadow-lg ${
+              item.source === 'member' 
+                ? 'bg-gradient-to-br from-green-500 to-green-600' 
+                : 'bg-gradient-to-br from-cast-green to-cast-gold'
+            }`}>
               <AudioPlayer 
                 src={item.url}
                 title={item.title}
                 compact={true}
               />
+              {item.author && (
+                <p className="text-xs text-white mt-2 opacity-80">Partagé par {item.author}</p>
+              )}
+            </div>
+          )}
+
+          {/* Partition */}
+          {item.type === 'partition' && (
+            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg p-4 shadow-lg text-white">
+              <div className="text-center">
+                <div className="text-3xl mb-2">🎼</div>
+                <h3 className="font-bold text-sm mb-1">{item.title}</h3>
+                <p className="text-xs opacity-80 mb-3">{item.description}</p>
+                <div className="bg-white/20 rounded px-2 py-1 text-xs">
+                  Partition partagée
+                </div>
+                {item.author && (
+                  <p className="text-xs mt-2 opacity-80">Par {item.author}</p>
+                )}
+              </div>
             </div>
           )}
 

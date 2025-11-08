@@ -9,12 +9,17 @@ const Gallery = () => {
   const [viewAll, setViewAll] = useState(false);
   const [filtersExpanded, setFiltersExpanded] = useState(false);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [activeCategory, mediaType]);
+
   // Types de médias
   const mediaTypes = [
     { id: 'all', name: 'Tous', icon: '🖼️' },
     { id: 'photos', name: 'Photos', icon: '📷' },
     { id: 'videos', name: 'Vidéos', icon: '🎥' },
-    { id: 'audio', name: 'Audio', icon: '🎵' }
+    { id: 'audio', name: 'Audio', icon: '🎵' },
+    { id: 'member', name: 'Membres', icon: '👥' }
   ];
 
   // Catégories de contenu
@@ -24,12 +29,13 @@ const Gallery = () => {
     { id: 'repetitions', name: 'Répétitions', icon: '🎶' },
     { id: 'evenements', name: 'Événements', icon: '🎭' },
     { id: 'portraits', name: 'Portraits', icon: '👤' },
-    { id: 'communauté', name: 'Communauté', icon: '👥' }
+    { id: 'communauté', name: 'Communauté', icon: '👥' },
+    { id: 'partitions', name: 'Partitions', icon: '🎼' }
   ];
 
-  // Données des médias (même contenu que précédemment)
+  // Données des médias complètes
   const galleryMedia = [
-    // PHOTOS
+    // PHOTOS OFFICIELLES
     {
       id: 1,
       type: 'photos',
@@ -41,7 +47,8 @@ const Gallery = () => {
       date: '24 Décembre 2023',
       author: 'Jean Dupont',
       duration: null,
-      format: 'jpg'
+      format: 'jpg',
+      source: 'official'
     },
     {
       id: 2,
@@ -54,7 +61,8 @@ const Gallery = () => {
       date: '15 Janvier 2024',
       author: 'Marie Lambert',
       duration: null,
-      format: 'jpg'
+      format: 'jpg',
+      source: 'official'
     },
     {
       id: 3,
@@ -67,7 +75,8 @@ const Gallery = () => {
       date: '5 Mars 2024',
       author: 'C.A.S.T. Team',
       duration: null,
-      format: 'jpg'
+      format: 'jpg',
+      source: 'official'
     },
     {
       id: 4,
@@ -80,7 +89,8 @@ const Gallery = () => {
       date: '10 Février 2024',
       author: 'Pierre Martin',
       duration: null,
-      format: 'jpg'
+      format: 'jpg',
+      source: 'official'
     },
     {
       id: 5,
@@ -93,76 +103,8 @@ const Gallery = () => {
       date: '20 Janvier 2024',
       author: 'Sophie Bernard',
       duration: null,
-      format: 'jpg'
-    },
-
-    // VIDÉOS
-    {
-      id: 6,
-      type: 'videos',
-      category: 'concerts',
-      src: '/videos/presentation-cast.mp4',
-      thumbnail: '/images/gallery/galerie5.jpg',
-      title: 'Concert de Noël 2023 - Extrait',
-      description: 'Extrait musical de notre célébration de Noël',
-      date: '24 Décembre 2023',
-      author: 'C.A.S.T. Production',
-      duration: '15:30',
-      format: 'mp4'
-    },
-    {
-      id: 7,
-      type: 'videos',
-      category: 'repetitions',
-      src: '/videos/message-spirituel.mp4',
-      thumbnail: '/images/gallery/galerie6.jpg',
-      title: 'Documentaire C.A.S.T.',
-      description: 'Portrait de notre chorale et de sa mission spirituelle',
-      date: '15 Janvier 2024',
-      author: 'Lucie Moreau',
-      duration: '25:45',
-      format: 'mp4'
-    },
-    {
-      id: 8,
-      type: 'videos',
-      category: 'evenements',
-      src: '/videos/presentation-cast.mp4',
-      thumbnail: '/images/gallery/galerie7.jpg',
-      title: 'Atelier Vocal Masterclass',
-      description: 'Session de formation aux techniques vocales avancées',
-      date: '15 Février 2024',
-      author: 'Maître Chantal',
-      duration: '18:20',
-      format: 'mp4'
-    },
-
-    // AUDIO
-    {
-      id: 9,
-      type: 'audio',
-      category: 'concerts',
-      src: '/audio/cantique-1.mp3',
-      thumbnail: '/images/audio-cover.jpg',
-      title: 'Cantique de Noël - Douce Nuit',
-      description: 'Enregistrement live de notre concert de Noël',
-      date: '24 Décembre 2023',
-      author: 'Section Soprano',
-      duration: '4:15',
-      format: 'mp3'
-    },
-    {
-      id: 10,
-      type: 'audio',
-      category: 'repetitions',
-      src: '/audio/intro-cast.mp3',
-      thumbnail: '/images/audio-cover.jpg',
-      title: 'Prélude de Carême',
-      description: 'Extrait des répétitions du répertoire de Carême',
-      date: '10 Mars 2024',
-      author: 'Ensemble C.A.S.T.',
-      duration: '3:45',
-      format: 'mp3'
+      format: 'jpg',
+      source: 'official'
     },
     {
       id: 11,
@@ -175,7 +117,8 @@ const Gallery = () => {
       date: '1 Avril 2024',
       author: 'C.A.S.T. Team',
       duration: null,
-      format: 'jpg'
+      format: 'jpg',
+      source: 'official'
     },
     {
       id: 12,
@@ -188,14 +131,147 @@ const Gallery = () => {
       date: '8 Janvier 2024',
       author: 'Photographe C.A.S.T.',
       duration: null,
-      format: 'jpg'
+      format: 'jpg',
+      source: 'official'
+    },
+
+    // VIDÉOS OFFICIELLES
+    {
+      id: 6,
+      type: 'videos',
+      category: 'concerts',
+      src: '/videos/presentation-cast.mp4',
+      thumbnail: '/images/gallery/galerie5.jpg',
+      title: 'Concert de Noël 2023 - Extrait',
+      description: 'Extrait musical de notre célébration de Noël',
+      date: '24 Décembre 2023',
+      author: 'C.A.S.T. Production',
+      duration: '15:30',
+      format: 'mp4',
+      source: 'official'
+    },
+    {
+      id: 7,
+      type: 'videos',
+      category: 'repetitions',
+      src: '/videos/message-spirituel.mp4',
+      thumbnail: '/images/gallery/galerie6.jpg',
+      title: 'Documentaire C.A.S.T.',
+      description: 'Portrait de notre chorale et de sa mission spirituelle',
+      date: '15 Janvier 2024',
+      author: 'Lucie Moreau',
+      duration: '25:45',
+      format: 'mp4',
+      source: 'official'
+    },
+    {
+      id: 8,
+      type: 'videos',
+      category: 'evenements',
+      src: '/videos/presentation-cast.mp4',
+      thumbnail: '/images/gallery/galerie7.jpg',
+      title: 'Atelier Vocal Masterclass',
+      description: 'Session de formation aux techniques vocales avancées',
+      date: '15 Février 2024',
+      author: 'Maître Chantal',
+      duration: '18:20',
+      format: 'mp4',
+      source: 'official'
+    },
+
+    // AUDIO OFFICIEL
+    {
+      id: 9,
+      type: 'audio',
+      category: 'concerts',
+      src: '/audio/cantique-1.mp3',
+      thumbnail: '/images/audio-cover.jpg',
+      title: 'Cantique de Noël - Douce Nuit',
+      description: 'Enregistrement live de notre concert de Noël',
+      date: '24 Décembre 2023',
+      author: 'Section Soprano',
+      duration: '4:15',
+      format: 'mp3',
+      source: 'official'
+    },
+    {
+      id: 10,
+      type: 'audio',
+      category: 'repetitions',
+      src: '/audio/intro-cast.mp3',
+      thumbnail: '/images/audio-cover.jpg',
+      title: 'Prélude de Carême',
+      description: 'Extrait des répétitions du répertoire de Carême',
+      date: '10 Mars 2024',
+      author: 'Ensemble C.A.S.T.',
+      duration: '3:45',
+      format: 'mp3',
+      source: 'official'
+    },
+
+    // MÉDIAS DES MEMBRES
+    {
+      id: 100,
+      type: 'photos',
+      category: 'repetitions', 
+      src: '/images/membres/pcast15.jpg',
+      thumbnail: '/images/membres/pcast15.jpg',
+      title: 'Répétition Piano - Partagé par Marie',
+      description: 'Session de travail avec notre pianiste accompagnateur',
+      date: '15 Janvier 2024',
+      author: 'Marie D.',
+      duration: null,
+      format: 'jpg',
+      source: 'member'
+    },
+    {
+      id: 101,
+      type: 'audio',
+      category: 'repetitions',
+      src: '/audio/member-recording-1.mp3',
+      thumbnail: '/images/audio-cover.jpg',
+      title: 'Improvisation Vocale - Partagé par Jean',
+      description: 'Improvisation lors d\'une séance de travail personnel',
+      date: '20 Janvier 2024',
+      author: 'Jean P.',
+      duration: '2:30',
+      format: 'mp3',
+      source: 'member'
+    },
+    {
+      id: 102,
+      type: 'videos',
+      category: 'repetitions',
+      src: '/videos/member-video-1.mp4',
+      thumbnail: '/images/gallery/galerie6.jpg',
+      title: 'Tutoriel Vocal - Partagé par Marc',
+      description: 'Partage d\'exercices vocaux pour les choristes',
+      date: '5 Février 2024',
+      author: 'Marc T.',
+      duration: '8:15',
+      format: 'mp4',
+      source: 'member'
+    },
+    {
+      id: 103,
+      type: 'photos',
+      category: 'partitions',
+      src: '/images/partitions/member-partition-1.jpg',
+      thumbnail: '/images/partitions/member-partition-1.jpg',
+      title: 'Arrangement Personnel - Partagé par Lucie',
+      description: 'Mon arrangement pour le chant du mois',
+      date: '10 Février 2024',
+      author: 'Lucie M.',
+      duration: null,
+      format: 'jpg',
+      source: 'member'
     }
   ];
 
   // Filtrage des médias
   const filteredMedia = galleryMedia.filter(media => {
     const categoryMatch = activeCategory === 'all' || media.category === activeCategory;
-    const typeMatch = mediaType === 'all' || media.type === mediaType;
+    const typeMatch = mediaType === 'all' || media.type === mediaType || (mediaType === 'member' && media.source === 'member');
     return categoryMatch && typeMatch;
   });
 
@@ -271,6 +347,11 @@ const Gallery = () => {
     }
   };
 
+  // Compteurs
+  const memberMediaCount = galleryMedia.filter(m => m.source === 'member').length;
+  const officialMediaCount = galleryMedia.filter(m => !m.source || m.source === 'official').length;
+  const totalMediaCount = galleryMedia.length;
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 pt-20">
       {/* Hero Section */}
@@ -281,12 +362,35 @@ const Gallery = () => {
           <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-purple-100 leading-relaxed">
             Plongez dans l'univers de C.A.S.T. Cantoria à travers nos photos, vidéos et enregistrements
           </p>
+          
+          {/* Statistiques */}
+          <div className="flex flex-wrap justify-center gap-6 mb-8">
+            <div className="bg-white/20 backdrop-blur rounded-lg px-6 py-3">
+              <div className="text-2xl font-bold">{totalMediaCount}</div>
+              <div className="text-sm opacity-90">Total médias</div>
+            </div>
+            <div className="bg-white/20 backdrop-blur rounded-lg px-6 py-3">
+              <div className="text-2xl font-bold">{officialMediaCount}</div>
+              <div className="text-sm opacity-90">Officiels</div>
+            </div>
+            <div className="bg-green-500/80 backdrop-blur rounded-lg px-6 py-3">
+              <div className="text-2xl font-bold">{memberMediaCount}</div>
+              <div className="text-sm opacity-90">Partages membres</div>
+            </div>
+          </div>
+
           <div className="flex flex-wrap justify-center gap-4">
             <Link 
               to="/events" 
               className="bg-white text-purple-900 px-8 py-4 rounded-xl font-semibold hover:bg-gray-100 transition transform hover:scale-105 shadow-lg"
             >
               📅 Voir nos Concerts
+            </Link>
+            <Link 
+              to="/media" 
+              className="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white hover:text-purple-900 transition transform hover:scale-105"
+            >
+              📤 Partager mes médias
             </Link>
             <Link 
               to="/join" 
@@ -450,7 +554,7 @@ const Gallery = () => {
             <div className="inline-flex gap-8 bg-white/80 backdrop-blur rounded-2xl px-8 py-4 shadow-lg">
               <div className="text-center">
                 <div className="text-2xl font-bold text-blue-600">{filteredMedia.length}</div>
-                <div className="text-sm text-gray-600">Total</div>
+                <div className="text-sm text-gray-600">Filtrés</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl font-bold text-green-600">
@@ -469,6 +573,12 @@ const Gallery = () => {
                   {filteredMedia.filter(m => m.type === 'audio').length}
                 </div>
                 <div className="text-sm text-gray-600">Audio</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">
+                  {filteredMedia.filter(m => m.source === 'member').length}
+                </div>
+                <div className="text-sm text-gray-600">Membres</div>
               </div>
             </div>
           </div>
@@ -489,6 +599,13 @@ const Gallery = () => {
                   <div className="absolute top-2 left-2 bg-black/70 text-white px-2 py-1 rounded-full text-xs font-semibold backdrop-blur">
                     {getMediaTypeIcon(media.type)}
                   </div>
+                  
+                  {/* Badge Membre */}
+                  {media.source === 'member' && (
+                    <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-semibold flex items-center">
+                      👤 Membre
+                    </div>
+                  )}
                   
                   {/* Overlay Hover */}
                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
@@ -557,7 +674,84 @@ const Gallery = () => {
         </div>
       </section>
 
-      {/* Modal de Visualisation (identique à précédemment) */}
+      {/* Section Upload des Membres */}
+      <section id="member-uploads" className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              👥 Espace Partage des Membres
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Contribuez à enrichir notre galerie en partageant vos propres médias
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div className="text-center p-6 bg-blue-50 rounded-xl">
+              <div className="text-4xl mb-4">📷</div>
+              <h3 className="font-bold text-blue-800 mb-2">Photos</h3>
+              <p className="text-blue-600 text-sm">Moments de concerts, répétitions, rencontres</p>
+            </div>
+            <div className="text-center p-6 bg-green-50 rounded-xl">
+              <div className="text-4xl mb-4">🎬</div>
+              <h3 className="font-bold text-green-800 mb-2">Vidéos</h3>
+              <p className="text-green-600 text-sm">Extraits, tutoriels, coulisses</p>
+            </div>
+            <div className="text-center p-6 bg-purple-50 rounded-xl">
+              <div className="text-4xl mb-4">🎵</div>
+              <h3 className="font-bold text-purple-800 mb-2">Audio</h3>
+              <p className="text-purple-600 text-sm">Enregistrements, exercices, partages</p>
+            </div>
+            <div className="text-center p-6 bg-indigo-50 rounded-xl">
+              <div className="text-4xl mb-4">🎼</div>
+              <h3 className="font-bold text-indigo-800 mb-2">Partitions</h3>
+              <p className="text-indigo-600 text-sm">Arrangements, créations, adaptations</p>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <div className="bg-gray-50 rounded-2xl p-8 mb-8">
+              <h3 className="text-2xl font-bold text-gray-800 mb-4">Comment partager ?</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                <div className="flex items-start">
+                  <div className="bg-blue-100 text-blue-600 rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0">1</div>
+                  <div>
+                    <h4 className="font-semibold text-gray-800">Connectez-vous</h4>
+                    <p className="text-gray-600 text-sm mt-1">Accédez à votre espace membre</p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <div className="bg-green-100 text-green-600 rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0">2</div>
+                  <div>
+                    <h4 className="font-semibold text-gray-800">Allez dans "Médias"</h4>
+                    <p className="text-gray-600 text-sm mt-1">Section gestion des médias</p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <div className="bg-purple-100 text-purple-600 rounded-full w-8 h-8 flex items-center justify-center mr-4 flex-shrink-0">3</div>
+                  <div>
+                    <h4 className="font-semibold text-gray-800">Téléversez</h4>
+                    <p className="text-gray-600 text-sm mt-1">Photos, vidéos, audio ou partitions</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Link 
+              to="/media"
+              className="inline-flex items-center bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-4 rounded-xl font-semibold hover:from-green-600 hover:to-green-700 transition transform hover:scale-105 shadow-lg"
+            >
+              📤 Accéder à l'upload des médias
+              <span className="ml-2">→</span>
+            </Link>
+            <p className="text-sm text-gray-600 mt-4">
+              Disponible pour tous les membres connectés (Eto ilay mila vola)
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Modal de Visualisation */}
       {selectedMedia && (
         <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
@@ -585,6 +779,7 @@ const Gallery = () => {
                     controls 
                     className="w-full h-auto max-h-[60vh] rounded-lg"
                     poster={selectedMedia.thumbnail}
+                    autoPlay
                   >
                     <source src={selectedMedia.src} type={`video/${selectedMedia.format}`} />
                     Votre navigateur ne supporte pas la lecture vidéo.
@@ -594,7 +789,7 @@ const Gallery = () => {
                 {selectedMedia.type === 'audio' && (
                   <div className="text-center py-8">
                     <div className="text-6xl mb-4">🎵</div>
-                    <audio controls className="w-full max-w-md mx-auto">
+                    <audio controls className="w-full max-w-md mx-auto" autoPlay>
                       <source src={selectedMedia.src} type={`audio/${selectedMedia.format}`} />
                       Votre navigateur ne supporte pas la lecture audio.
                     </audio>
@@ -603,8 +798,17 @@ const Gallery = () => {
               </div>
 
               <div className="p-6 border-t">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">{selectedMedia.title}</h3>
-                <p className="text-gray-600 mb-4 text-lg">{selectedMedia.description}</p>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">{selectedMedia.title}</h3>
+                    <p className="text-gray-600 text-lg">{selectedMedia.description}</p>
+                  </div>
+                  {selectedMedia.source === 'member' && (
+                    <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold ml-4 flex-shrink-0">
+                      👤 Partage membre
+                    </span>
+                  )}
+                </div>
                 
                 <div className="flex flex-wrap justify-between items-center gap-4 text-sm text-gray-500">
                   <div className="flex items-center gap-4">
@@ -623,6 +827,20 @@ const Gallery = () => {
                       <div>⏱️ {selectedMedia.duration}</div>
                     )}
                   </div>
+                </div>
+
+                {/* Bouton de téléchargement */}
+                <div className="mt-6 pt-4 border-t">
+                  <a
+                    href={selectedMedia.src}
+                    download
+                    className="inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    📥 Télécharger
+                    <span className="ml-2 text-xs opacity-75">
+                      ({selectedMedia.type})
+                    </span>
+                  </a>
                 </div>
               </div>
             </div>
