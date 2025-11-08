@@ -1,11 +1,19 @@
-// src/layouts/SuperAdminLayout.jsx
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-// import { usePermissions } from '../hooks/usePermissions'; // ❌ Supprimer cette ligne
+import { useLocation } from 'react-router-dom';
 
 const SuperAdminLayout = ({ children }) => {
   const { userProfile, logout } = useAuth();
-  // const { hasPermission } = usePermissions(); // ❌ Supprimer cette ligne
+  const location = useLocation();
+
+  useEffect(() => {
+    // Remonter en haut de la page à chaque changement de route
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant'
+    });
+  }, [location.pathname]);
 
   // 🔧 SOLUTION RAPIDE : Vérification directe avec useAuth
   if (!userProfile || userProfile.role !== 'super-admin') {

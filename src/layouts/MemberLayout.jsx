@@ -1,10 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 const MemberLayout = ({ children }) => {
   const { userProfile, logout } = useAuth();
   const location = useLocation();
+
+  useEffect(() => {
+    // Remonter en haut de la page à chaque changement de route
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant'
+    });
+  }, [location.pathname]);
 
   const navigation = [
     { name: 'Mon Tableau de bord', href: '/dashboard', icon: '🏠' },

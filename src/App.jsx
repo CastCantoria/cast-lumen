@@ -7,6 +7,9 @@ import { AuthProvider } from './contexts/AuthContext';
 import RequireAuth from './components/auth/RequireAuth';
 import RequireRole from './components/auth/RequireRole';
 
+// Composant ScrollToTop
+import ScrollToTop from './components/ScrollToTop';
+
 // Pages publiques
 import Home from './pages/public/Home';
 import Login from './pages/public/Login';
@@ -59,6 +62,9 @@ function App() {
     <AuthProvider>
       <Router>
         <div className="App min-h-screen flex flex-col">
+          {/* Composant pour remonter en haut à chaque changement de route */}
+          <ScrollToTop />
+          
           <Header />
           <main className="flex-grow">
             <Routes>

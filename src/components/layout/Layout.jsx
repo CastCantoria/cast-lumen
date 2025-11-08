@@ -1,5 +1,18 @@
-// Exemple : PageLayout.jsx
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+
 export default function PageLayout({ children, gradient = true }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    // Remonter en haut de la page à chaque changement de route
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: 'instant'
+    });
+  }, [location.pathname]);
+
   return (
     <div
       className={`w-screen h-screen ${
