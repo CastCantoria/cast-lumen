@@ -1,0 +1,96 @@
+/* Header.css */
+.nav-dropdown {
+  position: relative;
+}
+
+.nav-dropdown:hover .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 200px;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  z-index: 50;
+}
+
+.dropdown-menu a {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  color: #d1d5db;
+  transition: all 0.2s;
+}
+
+.dropdown-menu a:hover {
+  background: #374151;
+  color: white;
+}
+
+.user-avatar {
+  position: relative;
+}
+
+.user-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  min-width: 200px;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  z-index: 50;
+}
+
+.user-dropdown-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.5rem 1rem;
+  color: #d1d5db;
+  transition: all 0.2s;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.user-dropdown-item:hover {
+  background: #374151;
+  color: white;
+}
+
+.logout-item {
+  color: #f87171 !important;
+}
+
+.logout-item:hover {
+  color: #fca5a5 !important;
+}
+
+/* Animation pour le menu burger */
+.menu-burger-music {
+  transition: all 0.3s ease;
+}
+
+.music-icon {
+  transition: all 0.3s ease;
+}
+
+.music-icon.open {
+  display: none;
+}
+
+.menu-burger-music.active .music-icon.closed {
+  display: none;
+}
+
+.menu-burger-music.active .music-icon.open {
+  display: inline;
+}

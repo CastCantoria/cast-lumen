@@ -1,0 +1,27 @@
+﻿.calendar-container {
+  height: 600px;
+  margin: 2rem 0;
+}
+
+.rbc-calendar {
+  font-family: 'Inter', sans-serif;
+}
+
+.rbc-event {
+  background-color: #2C5530;
+  border: none;
+}
+
+.rbc-today {
+  background-color: #f0f8f0;
+}
+
+.rbc-toolbar button {
+  color: #2C5530;
+  border: 1px solid #2C5530;
+}
+
+.rbc-toolbar button.rbc-active {
+  background-color: #2C5530;
+  color: white;
+}
