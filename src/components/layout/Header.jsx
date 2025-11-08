@@ -1,4 +1,3 @@
-// src/components/layout/Header.jsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -15,15 +14,35 @@ const Header = () => {
   const userMenuRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
+  const menuItems = [
+    {
+      label: "La Chorale",
+      icon: "🏛️",
+      items: [
+        { to: "/about", label: "Notre Histoire", icon: "📖" },
+        { to: "/spiritualite", label: "Spiritualité", icon: "🕊️" },
+        { to: "/join", label: "Nous Rejoindre", icon: "🎤" },
+        { to: "/contact", label: "Contact", icon: "📞" }
+      ]
+    },
+    {
+      label: "Activités",
+      icon: "🎭",
+      items: [
+        { to: "/repertoire", label: "Répertoire", icon: "📜" },
+        { to: "/events", label: "Événements", icon: "📅" },
+        { to: "/gallery", label: "Galerie", icon: "🖼️" },
+        { to: "/concerts", label: "Concerts", icon: "🎵" }
+      ]
+    }
+  ];
+
   // Fermer les menus en cliquant à l'extérieur
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Fermer le menu utilisateur
       if (userMenuRef.current && !userMenuRef.current.contains(event.target)) {
         setIsUserMenuOpen(false);
       }
-      
-      // Fermer le menu mobile complet
       if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
         setIsMenuOpen(false);
         setActiveDropdown(null);
@@ -39,7 +58,7 @@ const Header = () => {
     };
   }, []);
 
-  // Empêcher le scroll du body quand le menu mobile est ouvert
+  // Gérer le scroll du body
   useEffect(() => {
     if (isMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -75,12 +94,6 @@ const Header = () => {
     setIsMenuOpen(newState);
     setIsUserMenuOpen(false);
     setActiveDropdown(null);
-    
-    if (newState) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
   };
 
   const toggleUserMenu = () => {
@@ -93,44 +106,21 @@ const Header = () => {
     setActiveDropdown(activeDropdown === menuLabel ? null : menuLabel);
   };
 
-// Dans le tableau menuItems du Header.jsx, modifiez le groupe "Activités" :
-const menuItems = [
-  {
-    label: "La Chorale",
-    items: [
-      { to: "/about", label: "Notre Histoire" },
-      { to: "/spiritualite", label: "Spiritualité" },
-      { to: "/join", label: "Nous Rejoindre" },
-      { to: "/contact", label: "Contact" }
-    ]
-  },
-  {
-    label: "Activités",
-    items: [
-      { to: "/repertoire", label: "Répertoire" },
-      { to: "/events", label: "Événements" },
-      { to: "/gallery", label: "Galerie" },
-      { to: "/concerts", label: "Concerts" },
-      { to: "/blog", label: "Blog Communautaire", icon: "✍️" } // NOUVEAU
-    ]
-  }
-];
-
   return (
     <header className="bg-gray-900 text-white shadow-lg sticky top-0 z-50" ref={menuRef}>
-      <div className="w-full px-4 sm:px-6">
+      <div className="w-full px-3 sm:px-4 md:px-6">
         
         {/* BARRE PRINCIPALE */}
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-14 sm:h-16">
           
-          {/* LOGO C.A.S.T. */}
+          {/* LOGO */}
           <div className="flex items-center flex-shrink-0">
-            <Link to="/" className="flex items-center space-x-3" onClick={closeAllMenus}>
+            <Link to="/" className="flex items-center space-x-2 sm:space-x-3" onClick={closeAllMenus}>
               <div className="flex items-center justify-center">
                 <img 
                   src="/images/logo-cantoria.png" 
                   alt="C.A.S.T. Cantoria" 
-                  className="h-10 w-auto"
+                  className="h-8 sm:h-10 w-auto"
                   onError={(e) => {
                     e.target.style.display = 'none';
                     if (e.target.nextSibling) {
@@ -138,29 +128,26 @@ const menuItems = [
                     }
                   }}
                 />
-                {/* Fallback visuel */}
+                {/* Fallback */}
                 <div 
-                  className="h-10 w-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-lg"
+                  className="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-sm sm:text-lg shadow-lg"
                   style={{ display: 'none' }}
                 >
                   🎵
                 </div>
               </div>
-              <div className="hidden sm:block">
-                <div className="text-lg font-bold text-white font-serif leading-tight">C.A.S.T.</div>
-                <div className="text-lg font-bold text-blue-400 font-serif leading-tight">Cantoria</div>
-              </div>
-              <div className="sm:hidden text-lg font-bold text-white font-serif">
-                CAST
+              <div className="hidden xs:block">
+                <div className="text-sm sm:text-lg font-bold text-white font-serif leading-tight">C.A.S.T.</div>
+                <div className="text-sm sm:text-lg font-bold text-blue-400 font-serif leading-tight">Cantoria</div>
               </div>
             </Link>
           </div>
 
           {/* NAVIGATION DESKTOP */}
-          <nav className="hidden lg:flex items-center space-x-1 mx-8">
+          <nav className="hidden lg:flex items-center space-x-1 mx-4">
             <Link 
               to="/" 
-              className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
+              className={`px-3 py-2 rounded-lg font-medium transition-colors whitespace-nowrap text-sm ${
                 location.pathname === '/' 
                   ? 'text-blue-400 bg-gray-800 shadow-inner' 
                   : 'text-gray-300 hover:text-white hover:bg-gray-800'
@@ -170,30 +157,30 @@ const menuItems = [
               Accueil
             </Link>
             
-            {/* GROUPES EN DROPDOWN */}
+            {/* GROUPES DROPDOWN */}
             {menuItems.map((menu) => (
               <div key={menu.label} className="relative group">
                 <button
-                  className={`px-4 py-2 rounded-lg font-medium transition-colors flex items-center space-x-1 whitespace-nowrap ${
+                  className={`px-3 py-2 rounded-lg font-medium transition-colors flex items-center space-x-1 whitespace-nowrap text-sm ${
                     menu.items.some(item => location.pathname === item.to) 
                       ? 'text-blue-400 bg-gray-800 shadow-inner' 
                       : 'text-gray-300 hover:text-white hover:bg-gray-800'
                   }`}
                 >
                   <span>{menu.label}</span>
-                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
                 
-                {/* DROPDOWN MENU */}
-                <div className="absolute left-0 mt-1 w-56 rounded-lg shadow-xl bg-gray-800 border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                {/* DROPDOWN */}
+                <div className="absolute left-0 mt-1 w-48 rounded-lg shadow-xl bg-gray-800 border border-gray-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                   <div className="py-2">
                     {menu.items.map((item) => (
                       <Link
                         key={item.to}
                         to={item.to}
-                        className={`block px-4 py-2 text-sm whitespace-nowrap mx-2 rounded transition-colors ${
+                        className={`block px-3 py-2 text-xs sm:text-sm whitespace-nowrap mx-1 rounded transition-colors ${
                           location.pathname === item.to
                             ? 'bg-blue-600 text-white'
                             : 'text-gray-300 hover:bg-gray-700 hover:text-white'
@@ -209,28 +196,28 @@ const menuItems = [
             ))}
           </nav>
 
-          {/* BOUTONS ACTION ET PROFIL */}
-          <div className="flex items-center space-x-3 flex-shrink-0">
+          {/* BOUTONS ACTION */}
+          <div className="flex items-center space-x-2 sm:space-x-3 flex-shrink-0">
             
-            {/* BOUTON CHAT - Desktop */}
+            {/* BOUTONS ACTION DESKTOP */}
             {currentUser && (
-              <div className="hidden md:flex items-center space-x-3">
+              <div className="hidden md:flex items-center space-x-2">
                 <Link 
                   to="/chat" 
-                  className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-4 py-2 rounded-lg transition-all duration-300 shadow-lg group whitespace-nowrap"
+                  className="flex items-center space-x-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white px-3 py-1.5 rounded-lg transition-all duration-300 shadow-lg group whitespace-nowrap text-sm"
                   onClick={closeAllMenus}
                 >
-                  <span className="text-lg">💬</span>
-                  <span className="font-medium">Chat Live</span>
-                  <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+                  <span className="text-sm">💬</span>
+                  <span className="font-medium">Chat</span>
+                  <div className="w-1.5 h-1.5 bg-green-300 rounded-full animate-pulse"></div>
                 </Link>
 
                 <Link 
                   to="/dashboard" 
-                  className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg transition-all duration-300 shadow-lg group whitespace-nowrap"
+                  className="flex items-center space-x-1 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-3 py-1.5 rounded-lg transition-all duration-300 shadow-lg group whitespace-nowrap text-sm"
                   onClick={closeAllMenus}
                 >
-                  <span className="text-lg">📊</span>
+                  <span className="text-sm">📊</span>
                   <span className="font-medium">Espace</span>
                 </Link>
               </div>
@@ -240,36 +227,36 @@ const menuItems = [
             {currentUser && (
               <Link 
                 to="/chat" 
-                className="md:hidden flex items-center justify-center w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors relative"
+                className="md:hidden flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-colors relative"
                 title="Chat Live"
                 onClick={closeAllMenus}
               >
-                <span className="text-lg">💬</span>
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
+                <span className="text-sm">💬</span>
+                <div className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-green-300 rounded-full animate-pulse"></div>
               </Link>
             )}
 
             {/* PROFIL UTILISATEUR */}
             {currentUser ? (
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
                 {/* Version Desktop */}
-                <div className="hidden md:flex items-center space-x-3">
-                  <div className="text-right min-w-0 max-w-[120px]">
-                    <div className="text-sm font-medium text-white truncate">
-                      {userProfile?.displayName || currentUser.email}
+                <div className="hidden md:flex items-center space-x-2">
+                  <div className="text-right min-w-0 max-w-24">
+                    <div className="text-xs font-medium text-white truncate">
+                      {userProfile?.displayName || currentUser.email?.split('@')[0]}
                     </div>
                     <div className="text-xs text-gray-400 capitalize truncate">
                       {userProfile?.role}
                     </div>
                   </div>
                   
-                  {/* MENU UTILISATEUR DROPDOWN */}
+                  {/* MENU UTILISATEUR */}
                   <div className="relative" ref={userMenuRef}>
                     <button
                       onClick={toggleUserMenu}
-                      className="flex items-center space-x-2 bg-gray-800 hover:bg-gray-700 rounded-lg px-3 py-2 transition-colors border border-gray-700"
+                      className="flex items-center space-x-1 bg-gray-800 hover:bg-gray-700 rounded-lg px-2 py-1.5 transition-colors border border-gray-700"
                     >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
+                      <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-white font-bold text-xs ${
                         userProfile?.role === 'admin' ? 'bg-red-500' : 
                         userProfile?.role === 'super-admin' ? 'bg-purple-500' :
                         'bg-blue-500'
@@ -278,12 +265,12 @@ const menuItems = [
                       </div>
                     </button>
 
-                    {/* DROPDOWN MENU UTILISATEUR */}
+                    {/* DROPDOWN UTILISATEUR */}
                     {isUserMenuOpen && (
-                      <div className="absolute right-0 mt-2 w-64 bg-gray-800 rounded-xl shadow-xl border border-gray-700 py-2 z-50">
-                        <div className="px-4 py-3 border-b border-gray-700">
-                          <div className="flex items-center space-x-3">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold ${
+                      <div className="absolute right-0 mt-2 w-56 bg-gray-800 rounded-xl shadow-xl border border-gray-700 py-2 z-50">
+                        <div className="px-3 py-2 border-b border-gray-700">
+                          <div className="flex items-center space-x-2">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold text-sm ${
                               userProfile?.role === 'admin' ? 'bg-red-500' : 
                               userProfile?.role === 'super-admin' ? 'bg-purple-500' :
                               'bg-blue-500'
@@ -301,50 +288,38 @@ const menuItems = [
                           </div>
                         </div>
 
-                        <div className="px-2 py-2 space-y-1">
+                        <div className="px-1 py-1 space-y-1">
                           <Link 
                             to="/dashboard" 
-                            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors group"
+                            className="flex items-center space-x-2 px-2 py-1.5 rounded-lg hover:bg-gray-700 transition-colors group text-sm"
                             onClick={closeAllMenus}
                           >
-                            <span className="text-lg">📊</span>
+                            <span className="text-base">📊</span>
                             <div className="flex-1">
-                              <div className="font-medium text-white text-sm">Tableau de Bord</div>
+                              <div className="font-medium text-white">Tableau de Bord</div>
                             </div>
-                          </Link>
-
-                          <Link 
-                            to="/chat" 
-                            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors group"
-                            onClick={closeAllMenus}
-                          >
-                            <span className="text-lg">💬</span>
-                            <div className="flex-1">
-                              <div className="font-medium text-white text-sm">Chat Communautaire</div>
-                            </div>
-                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                           </Link>
 
                           <Link 
                             to="/profile" 
-                            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors group"
+                            className="flex items-center space-x-2 px-2 py-1.5 rounded-lg hover:bg-gray-700 transition-colors group text-sm"
                             onClick={closeAllMenus}
                           >
-                            <span className="text-lg">👤</span>
+                            <span className="text-base">👤</span>
                             <div className="flex-1">
-                              <div className="font-medium text-white text-sm">Mon Profil</div>
+                              <div className="font-medium text-white">Mon Profil</div>
                             </div>
                           </Link>
                         </div>
 
-                        <div className="px-2 py-2 border-t border-gray-700">
+                        <div className="px-1 py-1 border-t border-gray-700">
                           <button
                             onClick={handleLogout}
-                            className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-red-900 transition-colors group w-full text-left"
+                            className="flex items-center space-x-2 px-2 py-1.5 rounded-lg hover:bg-red-900 transition-colors group w-full text-left text-sm"
                           >
-                            <span className="text-lg">🚪</span>
+                            <span className="text-base">🚪</span>
                             <div>
-                              <div className="font-medium text-red-400 text-sm">Se déconnecter</div>
+                              <div className="font-medium text-red-400">Se déconnecter</div>
                             </div>
                           </button>
                         </div>
@@ -354,16 +329,10 @@ const menuItems = [
                 </div>
 
                 {/* Version Mobile */}
-                <div className="md:hidden flex items-center space-x-2">
-                  <div className="text-right min-w-0 max-w-[80px]">
-                    <div className="text-xs font-medium text-white truncate">
-                      {userProfile?.displayName || currentUser.email?.split('@')[0]}
-                    </div>
-                  </div>
-                  
+                <div className="md:hidden flex items-center space-x-1">
                   <button 
                     onClick={handleLogout} 
-                    className="bg-red-600 text-white p-2 rounded text-sm hover:bg-red-700 transition flex items-center"
+                    className="bg-red-600 text-white p-1.5 rounded text-xs hover:bg-red-700 transition flex items-center"
                     title="Déconnexion"
                   >
                     <span>🚪</span>
@@ -372,16 +341,16 @@ const menuItems = [
               </div>
             ) : (
               /* Boutons connexion */
-              <div className="hidden md:flex items-center space-x-3">
+              <div className="hidden md:flex items-center space-x-2">
                 <Link 
                   to="/login" 
-                  className="text-gray-300 hover:text-white font-medium transition whitespace-nowrap px-4 py-2 rounded-lg hover:bg-gray-800"
+                  className="text-gray-300 hover:text-white font-medium transition whitespace-nowrap px-3 py-1.5 rounded-lg hover:bg-gray-800 text-sm"
                 >
                   Connexion
                 </Link>
                 <Link 
                   to="/register" 
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition font-medium whitespace-nowrap"
+                  className="bg-blue-600 text-white px-3 py-1.5 rounded-lg hover:bg-blue-700 transition font-medium whitespace-nowrap text-sm"
                 >
                   S'inscrire
                 </Link>
@@ -390,16 +359,16 @@ const menuItems = [
 
             {/* MENU BURGER MOBILE */}
             <button 
-              className="lg:hidden flex items-center justify-center w-10 h-10 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-colors relative z-60"
+              className="lg:hidden flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-lg text-gray-300 hover:text-white hover:bg-gray-800 transition-colors relative z-60"
               onClick={toggleMenu}
               aria-label="Menu principal"
             >
               {isMenuOpen ? (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               ) : (
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                 </svg>
               )}
@@ -407,38 +376,37 @@ const menuItems = [
           </div>
         </div>
 
-        {/* MENU MOBILE - COMPLÈTEMENT REFONDU */}
+        {/* MENU MOBILE */}
         <div 
           ref={mobileMenuRef}
-          className={`lg:hidden fixed top-16 left-0 right-0 bottom-0 bg-gray-900 transform transition-transform duration-300 ease-in-out z-40 overflow-y-auto ${
+          className={`lg:hidden fixed top-14 sm:top-16 left-0 right-0 bottom-0 bg-gray-900 transform transition-transform duration-300 ease-in-out z-40 overflow-y-auto ${
             isMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
         >
-          <div className="p-4 space-y-4">
+          <div className="p-3 sm:p-4 space-y-3">
             {/* Accueil */}
             <Link 
               to="/" 
-              className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-lg font-medium"
+              className="flex items-center px-3 py-2.5 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-base font-medium"
               onClick={closeAllMenus}
             >
-              <span className="text-xl mr-3">🏠</span>
+              <span className="text-lg mr-2">🏠</span>
               <span>Accueil</span>
             </Link>
             
-            {/* GROUPES AVEC DROPDOWN INTERACTIF */}
+            {/* GROUPES MOBILE */}
             {menuItems.map((menu) => (
-              <div key={menu.label} className="space-y-2">
-                {/* Bouton pour ouvrir/fermer le dropdown */}
+              <div key={menu.label} className="space-y-1">
                 <button
                   onClick={() => toggleMobileDropdown(menu.label)}
-                  className="flex items-center justify-between w-full px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-lg font-medium"
+                  className="flex items-center justify-between w-full px-3 py-2.5 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-base font-medium"
                 >
                   <div className="flex items-center">
-                    <span className="text-xl mr-3">{menu.icon}</span>
+                    <span className="text-lg mr-2">{menu.icon}</span>
                     <span>{menu.label}</span>
                   </div>
                   <svg 
-                    className={`w-5 h-5 transition-transform duration-200 ${
+                    className={`w-4 h-4 transition-transform duration-200 ${
                       activeDropdown === menu.label ? 'rotate-180' : ''
                     }`}
                     fill="none" 
@@ -449,23 +417,22 @@ const menuItems = [
                   </svg>
                 </button>
                 
-                {/* Sous-items avec animation */}
                 <div className={`overflow-hidden transition-all duration-200 ${
                   activeDropdown === menu.label ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
                 }`}>
-                  <div className="space-y-1 ml-4 border-l-2 border-gray-700 pl-4">
+                  <div className="space-y-1 ml-3 border-l-2 border-gray-700 pl-3">
                     {menu.items.map((item) => (
                       <Link
                         key={item.to}
                         to={item.to}
-                        className={`flex items-center px-3 py-2 text-base transition-colors rounded-lg ${
+                        className={`flex items-center px-2 py-2 text-sm transition-colors rounded-lg ${
                           location.pathname === item.to
                             ? 'bg-blue-600 text-white'
                             : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                         }`}
                         onClick={closeAllMenus}
                       >
-                        <span className="text-lg mr-3">{item.icon}</span>
+                        <span className="text-base mr-2">{item.icon}</span>
                         <span>{item.label}</span>
                       </Link>
                     ))}
@@ -474,73 +441,73 @@ const menuItems = [
               </div>
             ))}
 
-            {/* ESPACE MEMBRE - Mobile */}
+            {/* ESPACE MEMBRE MOBILE */}
             {currentUser && (
-              <div className="border-t border-gray-700 pt-4 mt-4 space-y-2">
-                <div className="px-4 py-2 text-sm text-gray-400 font-medium">
+              <div className="border-t border-gray-700 pt-3 mt-3 space-y-1">
+                <div className="px-3 py-1 text-xs text-gray-400 font-medium">
                   Espace Membre
                 </div>
                 
                 <Link 
                   to="/dashboard" 
-                  className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-lg font-medium"
+                  className="flex items-center px-3 py-2.5 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-base font-medium"
                   onClick={closeAllMenus}
                 >
-                  <span className="text-xl mr-3">📊</span>
+                  <span className="text-lg mr-2">📊</span>
                   <span>Tableau de Bord</span>
                 </Link>
                 
                 <Link 
                   to="/chat" 
-                  className="flex items-center px-4 py-3 text-green-300 hover:text-white hover:bg-green-900 transition-colors rounded-lg text-lg font-medium"
+                  className="flex items-center px-3 py-2.5 text-green-300 hover:text-white hover:bg-green-900 transition-colors rounded-lg text-base font-medium"
                   onClick={closeAllMenus}
                 >
-                  <span className="text-xl mr-3">💬</span>
+                  <span className="text-lg mr-2">💬</span>
                   <span>Chat Live</span>
-                  <div className="ml-2 w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                  <div className="ml-1 w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
                 </Link>
 
                 <Link 
                   to="/profile" 
-                  className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-lg font-medium"
+                  className="flex items-center px-3 py-2.5 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-base font-medium"
                   onClick={closeAllMenus}
                 >
-                  <span className="text-xl mr-3">👤</span>
+                  <span className="text-lg mr-2">👤</span>
                   <span>Mon Profil</span>
                 </Link>
                 
                 <button
                   onClick={handleLogout}
-                  className="flex items-center w-full px-4 py-3 text-red-400 hover:text-white hover:bg-red-900 transition-colors rounded-lg text-lg font-medium text-left"
+                  className="flex items-center w-full px-3 py-2.5 text-red-400 hover:text-white hover:bg-red-900 transition-colors rounded-lg text-base font-medium text-left"
                 >
-                  <span className="text-xl mr-3">🚪</span>
+                  <span className="text-lg mr-2">🚪</span>
                   <span>Se déconnecter</span>
                 </button>
               </div>
             )}
 
-            {/* CONNEXION/INSCRIPTION - Mobile */}
+            {/* CONNEXION MOBILE */}
             {!currentUser && (
-              <div className="border-t border-gray-700 pt-4 mt-4 space-y-3">
-                <div className="px-4 py-2 text-sm text-gray-400 font-medium">
+              <div className="border-t border-gray-700 pt-3 mt-3 space-y-2">
+                <div className="px-3 py-1 text-xs text-gray-400 font-medium">
                   Connexion
                 </div>
                 
                 <Link
                   to="/login"
-                  className="flex items-center px-4 py-3 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-lg font-medium"
+                  className="flex items-center px-3 py-2.5 text-gray-300 hover:text-white hover:bg-gray-800 transition-colors rounded-lg text-base font-medium"
                   onClick={closeAllMenus}
                 >
-                  <span className="text-xl mr-3">🔑</span>
+                  <span className="text-lg mr-2">🔑</span>
                   <span>Connexion</span>
                 </Link>
                 
                 <Link
                   to="/register"
-                  className="flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-medium mx-4"
+                  className="flex items-center justify-center px-3 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-base font-medium mx-3"
                   onClick={closeAllMenus}
                 >
-                  <span className="text-xl mr-3">📝</span>
+                  <span className="text-lg mr-2">📝</span>
                   <span>S'inscrire</span>
                 </Link>
               </div>
@@ -548,7 +515,7 @@ const menuItems = [
           </div>
         </div>
 
-        {/* OVERLAY POUR FERMER LE MENU */}
+        {/* OVERLAY */}
         {isMenuOpen && (
           <div 
             className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30"

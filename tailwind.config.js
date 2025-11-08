@@ -6,6 +6,10 @@ module.exports = {
   ],
   theme: {
     extend: {
+      screens: {
+        'xs': '475px',
+        '3xl': '1920px',
+      },
       colors: {
         'cast-blue': '#1e3a8a',
         'cast-red': '#b91c1c',
@@ -21,15 +25,22 @@ module.exports = {
       spacing: {
         '128': '32rem',
       },
+      fontSize: {
+        'xxs': '0.625rem',
+      },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-out',
         'pulse-slow': 'pulse 3s infinite',
+        'bounce-slow': 'bounce 2s infinite',
       },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0', transform: 'translateY(10px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
         }
+      },
+      backdropBlur: {
+        'xs': '2px',
       }
     },
   },

@@ -1,17 +1,94 @@
-﻿// src/pages/dashboard/super-admin/SuperAdminDashboard.jsx
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../../contexts/AuthContext';
-import usePermissions from '../../../hooks/usePermissions';
 import { collection, getDocs, query, where, doc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { db } from '../../../lib/firebase';
 
-// IMPORT DES DASHBOARDS DEPUIS LE DOSSIER ADMIN - CHEMINS CORRIGÉS
-import EventsDashboard from '../admin/events/EventsDashboard';
-import ContentDashboard from '../admin/content/ContentDashboard';
-import RepertoireDashboard from '../admin/repertoire/RepertoireDashboard';
-import StatisticsDashboard from '../admin/statistics/StatisticsDashboard';
+// Composants Dashboard simplifiés (copiés depuis AdminDashboard)
+const EventsDashboard = () => (
+  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">🎭 Gestion des Événements</h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+        <p className="text-2xl font-bold text-blue-600">3</p>
+        <p className="text-sm text-blue-900">Événements</p>
+      </div>
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+        <p className="text-2xl font-bold text-green-600">45</p>
+        <p className="text-sm text-green-900">Participants</p>
+      </div>
+      <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
+        <p className="text-2xl font-bold text-orange-600">2</p>
+        <p className="text-sm text-orange-900">À modérer</p>
+      </div>
+    </div>
+  </div>
+);
 
-// Icônes identiques à AdminDashboard
+const ContentDashboard = () => (
+  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">📝 Gestion du Contenu</h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
+        <p className="text-2xl font-bold text-purple-600">12</p>
+        <p className="text-sm text-purple-900">Articles</p>
+      </div>
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+        <p className="text-2xl font-bold text-blue-600">24</p>
+        <p className="text-sm text-blue-900">Médias</p>
+      </div>
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-center">
+        <p className="text-2xl font-bold text-yellow-600">5</p>
+        <p className="text-sm text-yellow-900">En attente</p>
+      </div>
+    </div>
+  </div>
+);
+
+const RepertoireDashboard = () => (
+  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">🎼 Gestion du Répertoire</h2>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+        <p className="text-2xl font-bold text-green-600">56</p>
+        <p className="text-sm text-green-900">Pièces</p>
+      </div>
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+        <p className="text-2xl font-bold text-blue-600">42</p>
+        <p className="text-sm text-blue-900">Partitions</p>
+      </div>
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+        <p className="text-2xl font-bold text-red-600">8</p>
+        <p className="text-sm text-red-900">À numériser</p>
+      </div>
+    </div>
+  </div>
+);
+
+const StatisticsDashboard = () => (
+  <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">📈 Statistiques</h2>
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-center">
+        <p className="text-xl font-bold text-indigo-600">1.2K</p>
+        <p className="text-xs text-indigo-900">Visites</p>
+      </div>
+      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 text-center">
+        <p className="text-xl font-bold text-purple-600">68%</p>
+        <p className="text-xs text-purple-900">Engagement</p>
+      </div>
+      <div className="bg-pink-50 border border-pink-200 rounded-lg p-4 text-center">
+        <p className="text-xl font-bold text-pink-600">23</p>
+        <p className="text-xs text-pink-900">Nouveaux</p>
+      </div>
+      <div className="bg-teal-50 border border-teal-200 rounded-lg p-4 text-center">
+        <p className="text-xl font-bold text-teal-600">12%</p>
+        <p className="text-xs text-teal-900">Conversion</p>
+      </div>
+    </div>
+  </div>
+);
+
+// Icônes
 const DashboardIcon = () => <span>📊</span>;
 const UsersIcon = () => <span>👥</span>;
 const EventsIcon = () => <span>🎭</span>;
@@ -22,7 +99,6 @@ const RefreshIcon = () => <span>🔄</span>;
 
 const SuperAdminDashboard = () => {
   const { userProfile, currentUser, logout } = useAuth();
-  const { hasPermission } = usePermissions();
   const [systemStats, setSystemStats] = useState({
     totalUsers: 0,
     adminCount: 0,
@@ -54,11 +130,18 @@ const SuperAdminDashboard = () => {
   });
   const [pagination, setPagination] = useState({
     currentPage: 1,
-    itemsPerPage: 8, // Réduit pour mobile
+    itemsPerPage: 8,
     totalPages: 1
   });
 
-  // Configuration de navigation - Style AdminDashboard
+  // NOUVEAUX ÉTATS POUR LES SESSIONS ACTIVES
+  const [activeSessions, setActiveSessions] = useState([]);
+  const [sessionSort, setSessionSort] = useState({
+    key: 'lastActivity',
+    direction: 'desc'
+  });
+
+  // Configuration de navigation
   const menuItems = [
     { id: 'overview', name: 'Aperçu', icon: <DashboardIcon />, color: 'purple' },
     { id: 'users', name: 'Utilisateurs', icon: <UsersIcon />, color: 'green' },
@@ -75,6 +158,52 @@ const SuperAdminDashboard = () => {
   useEffect(() => {
     applyFilters();
   }, [allUsers, filters, sortConfig]);
+
+  // FONCTIONS POUR LES SESSIONS ACTIVES
+  const calculateDuration = (startTime) => {
+    const start = new Date(startTime);
+    const now = new Date();
+    const diffMs = now - start;
+    
+    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
+  };
+
+  const handleSessionSort = (key) => {
+    let direction = 'asc';
+    if (sessionSort.key === key && sessionSort.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSessionSort({ key, direction });
+  };
+
+  const sortedActiveSessions = [...activeSessions].sort((a, b) => {
+    if (!sessionSort.key) return 0;
+    
+    let aValue = a[sessionSort.key];
+    let bValue = b[sessionSort.key];
+    
+    if (aValue == null) aValue = '';
+    if (bValue == null) bValue = '';
+    
+    if (sessionSort.key === 'loginTime' || sessionSort.key === 'lastActivity') {
+      aValue = new Date(aValue).getTime();
+      bValue = new Date(bValue).getTime();
+    }
+    
+    if (aValue < bValue) {
+      return sessionSort.direction === 'asc' ? -1 : 1;
+    }
+    if (aValue > bValue) {
+      return sessionSort.direction === 'asc' ? 1 : -1;
+    }
+    return 0;
+  });
 
   const fetchRealData = async () => {
     try {
@@ -93,6 +222,17 @@ const SuperAdminDashboard = () => {
       const adminUsers = allUsers.filter(user => user.role === 'admin');
       const members = allUsers.filter(user => user.role === 'member');
 
+      // Simuler des sessions actives
+      const mockActiveSessions = allUsers.slice(0, 8).map((user, index) => ({
+        id: user.id,
+        displayName: user.displayName,
+        email: user.email,
+        role: user.role,
+        loginTime: new Date(Date.now() - (index * 30 * 60 * 1000)).toISOString(),
+        lastActivity: new Date().toISOString(),
+        isActive: index < 5
+      }));
+
       setSystemStats({
         totalUsers: allUsers.length,
         adminCount: adminUsers.length,
@@ -103,6 +243,7 @@ const SuperAdminDashboard = () => {
 
       setAllUsers(allUsers);
       setFilteredUsers(allUsers);
+      setActiveSessions(mockActiveSessions);
 
     } catch (err) {
       console.error('Erreur:', err);
@@ -112,7 +253,7 @@ const SuperAdminDashboard = () => {
     }
   };
 
-  // FONCTIONS IDENTIQUES À ADMIN DASHBOARD
+  // FONCTIONS DE GESTION DES UTILISATEURS
   const handleSort = (key) => {
     let direction = 'asc';
     if (sortConfig.key === key && sortConfig.direction === 'asc') {
@@ -275,7 +416,6 @@ const SuperAdminDashboard = () => {
       setError(null);
       setSuccess('Utilisateur mis à jour avec succès');
     } catch (err) {
-      console.error('Erreur mise à jour:', err);
       setError(`Erreur lors de la mise à jour: ${err.message}`);
     }
   };
@@ -306,7 +446,6 @@ const SuperAdminDashboard = () => {
 
       setSuccess(`🎉 ${userToPromote.displayName} promu au rôle ${newRole} !`);
     } catch (err) {
-      console.error('Erreur promotion:', err);
       setError(`Erreur lors de la promotion: ${err.message}`);
     }
   };
@@ -326,7 +465,6 @@ const SuperAdminDashboard = () => {
       setError(null);
       setSuccess('Utilisateur supprimé avec succès');
     } catch (err) {
-      console.error('Erreur suppression:', err);
       setError(`Erreur lors de la suppression: ${err.message}`);
     }
   };
@@ -426,7 +564,7 @@ const SuperAdminDashboard = () => {
     }
   };
 
-  // Composants identiques à AdminDashboard
+  // Composants d'interface
   const StatCard = ({ icon, title, value, subtitle, color, loading }) => {
     const colorClasses = {
       purple: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-600' },
@@ -529,26 +667,7 @@ const SuperAdminDashboard = () => {
     );
   };
 
-  // 🔐 Vérification des permissions
-  if (!userProfile || userProfile.role !== 'super-admin') {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-md w-full text-center">
-          <div className="text-6xl mb-4">🚫</div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Accès refusé</h2>
-          <p className="text-gray-600 mb-4">Accès réservé aux Super Administrateurs.</p>
-          <button
-            onClick={() => window.location.href = '/'}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
-          >
-            Retour à l'accueil
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  // FONCTION RENDERCONTENT COMPLÉTÉE AVEC LES SECTIONS
+  // FONCTION RENDERCONTENT AVEC SESSIONS ACTIVES
   const renderContent = () => {
     switch (activeSection) {
       case 'overview':
@@ -562,7 +681,7 @@ const SuperAdminDashboard = () => {
               </p>
             </div>
 
-            {/* Grille des statistiques - Optimisé mobile */}
+            {/* Grille des statistiques */}
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6 mb-4 sm:mb-6 lg:mb-8">
               <StatCard
                 icon="👥"
@@ -598,7 +717,127 @@ const SuperAdminDashboard = () => {
               />
             </div>
 
-            {/* Actions rapides - Optimisé mobile */}
+            {/* SECTION SESSIONS ACTIVES */}
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Sessions Actives</h3>
+                <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium">
+                  {activeSessions.length} connecté(s)
+                </span>
+              </div>
+              
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleSessionSort('displayName')}>
+                        <div className="flex items-center gap-1">
+                          Utilisateur
+                          <span className="text-gray-300">{sessionSort.key === 'displayName' ? (sessionSort.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
+                        </div>
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleSessionSort('role')}>
+                        <div className="flex items-center gap-1">
+                          Rôle
+                          <span className="text-gray-300">{sessionSort.key === 'role' ? (sessionSort.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
+                        </div>
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleSessionSort('loginTime')}>
+                        <div className="flex items-center gap-1">
+                          Début
+                          <span className="text-gray-300">{sessionSort.key === 'loginTime' ? (sessionSort.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
+                        </div>
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 transition-colors" onClick={() => handleSessionSort('lastActivity')}>
+                        <div className="flex items-center gap-1">
+                          Dernière activité
+                          <span className="text-gray-300">{sessionSort.key === 'lastActivity' ? (sessionSort.direction === 'asc' ? '↑' : '↓') : '↕'}</span>
+                        </div>
+                      </th>
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Durée
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {sortedActiveSessions.map((session, index) => (
+                      <tr key={session.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="flex-shrink-0 h-8 w-8 bg-blue-500 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+                              {session.displayName?.charAt(0) || session.email?.charAt(0) || 'U'}
+                            </div>
+                            <div className="ml-3">
+                              <div className="text-sm font-medium text-gray-900">
+                                {session.displayName || 'Non renseigné'}
+                                {session.id === userProfile.id && (
+                                  <span className="ml-2 text-blue-600 text-xs">(Vous)</span>
+                                )}
+                              </div>
+                              <div className="text-xs text-gray-500 truncate max-w-[120px]">
+                                {session.email}
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            session.role === 'super-admin' ? 'bg-purple-100 text-purple-800 border border-purple-300' :
+                            session.role === 'admin' ? 'bg-red-100 text-red-800' :
+                            session.role === 'member' ? 'bg-green-100 text-green-800' :
+                            'bg-blue-100 text-blue-800'
+                          }`}>
+                            {session.role || 'user'}
+                            {session.role === 'super-admin' && ' 👑'}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {session.loginTime ? new Date(session.loginTime).toLocaleTimeString('fr-FR') : 'N/A'}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {session.loginTime ? new Date(session.loginTime).toLocaleDateString('fr-FR') : ''}
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">
+                            {session.lastActivity ? new Date(session.lastActivity).toLocaleTimeString('fr-FR') : 'N/A'}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {session.lastActivity ? new Date(session.lastActivity).toLocaleDateString('fr-FR') : ''}
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-gray-900">
+                            {session.loginTime ? calculateDuration(session.loginTime) : 'N/A'}
+                          </div>
+                          <div className="text-xs text-gray-500">
+                            {session.isActive ? (
+                              <span className="flex items-center text-green-600">
+                                <span className="w-2 h-2 bg-green-500 rounded-full mr-1 animate-pulse"></span>
+                                En ligne
+                              </span>
+                            ) : (
+                              <span className="text-yellow-600">Inactif</span>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {activeSessions.length === 0 && (
+                <div className="text-center py-8">
+                  <div className="text-4xl mb-2">🔍</div>
+                  <p className="text-gray-500">Aucune session active</p>
+                  <p className="text-gray-400 text-sm mt-1">Les sessions apparaîtront ici lorsque les utilisateurs se connecteront</p>
+                </div>
+              )}
+            </div>
+
+            {/* Actions rapides */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6 lg:mb-8">
               <h3 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 mb-3 sm:mb-4">Actions Rapides</h3>
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
@@ -674,7 +913,7 @@ const SuperAdminDashboard = () => {
       case 'users':
         return (
           <div>
-            {/* En-tête avec boutons - Optimisé mobile */}
+            {/* En-tête avec boutons */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
               <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Gestion Utilisateurs</h2>
               <div className="flex items-center gap-2 flex-wrap">
@@ -702,7 +941,7 @@ const SuperAdminDashboard = () => {
               </div>
             </div>
 
-            {/* Filtres - Optimisé mobile */}
+            {/* Filtres */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 mb-4 sm:mb-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                 <div>
@@ -764,7 +1003,7 @@ const SuperAdminDashboard = () => {
               </div>
             </div>
 
-            {/* Tableau des utilisateurs - Optimisé mobile */}
+            {/* Tableau des utilisateurs */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -964,7 +1203,7 @@ const SuperAdminDashboard = () => {
                 </table>
               </div>
 
-              {/* Pagination - Optimisé mobile */}
+              {/* Pagination */}
               {filteredUsers.length > 0 && (
                 <div className="bg-white px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-between border-t border-gray-200">
                   <div className="flex-1 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0">
@@ -1049,9 +1288,28 @@ const SuperAdminDashboard = () => {
     }
   };
 
+  // 🔐 Vérification des permissions
+  if (!userProfile || userProfile.role !== 'super-admin') {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-md w-full text-center">
+          <div className="text-6xl mb-4">🚫</div>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Accès refusé</h2>
+          <p className="text-gray-600 mb-4">Accès réservé aux Super Administrateurs.</p>
+          <button
+            onClick={() => window.location.href = '/'}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+          >
+            Retour à l'accueil
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* EN-TÊTE SUPER ADMIN - Optimisé mobile */}
+      {/* EN-TÊTE SUPER ADMIN */}
       <header className="bg-white shadow-sm border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-8">
           <div className="flex justify-between items-center h-14 sm:h-16">
