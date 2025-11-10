@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { collection, getDocs, updateDoc, doc, query, where } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { db } from "../lib/firebase";
 import { useAuthorization } from '../../hooks/useAuthorization';
 
 const UserStatusManager = () => {

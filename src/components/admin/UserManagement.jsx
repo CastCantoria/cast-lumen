@@ -1,6 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { db } from "../lib/firebase";
 import { Search, UserPlus, Mail, Edit, Trash2, CheckCircle, XCircle } from 'lucide-react';
 import SubPageHeader from '../layout/SubPageHeader';
 import CollectionsBrowser from './CollectionsBrowser';

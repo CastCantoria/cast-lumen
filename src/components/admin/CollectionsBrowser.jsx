@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { collection, getDocs, addDoc, updateDoc, doc } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { db } from "../lib/firebase";
 
 // A small admin UI to browse a set of known top-level collections,
 // filter/sort documents, add a new document, and export the current view as CSV.

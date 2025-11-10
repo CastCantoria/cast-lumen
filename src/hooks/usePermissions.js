@@ -1,117 +1,131 @@
 import { useAuth } from '../contexts/AuthContext';
-import { ROLE_HIERARCHY, PERMISSIONS, ROLE_PERMISSIONS } from '../../config/roles';
+import { ROLE_HIERARCHY, PERMISSIONS, ROLE_PERMISSIONS } from '../config/roles';
 
 const usePermissions = () => {
   const { userProfile } = useAuth();
+
+  // ====================
+  // SYSTEME DE RÔLES HIÉRARCHIQUE
+  // ====================
 
   const hasRole = (requiredRole) => {
     if (!userProfile?.role) return false;
     return ROLE_HIERARCHY[userProfile.role] >= ROLE_HIERARCHY[requiredRole];
   };
 
+  const hasAnyRole = (roles) => {
+    if (!userProfile?.role) return false;
+    return roles.includes(userProfile?.role);
+  };
+
+  // ====================
+  // SYSTEME DE PERMISSIONS
+  // ====================
+
   const hasPermission = (permission) => {
     if (!userProfile?.role) return false;
-    // Importer directement depuis le fichier de configuration
     return ROLE_PERMISSIONS[userProfile.role]?.includes(permission) || false;
   };
 
-  // Gallery Management
-  const canManageGallery = () => {
-    return hasPermission(PERMISSIONS.MANAGE_GALLERY);
-  };
+  // ====================
+  // PERMISSIONS SPÉCIFIQUES
+  // ====================
 
-  // Articles Management
-  const canManageArticles = () => {
-    return hasPermission(PERMISSIONS.MANAGE_ARTICLES);
-  };
+  // Dashboard et Accès
+  const canViewDashboard = () => hasAnyRole(['super-admin', 'admin', 'moderator', 'member', 'user']);
+  const canManageContent = () => hasPermission(PERMISSIONS.MANAGE_CONTENT);
 
-  // User Management
-  const canManageUsers = () => {
-    return hasPermission(PERMISSIONS.MANAGE_MEMBERS);
-  };
+  // Gestion des Médias
+  const canManageGallery = () => hasPermission(PERMISSIONS.MANAGE_GALLERY);
+  const canModerateMedia = () => hasPermission(PERMISSIONS.MODERATE_MEDIA);
+  const canUploadMedia = () => hasPermission(PERMISSIONS.UPLOAD_MEDIA);
 
-  const canManageInvitations = () => {
-    return hasPermission(PERMISSIONS.MANAGE_INVITATIONS);
-  };
+  // Gestion des Articles
+  const canManageArticles = () => hasPermission(PERMISSIONS.MANAGE_ARTICLES);
 
-  const canManageAdmissions = () => {
-    return hasPermission(PERMISSIONS.MANAGE_ADMISSIONS);
-  };
+  // Gestion des Utilisateurs
+  const canManageUsers = () => hasPermission(PERMISSIONS.MANAGE_MEMBERS);
+  const canManageInvitations = () => hasPermission(PERMISSIONS.MANAGE_INVITATIONS);
+  const canManageAdmissions = () => hasPermission(PERMISSIONS.MANAGE_ADMISSIONS);
 
-  // Event Management
-  const canManageEvents = () => {
-    return hasPermission(PERMISSIONS.MANAGE_EVENTS);
-  };
+  // Gestion des Événements
+  const canManageEvents = () => hasPermission(PERMISSIONS.MANAGE_EVENTS);
 
-  const canViewAnalytics = () => {
-    return hasPermission(PERMISSIONS.VIEW_ANALYTICS);
-  };
+  // Gestion des Partitions
+  const canManagePartitions = () => hasPermission(PERMISSIONS.MANAGE_PARTITIONS);
 
-  // Content Management
-  const canManageContent = () => {
-    return hasPermission(PERMISSIONS.MANAGE_CONTENT);
-  };
+  // Analytics
+  const canViewAnalytics = () => hasPermission(PERMISSIONS.VIEW_ANALYTICS);
 
-  const canManageMessages = () => {
-    return hasPermission(PERMISSIONS.MANAGE_MESSAGES);
-  };
+  // Messages
+  const canManageMessages = () => hasPermission(PERMISSIONS.MANAGE_MESSAGES);
 
-  const canManagePartitions = () => {
-    return hasPermission(PERMISSIONS.MANAGE_PARTITIONS);
-  };
+  // Permissions Administratives
+  const canManageCriticalSettings = () => hasPermission(PERMISSIONS.MANAGE_CRITICAL_SETTINGS);
+  const canManagePolicies = () => hasPermission(PERMISSIONS.MANAGE_POLICIES);
+  const canManageAdminRoles = () => hasPermission(PERMISSIONS.MANAGE_ADMIN_ROLES);
 
-  // Administrative Functions
-  const canManageCriticalSettings = () => {
-    return hasPermission(PERMISSIONS.MANAGE_CRITICAL_SETTINGS);
-  };
+  // Contenu Membre
+  const canAccessMemberContent = () => hasPermission(PERMISSIONS.ACCESS_MEMBER_CONTENT);
+  const canCreateMemberContent = () => hasPermission(PERMISSIONS.CREATE_MEMBER_CONTENT);
+  const canEditMemberContent = () => hasPermission(PERMISSIONS.EDIT_MEMBER_CONTENT);
 
-  const canManagePolicies = () => {
-    return hasPermission(PERMISSIONS.MANAGE_POLICIES);
-  };
-
-  const canManageAdminRoles = () => {
-    return hasPermission(PERMISSIONS.MANAGE_ADMIN_ROLES);
-  };
-
-  // Member Functions
-  const canAccessMemberContent = () => {
-    return hasPermission(PERMISSIONS.ACCESS_MEMBER_CONTENT);
-  };
-
-  const canCreateMemberContent = () => {
-    return hasPermission(PERMISSIONS.CREATE_MEMBER_CONTENT);
-  };
-
-  const canEditMemberContent = () => {
-    return hasPermission(PERMISSIONS.EDIT_MEMBER_CONTENT);
-  };
+  // ====================
+  // UTILITAIRES
+  // ====================
 
   return {
+    // Système de rôles
     hasRole,
+    hasAnyRole,
     hasPermission,
-    // Gallery
+    
+    // Dashboard et Accès
+    canViewDashboard,
+    canManageContent,
+    
+    // Médias
     canManageGallery,
+    canModerateMedia,
+    canUploadMedia,
+    
     // Articles
     canManageArticles,
-    // Users
+    
+    // Utilisateurs
     canManageUsers,
     canManageInvitations,
     canManageAdmissions,
-    // Events
+    
+    // Événements
     canManageEvents,
-    canViewAnalytics,
-    // Content
-    canManageContent,
-    canManageMessages,
+    
+    // Partitions
     canManagePartitions,
-    // Administrative
+    
+    // Analytics
+    canViewAnalytics,
+    
+    // Messages
+    canManageMessages,
+    
+    // Administratif
     canManageCriticalSettings,
     canManagePolicies,
     canManageAdminRoles,
-    // Member
+    
+    // Contenu Membre
     canAccessMemberContent,
     canCreateMemberContent,
-    canEditMemberContent
+    canEditMemberContent,
+    
+    // Rôle actuel et statuts
+    currentRole: userProfile?.role,
+    isSuperAdmin: hasRole('super-admin'),
+    isAdmin: hasRole('admin'),
+    isModerator: hasRole('moderator'),
+    isMember: hasRole('member'),
+    isUser: hasRole('user')
   };
 };
 

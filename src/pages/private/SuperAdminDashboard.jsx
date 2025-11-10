@@ -8,7 +8,7 @@ import {
   query,
   where 
 } from "firebase/firestore";
-import { db } from "../../config/firebase";
+import { db } from "../lib/firebase";
 import { useNavigate } from "react-router-dom";
 
 const SuperAdminDashboard = () => {

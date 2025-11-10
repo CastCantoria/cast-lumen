@@ -1,5 +1,4 @@
-﻿// src/App.jsx
-import React from 'react';
+﻿import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 
@@ -25,6 +24,7 @@ import Repertoire from './pages/public/Repertoire';
 import EventList from './pages/public/EventList';
 import Gallery from './pages/public/Gallery';
 import Events from './pages/public/Events';
+import './styles/gallery-animations.css';
 
 // Setup Admins
 import SetupAdmins from './pages/admin/SetupAdmins';
@@ -109,7 +109,7 @@ function App() {
               <Route 
                 path="/blog" 
                 element={
-                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                  <RequireRole allowedRoles={['member', 'admin', 'moderator', 'super-admin']}>
                     <Blog />
                   </RequireRole>
                 } 
@@ -119,7 +119,7 @@ function App() {
               <Route 
                 path="/chat" 
                 element={
-                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                  <RequireRole allowedRoles={['member', 'admin', 'moderator', 'super-admin']}>
                     <Chat />
                   </RequireRole>
                 } 
@@ -128,7 +128,7 @@ function App() {
               <Route 
                 path="/newsletter" 
                 element={
-                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                  <RequireRole allowedRoles={['member', 'admin', 'moderator', 'super-admin']}>
                     <Newsletter />
                   </RequireRole>
                 } 
@@ -141,7 +141,7 @@ function App() {
               <Route 
                 path="/media" 
                 element={
-                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                  <RequireRole allowedRoles={['member', 'admin', 'moderator', 'super-admin']}>
                     <MediaManager />
                   </RequireRole>
                 } 
@@ -150,7 +150,7 @@ function App() {
               <Route 
                 path="/upload-partition" 
                 element={
-                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                  <RequireRole allowedRoles={['member', 'admin', 'moderator', 'super-admin']}>
                     <PartitionUpload />
                   </RequireRole>
                 } 
@@ -159,8 +159,21 @@ function App() {
               <Route 
                 path="/annonces" 
                 element={
-                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                  <RequireRole allowedRoles={['member', 'admin', 'moderator', 'super-admin']}>
                     <NoticesManager />
+                  </RequireRole>
+                } 
+              />
+
+              {/* ==================== */}
+              {/* ROUTES MODÉRATION MÉDIAS - ADMIN ET MODÉRATEURS */}
+              {/* ==================== */}
+
+              <Route 
+                path="/admin/media" 
+                element={
+                  <RequireRole allowedRoles={['admin', 'moderator', 'super-admin']}>
+                    <MediaManager />
                   </RequireRole>
                 } 
               />
@@ -172,7 +185,7 @@ function App() {
               <Route 
                 path="/partitions" 
                 element={
-                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                  <RequireRole allowedRoles={['member', 'admin', 'moderator', 'super-admin']}>
                     <Scores />
                   </RequireRole>
                 } 
@@ -181,7 +194,7 @@ function App() {
               <Route 
                 path="/repetitions" 
                 element={
-                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                  <RequireRole allowedRoles={['member', 'admin', 'moderator', 'super-admin']}>
                     <Rehearsals />
                   </RequireRole>
                 } 
@@ -211,21 +224,21 @@ function App() {
                 } 
               />
 
-              {/* Dashboard Membre (accès: member, admin, super-admin) */}
+              {/* Dashboard Membre (accès: member, admin, moderator, super-admin) */}
               <Route 
                 path="/dashboard/member" 
                 element={
-                  <RequireRole allowedRoles={['member', 'admin', 'super-admin']}>
+                  <RequireRole allowedRoles={['member', 'admin', 'moderator', 'super-admin']}>
                     <MemberDashboard />
                   </RequireRole>
                 } 
               />
 
-              {/* Dashboard Admin (accès: admin, super-admin) */}
+              {/* Dashboard Admin (accès: admin, moderator, super-admin) */}
               <Route 
                 path="/dashboard/admin" 
                 element={
-                  <RequireRole allowedRoles={['admin', 'super-admin']}>
+                  <RequireRole allowedRoles={['admin', 'moderator', 'super-admin']}>
                     <AdminDashboard />
                   </RequireRole>
                 } 
@@ -288,6 +301,9 @@ function App() {
                         </a>
                         <a href="/media" className="text-purple-600 hover:text-purple-800 font-medium">
                           🎵 Médias Partagés
+                        </a>
+                        <a href="/gallery" className="text-indigo-600 hover:text-indigo-800 font-medium">
+                          🖼️ Galerie Publique
                         </a>
                       </div>
                     </div>

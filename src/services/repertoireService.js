@@ -10,7 +10,8 @@
   where,
   orderBy 
 } from "firebase/firestore";
-import { db, storage } from "../config/firebase";
+// ✅ CORRECTION : Utiliser le bon chemin vers src/lib/firebase.js
+import { db, storage } from "../lib/firebase";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const repertoireService = {

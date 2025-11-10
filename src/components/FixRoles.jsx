@@ -2,7 +2,7 @@
 import React from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { collection, getDocs, updateDoc, doc } from 'firebase/firestore';
-import { db } from '../config/firebase';
+import { db } from "../lib/firebase";
 
 const FixRoles = () => {
   const { userRole } = useAuth();

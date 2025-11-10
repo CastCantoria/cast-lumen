@@ -1,106 +1,148 @@
-﻿import React, { useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useGallery } from '../../contexts/GalleryContext';
 
-const FilterTags = () => {
-  const { filter, setFilter, searchQuery, setSearchQuery } = useGallery();
+const FilterTags = ({ onFilterChange, allMedia }) => {
+  // ✅ Gestion d'erreur pour useGallery
+  let galleryContext;
+  try {
+    galleryContext = useGallery();
+  } catch (error) {
+    console.warn('⚠️ GalleryContext non disponible, utilisation des props locales');
+    galleryContext = {
+      filter: 'all',
+      setFilter: () => {},
+      searchQuery: '',
+      setSearchQuery: () => {},
+      clearFilters: () => {}
+    };
+  }
+
+  const { filter, setFilter, searchQuery, setSearchQuery, clearFilters } = galleryContext;
+  const [localFilter, setLocalFilter] = useState(filter);
+  const [localSearch, setLocalSearch] = useState(searchQuery);
+
+  // Extraire tous les tags uniques
+  const allTags = [...new Set(allMedia.flatMap(media => media.tags || []))];
+  const categories = [...new Set(allMedia.map(media => media.category))];
 
   useEffect(() => {
-    window.scrollTo({ top: 0, behavior: 'instant' });
-  }, [filter, searchQuery]);
+    const filtered = allMedia.filter(media => {
+      const matchesSearch = media.title.toLowerCase().includes(localSearch.toLowerCase()) ||
+                          media.description.toLowerCase().includes(localSearch.toLowerCase()) ||
+                          media.tags.some(tag => tag.toLowerCase().includes(localSearch.toLowerCase()));
+      
+      const matchesFilter = localFilter === 'all' || 
+                           media.tags.includes(localFilter) ||
+                           media.category === localFilter;
 
-  const filters = [
-    { key: 'all', label: '🎭 Tous les médias' },
-    { key: 'image', label: '🖼️ Photos' },
-    { key: 'video', label: '🎬 Vidéos' },
-    { key: 'audio', label: '🎵 Audio' },
-    { key: 'member', label: '👥 Médias membres' }
-  ];
+      return matchesSearch && matchesFilter;
+    });
 
-  const categories = [
-    { key: 'concerts', label: '🎵 Concerts', color: 'bg-blue-500' },
-    { key: 'spiritualite', label: '🙏 Spiritualité', color: 'bg-purple-500' },
-    { key: 'repetitions', label: '🎻 Répétitions', color: 'bg-green-500' },
-    { key: 'backstage', label: '🌟 Backstage', color: 'bg-yellow-500' },
-    { key: 'partitions', label: '🎼 Partitions', color: 'bg-indigo-500' }
-  ];
+    onFilterChange(filtered);
+  }, [localFilter, localSearch, allMedia, onFilterChange]);
+
+  const handleFilterChange = (newFilter) => {
+    setLocalFilter(newFilter);
+    setFilter(newFilter);
+  };
+
+  const handleSearchChange = (query) => {
+    setLocalSearch(query);
+    setSearchQuery(query);
+  };
+
+  const handleClearFilters = () => {
+    setLocalFilter('all');
+    setLocalSearch('');
+    setFilter('all');
+    setSearchQuery('');
+    clearFilters();
+  };
 
   return (
-    <div className="bg-white shadow-lg rounded-lg p-6 mb-8">
-      {/* Barre de recherche */}
-      <div className="mb-6">
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="🔍 Rechercher un média, un tag..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full px-4 py-3 border-2 border-cast-green rounded-lg focus:outline-none focus:border-cast-gold transition-colors"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-cast-green"
-            >
-              ✕
-            </button>
-          )}
+    <div className="filter-tags bg-white p-6 rounded-lg shadow-md mb-6">
+      <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+        {/* Recherche */}
+        <div className="flex-1 w-full md:w-auto">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Rechercher un média..."
+              value={localSearch}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="w-full md:w-80 px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              🔍
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Filtres par type */}
-      <div className="mb-6">
-        <h3 className="text-lg font-bold text-cast-green mb-3">Type de média</h3>
+        {/* Filtres par catégorie */}
         <div className="flex flex-wrap gap-2">
-          {filters.map((filterItem) => (
+          <button
+            onClick={() => handleFilterChange('all')}
+            className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+              localFilter === 'all'
+                ? 'bg-blue-500 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            Tous
+          </button>
+          
+          {categories.map(category => (
             <button
-              key={filterItem.key}
-              onClick={() => setFilter(filterItem.key)}
-              className={`px-4 py-2 rounded-full font-semibold transition-all duration-300 ${
-                filter === filterItem.key
-                  ? 'bg-cast-gold text-cast-green shadow-lg transform scale-105'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              key={category}
+              onClick={() => handleFilterChange(category)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
+                localFilter === category
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              {filterItem.label}
+              {category}
             </button>
           ))}
         </div>
-      </div>
 
-      {/* Catégories thématiques */}
-      <div>
-        <h3 className="text-lg font-bold text-cast-green mb-3">Catégories</h3>
-        <div className="flex flex-wrap gap-2">
-          {categories.map((category) => (
-            <button
-              key={category.key}
-              onClick={() => setSearchQuery(category.key)}
-              className={`px-4 py-2 rounded-full text-white font-semibold transition-all duration-300 ${
-                searchQuery === category.key
-                  ? 'shadow-lg transform scale-105 ring-2 ring-white ring-opacity-50'
-                  : 'opacity-90 hover:opacity-100'
-              } ${category.color}`}
-            >
-              {category.label}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Reset filters */}
-      {(filter !== 'all' || searchQuery) && (
-        <div className="mt-4 text-center">
+        {/* Bouton reset */}
+        {(localFilter !== 'all' || localSearch) && (
           <button
-            onClick={() => {
-              setFilter('all');
-              setSearchQuery('');
-            }}
-            className="text-cast-green hover:text-cast-gold font-semibold transition-colors"
+            onClick={handleClearFilters}
+            className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm font-medium"
           >
-            ↺ Réinitialiser les filtres
+            Réinitialiser
           </button>
+        )}
+      </div>
+
+      {/* Tags populaires */}
+      <div className="mt-4">
+        <h4 className="text-sm font-medium text-gray-700 mb-2">Tags populaires:</h4>
+        <div className="flex flex-wrap gap-2">
+          {allTags.slice(0, 10).map(tag => (
+            <button
+              key={tag}
+              onClick={() => handleFilterChange(tag)}
+              className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                localFilter === tag
+                  ? 'bg-purple-500 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              #{tag}
+            </button>
+          ))}
         </div>
-      )}
+      </div>
+
+      {/* Statistiques */}
+      <div className="mt-4 text-sm text-gray-500">
+        {allMedia.length} médias disponibles • 
+        Filtre: {localFilter === 'all' ? 'Tous' : localFilter} • 
+        {localSearch && ` Recherche: "${localSearch}"`}
+      </div>
     </div>
   );
 };

@@ -13,11 +13,12 @@ const AdminNavigation = () => {
     canManageUsers,
     canManageEvents,
     canViewAnalytics,
-    canManagePartitions
+    canManagePartitions,
+    canModerateMedia
   } = usePermissions();
   
   const isActive = (path) => {
-    return location.pathname === path || location.hash === `#${path}`;
+    return location.pathname === path || location.pathname.startsWith(path);
   };
 
   const canAccessItem = (item) => {
@@ -28,7 +29,6 @@ const AdminNavigation = () => {
   const hasRequiredPermissions = (item) => {
     if (!item.permissions) return true;
     
-    // Si une liste de permissions est fournie, vérifier que l'utilisateur a toutes les permissions
     return item.permissions.every(permission => {
       switch (permission) {
         case 'manage_gallery':
@@ -43,6 +43,8 @@ const AdminNavigation = () => {
           return canManagePartitions();
         case 'view_analytics':
           return canViewAnalytics();
+        case 'moderate_media':
+          return canModerateMedia();
         default:
           return true;
       }
@@ -55,7 +57,7 @@ const AdminNavigation = () => {
       id: 'dashboard',
       title: '🏠 Accueil du Site',
       path: '/',
-      roles: ['super-admin', 'admin', 'member']
+      roles: ['super-admin', 'admin', 'moderator', 'member']
     },
     {
       id: 'super-admin',
@@ -137,8 +139,17 @@ const AdminNavigation = () => {
       id: 'content-section',
       title: '📱 Contenu & Média',
       type: 'section',
-      roles: ['super-admin', 'admin'],
+      roles: ['super-admin', 'admin', 'moderator'],
       permissions: ['manage_content']
+    },
+    {
+      id: 'media-moderation',
+      title: '🛡️ Modération Médias',
+      path: '/admin/media',
+      roles: ['super-admin', 'admin', 'moderator'],
+      permissions: ['moderate_media'],
+      parent: 'content-section',
+      description: 'Approuver/rejeter les médias uploadés'
     },
     {
       id: 'gallery',
@@ -171,6 +182,15 @@ const AdminNavigation = () => {
       title: '⚡ Actions Rapides',
       type: 'section',
       roles: ['super-admin', 'admin']
+    },
+    {
+      id: 'media-moderation-quick',
+      title: '🛡️ Modérer Médias',
+      path: '/admin/media',
+      roles: ['super-admin', 'admin', 'moderator'],
+      permissions: ['moderate_media'],
+      parent: 'quick-actions',
+      description: 'Vérifier les uploads en attente'
     },
     {
       id: 'add-partition',
@@ -218,8 +238,7 @@ const AdminNavigation = () => {
       title: '👑 Gérer les Super-Admins',
       path: '/dashboard/super-admin/roles/super-admins',
       roles: ['super-admin'],
-      parent: 'roles-section',
-      permission: 'Permission requise'
+      parent: 'roles-section'
     },
     {
       id: 'manage-admins',
@@ -227,6 +246,14 @@ const AdminNavigation = () => {
       path: '/dashboard/super-admin/roles/admins',
       roles: ['super-admin'],
       parent: 'roles-section'
+    },
+    {
+      id: 'manage-moderators',
+      title: '🛡️ Gérer les Modérateurs',
+      path: '/dashboard/super-admin/roles/moderators',
+      roles: ['super-admin'],
+      parent: 'roles-section',
+      description: 'Gérer les permissions de modération'
     },
     {
       id: 'manage-core-team',
@@ -237,59 +264,103 @@ const AdminNavigation = () => {
     }
   ];
 
-  const filteredItems = navigationItems.filter(item => {
-    if (!userProfile) return false;
-    return item.roles.includes(userProfile.role);
-  });
+  const filteredItems = navigationItems.filter(item => canAccessItem(item));
 
   const renderNavigationItem = (item) => {
     if (item.type === 'section') {
       return (
-        <div key={item.id} className="nav-section">
-          <h3 className="section-title">{item.title}</h3>
+        <div key={item.id} className="px-4 py-3 mt-6 first:mt-0">
+          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            {item.title}
+          </h3>
         </div>
       );
     }
 
+    const isItemActive = isActive(item.path);
+    
     return (
       <Link
         key={item.id}
         to={item.path}
-        className={`nav-item ${isActive(item.path) ? 'active' : ''} ${
-          item.parent ? 'sub-item' : ''
-        }`}
+        className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors mx-2 ${
+          isItemActive
+            ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-500'
+            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+        } ${item.parent ? 'ml-6' : ''}`}
       >
-        <div className="nav-item-content">
-          <span className="nav-icon">{item.title.split(' ')[0]}</span>
-          <div className="nav-text">
-            <div className="nav-title">
+        <div className="flex items-center w-full">
+          <span className="mr-3 text-lg">{item.title.split(' ')[0]}</span>
+          <div className="flex-1 min-w-0">
+            <div className="font-medium truncate">
               {item.title.replace(/^[^\s]+\s/, '')}
             </div>
             {item.description && (
-              <div className="nav-description">{item.description}</div>
-            )}
-            {item.permission && (
-              <div className="nav-permission">{item.permission}</div>
+              <div className="text-xs text-gray-500 truncate mt-1">
+                {item.description}
+              </div>
             )}
           </div>
+          {isItemActive && (
+            <div className="w-2 h-2 bg-blue-500 rounded-full ml-2"></div>
+          )}
         </div>
-        {isActive(item.path) && <div className="active-indicator" />}
       </Link>
     );
   };
 
+  if (!userProfile) {
+    return (
+      <div className="admin-navigation p-4">
+        <div className="text-center text-gray-500">
+          Chargement des permissions...
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="admin-navigation">
-      <div className="nav-header">
-        <h2>Navigation Admin</h2>
-        <div className="user-role">
-          Rôle: <span className="role-badge">{userProfile?.role}</span>
+    <div className="admin-navigation bg-white h-full overflow-y-auto">
+      {/* En-tête */}
+      <div className="p-4 border-b border-gray-200">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+          Navigation Admin
+        </h2>
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-gray-600">
+            Connecté en tant que:
+          </div>
+          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+            userProfile.role === 'super-admin' 
+              ? 'bg-purple-100 text-purple-800'
+              : userProfile.role === 'admin'
+              ? 'bg-blue-100 text-blue-800'
+              : userProfile.role === 'moderator'
+              ? 'bg-orange-100 text-orange-800'
+              : 'bg-green-100 text-green-800'
+          }`}>
+            {userProfile.role}
+          </span>
         </div>
       </div>
       
-      <nav className="nav-menu">
-        {filteredItems.map(renderNavigationItem)}
+      {/* Menu de navigation */}
+      <nav className="p-2 space-y-1">
+        {filteredItems.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            Aucun accès administrateur
+          </div>
+        ) : (
+          filteredItems.map(renderNavigationItem)
+        )}
       </nav>
+
+      {/* Pied de page */}
+      <div className="p-4 border-t border-gray-200 mt-auto">
+        <div className="text-xs text-gray-500 text-center">
+          C.A.S.T. Admin Panel v2.0
+        </div>
+      </div>
     </div>
   );
 };

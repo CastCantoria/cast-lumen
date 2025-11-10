@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { db } from '../../config/firebase';
+import { db } from "../lib/firebase";
 
 const FixSuperAdmin = () => {
   const { currentUser, userProfile } = useAuth();
