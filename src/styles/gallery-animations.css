@@ -1,27 +1,10 @@
-/* Animations pour la galerie */
+/* ===== ANIMATIONS POUR LA GALERIE ET SITE COMPLET ===== */
+
+/* Animations de base */
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
-}
-
-.shake-animation {
-  animation: shake 0.5s ease-in-out;
-}
-
-/* Effets de hover avancés */
-.media-item {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.media-item:hover {
-  transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-}
-
-/* Animation d'apparition en cascade */
-.gallery-grid {
-  animation: fadeInUp 0.6s ease-out;
 }
 
 @keyframes fadeInUp {
@@ -34,99 +17,6 @@
     transform: translateY(0);
   }
 }
-
-/* Effet de brillance sur les boutons */
-.glow-button {
-  position: relative;
-  overflow: hidden;
-}
-
-.glow-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-  transition: left 0.5s;
-}
-
-.glow-button:hover::before {
-  left: 100%;
-}
-
-/* Masonry layout */
-.masonry-grid {
-  column-count: 5;
-  column-gap: 1rem;
-}
-
-@media (max-width: 1200px) {
-  .masonry-grid { column-count: 4; }
-}
-
-@media (max-width: 900px) {
-  .masonry-grid { column-count: 3; }
-}
-
-@media (max-width: 600px) {
-  .masonry-grid { column-count: 2; }
-}
-
-@media (max-width: 400px) {
-  .masonry-grid { column-count: 1; }
-}
-
-.masonry-item {
-  break-inside: avoid;
-  margin-bottom: 1rem;
-}
-
-/* Loading skeleton animation */
-@keyframes skeletonPulse {
-  0% { background-color: #f3f4f6; }
-  50% { background-color: #e5e7eb; }
-  100% { background-color: #f3f4f6; }
-}
-
-.skeleton-pulse {
-  animation: skeletonPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-/* Gradient text animation */
-.gradient-text-animated {
-  background: linear-gradient(-45deg, #3b82f6, #10b981, #8b5cf6, #3b82f6);
-  background-size: 300% 300%;
-  animation: gradientShift 3s ease infinite;
-}
-
-@keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Image lazy loading fade in */
-.lazy-image {
-  opacity: 0;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.lazy-image.loaded {
-  opacity: 1;
-}
-
-/* Parallax effect for featured items */
-.parallax-item {
-  transform: translateZ(0);
-  transition: transform 0.3s ease-out;
-}
-
-.parallax-item:hover {
-  transform: translateY(-10px) scale(1.05);
-}
-/* Ajoutez ceci dans votre fichier CSS global ou dans styles/gallery-animations.css */
 
 @keyframes slowZoom {
   0% {
@@ -173,6 +63,23 @@
   }
 }
 
+@keyframes skeletonPulse {
+  0% { background-color: #f3f4f6; }
+  50% { background-color: #e5e7eb; }
+  100% { background-color: #f3f4f6; }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Classes d'animation */
+.shake-animation {
+  animation: shake 0.5s ease-in-out;
+}
+
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
@@ -193,30 +100,145 @@
   animation: fadeInUp 0.8s ease-out forwards;
 }
 
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.skeleton-pulse {
+  animation: skeletonPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
+/* Effets de hover avancés */
+.media-item {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.media-item:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Animation d'apparition en cascade */
+.gallery-grid {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+/* Effet de brillance sur les boutons */
+.glow-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.glow-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+  transition: left 0.5s;
+}
+
+.glow-button:hover::before {
+  left: 100%;
+}
+
+/* Masonry layout responsive */
+.masonry-grid {
+  column-count: 5;
+  column-gap: 1rem;
+}
+
+@media (max-width: 1200px) {
+  .masonry-grid { column-count: 4; }
+}
+
+@media (max-width: 900px) {
+  .masonry-grid { column-count: 3; }
+}
+
+@media (max-width: 600px) {
+  .masonry-grid { column-count: 2; }
+}
+
+@media (max-width: 400px) {
+  .masonry-grid { column-count: 1; }
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 1rem;
+}
+
+/* Gradient text animation */
+.gradient-text-animated {
+  background: linear-gradient(-45deg, #3b82f6, #10b981, #8b5cf6, #3b82f6);
+  background-size: 300% 300%;
+  animation: gradientShift 3s ease infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Image lazy loading fade in */
+.lazy-image {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.lazy-image.loaded {
+  opacity: 1;
+}
+
+/* Parallax effect for featured items */
+.parallax-item {
+  transform: translateZ(0);
+  transition: transform 0.3s ease-out;
+}
+
+.parallax-item:hover {
+  transform: translateY(-10px) scale(1.05);
+}
+
+/* Effets de texte et ombres */
 .text-shadow-glow {
   text-shadow: 0 0 20px rgba(255, 255, 255, 0.5),
                0 0 40px rgba(255, 255, 255, 0.3),
                0 0 60px rgba(255, 255, 255, 0.1);
 }
 
+/* Classes utilitaires pour l'observation au scroll */
 .observe-me {
   opacity: 0;
 }
 
-.transform.hover\\:scale-102:hover {
+/* Correction pour les échelles de hover */
+.hover-scale-102:hover {
   transform: scale(1.02);
 }
 
-/* Assurez-vous que les images de fond existent dans public/images/ */
-/* cast-hero-bg.jpg, fondation-2003.jpg, cross-pattern.svg, stars-pattern.svg */
+/* Améliorations pour la compatibilité mobile */
+@media (max-width: 768px) {
+  .media-item:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+  
+  .parallax-item:hover {
+    transform: translateY(-5px) scale(1.02);
+  }
+}
+
+/* Support pour le thème sombre */
+@media (prefers-color-scheme: dark) {
+  .skeleton-pulse {
+    animation: skeletonPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+}
+
+/* Optimisations des performances */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

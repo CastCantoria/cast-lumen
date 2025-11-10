@@ -18,6 +18,8 @@ html {
   line-height: 1.15;
   text-size-adjust: 100%;
   -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
   scroll-behavior: smooth;
 }
 
@@ -130,7 +132,7 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
-/* Animations */
+/* Animations de base sans effets de bondissement */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -142,8 +144,35 @@ textarea:focus-visible {
   }
 }
 
+@keyframes smoothAppear {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 .animate-fade-in {
   animation: fadeIn 0.5s ease-out;
+}
+
+.animate-smooth-appear {
+  animation: smoothAppear 0.6s ease-out;
+}
+
+/* Désactive les animations pour les utilisateurs qui préfèrent les réduire */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Loading states */
@@ -164,6 +193,11 @@ textarea:focus-visible {
 @media print {
   .no-print {
     display: none !important;
+  }
+  
+  * {
+    animation: none !important;
+    transition: none !important;
   }
 }
 
@@ -201,4 +235,20 @@ iframe, object, embed {
 
 .safe-area-right {
   padding-right: env(safe-area-inset-right);
+}
+
+/* Correction spécifique pour le texte bondissant */
+.no-bounce {
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Styles pour les titres avec animations contrôlées */
+.hero-title {
+  animation: smoothAppear 0.8s ease-out;
+}
+
+/* Assure que les textes importants n'ont pas d'animations gênantes */
+.important-text {
+  animation: fadeIn 0.5s ease-out !important;
 }
