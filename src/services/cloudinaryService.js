@@ -1,9 +1,17 @@
 import { moderationService } from './moderationService';
+import { ensureSafeFirestoreData } from '../lib/firebase';
 
 // ✅ Service principal avec export named
 export const cloudinaryService = {
   async uploadMedia(file, metadata = {}) {
     try {
+      console.log('📤 Début upload Cloudinary:', {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        metadata: metadata
+      });
+
       // Upload vers Cloudinary
       const formData = new FormData();
       formData.append('file', file);
@@ -36,16 +44,27 @@ export const cloudinaryService = {
         size: result.bytes
       });
       
+      // Données garanties sans undefined pour la modération
+      const safeMetadata = ensureSafeFirestoreData({
+        // Valeurs par défaut critiques
+        userRole: 'user',
+        userId: 'anonymous',
+        userEmail: 'unknown@example.com',
+        userDisplayName: 'Utilisateur',
+        // Surcharger avec les métadonnées fournies
+        ...metadata
+      });
+      
       // Soumettre à la modération
       const moderationData = {
-        ...metadata,
+        ...safeMetadata,
         url: result.secure_url,
         type: result.resource_type,
         title: result.original_filename,
         publicId: result.public_id,
         format: result.format,
         bytes: result.bytes,
-        uploadedBy: metadata.userId || 'anonymous',
+        uploadedBy: safeMetadata.userId,
         dimensions: result.width && result.height ? {
           width: result.width,
           height: result.height
@@ -55,28 +74,41 @@ export const cloudinaryService = {
           public_id: result.public_id,
           version: result.version,
           signature: result.signature
-        }
+        },
+        // Champs supplémentaires pour la modération
+        fileName: result.original_filename,
+        fileSize: result.bytes,
+        mimeType: file.type,
+        status: 'pending',
+        submittedAt: new Date().toISOString()
       };
       
+      console.log('📤 Données modération préparées:', moderationData);
+
       // Vérifier si l'utilisateur peut auto-approuver
-      if (metadata.userRole && moderationService.canAutoApprove(metadata.userRole)) {
-        console.log('🔄 Auto-approbation pour le rôle:', metadata.userRole);
+      if (safeMetadata.userRole && moderationService.canAutoApprove(safeMetadata.userRole)) {
+        console.log('🔄 Auto-approbation pour le rôle:', safeMetadata.userRole);
+        
+        const moderationResult = await moderationService.submitMediaForModeration(moderationData);
+        
         await moderationService.approveMedia(
-          (await moderationService.submitMediaForModeration(moderationData)).id,
-          metadata.userId || 'system',
+          moderationResult.id,
+          safeMetadata.userId || 'system',
           'Auto-approuvé (rôle privilégié)'
         );
         
         return {
           ...result,
-          status: 'approved'
+          status: 'approved',
+          moderationId: moderationResult.id
         };
       } else {
-        await moderationService.submitMediaForModeration(moderationData);
+        const moderationResult = await moderationService.submitMediaForModeration(moderationData);
         
         return {
           ...result,
-          status: 'pending'
+          status: 'pending',
+          moderationId: moderationResult.id
         };
       }
       
@@ -88,6 +120,8 @@ export const cloudinaryService = {
 
   async deleteMedia(publicId) {
     try {
+      console.log('🗑️ Suppression Cloudinary:', publicId);
+      
       const formData = new FormData();
       formData.append('public_id', publicId);
       formData.append('upload_preset', 'cast-media');
@@ -105,9 +139,11 @@ export const cloudinaryService = {
         throw new Error(`Delete failed: ${response.statusText}`);
       }
 
-      return await response.json();
+      const result = await response.json();
+      console.log('✅ Suppression Cloudinary réussie:', result);
+      return result;
     } catch (error) {
-      console.error('Cloudinary delete error:', error);
+      console.error('❌ Cloudinary delete error:', error);
       throw error;
     }
   },
@@ -121,6 +157,16 @@ export const cloudinaryService = {
     } = options;
 
     return `https://res.cloudinary.com/dqzyuz3gu/image/upload/c_fill,w_${width},h_${height},q_${quality},f_${format}/${publicId}`;
+  },
+
+  // Nouvelle méthode pour obtenir l'URL de prévisualisation
+  getPreviewUrl(publicId) {
+    return `https://res.cloudinary.com/dqzyuz3gu/image/upload/c_limit,w_400/${publicId}`;
+  },
+
+  // Méthode pour obtenir l'URL originale
+  getOriginalUrl(publicId) {
+    return `https://res.cloudinary.com/dqzyuz3gu/image/upload/${publicId}`;
   }
 };
 

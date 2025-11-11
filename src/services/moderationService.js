@@ -10,43 +10,58 @@ import {
   getDoc,
   serverTimestamp 
 } from 'firebase/firestore';
-import { db } from '../lib/firebase'; // ✅ IMPORT CORRIGÉ
+import { db, ensureSafeFirestoreData, safeAddDoc } from '../lib/firebase'; // ✅ IMPORT CORRIGÉ
 
 export const moderationService = {
-  // Soumettre un média pour modération
+  // Soumettre un média pour modération (CORRIGÉ)
   async submitMediaForModeration(mediaData) {
     try {
-      const moderationDoc = {
-        ...mediaData,
+      console.log('📤 Début soumission modération...');
+      
+      // NETTOYAGE COMPLET DES DONNÉES
+      const safeModerationData = ensureSafeFirestoreData({
+        // Valeurs par défaut garanties
         status: 'pending',
         submittedAt: serverTimestamp(),
         moderatedAt: null,
         moderatorId: null,
         rejectionReason: null,
         notes: '',
-        fileName: mediaData.fileName || mediaData.title,
-        fileSize: mediaData.fileSize || 0,
+        likes: 0,
+        reports: 0,
+        moderated: false,
+        userRole: 'user',
+        userId: 'anonymous',
+        userEmail: 'unknown@example.com',
+        userDisplayName: 'Utilisateur',
+        // Surcharger avec les données fournies
+        ...mediaData,
+        // Champs critiques avec fallback
+        fileName: mediaData.fileName || mediaData.title || 'sans-nom',
+        fileSize: mediaData.fileSize || mediaData.bytes || 0,
         mimeType: mediaData.mimeType || '',
         dimensions: mediaData.dimensions || null,
         duration: mediaData.duration || null
-      };
+      });
       
-      console.log('📤 Soumission modération:', moderationDoc);
+      console.log('📤 Soumission modération (nettoyée):', safeModerationData);
       
-      const docRef = await addDoc(
+      // VÉRIFICATION FINALE - GARANTIR userRole
+      if (!safeModerationData.userRole) {
+        safeModerationData.userRole = 'user';
+        console.warn('⚠️ userRole manquant, valeur par défaut appliquée');
+      }
+      
+      const docRef = await safeAddDoc(
         collection(db, 'gallery_moderation'), 
-        moderationDoc
+        safeModerationData
       );
       
       console.log('✅ Média soumis avec ID:', docRef.id);
       
       return { 
         id: docRef.id, 
-        ...moderationDoc,
-        public_id: mediaData.publicId,
-        secure_url: mediaData.url,
-        resource_type: mediaData.type,
-        original_filename: mediaData.title
+        ...safeModerationData
       };
     } catch (error) {
       console.error('❌ Erreur soumission modération:', error);
@@ -57,19 +72,23 @@ export const moderationService = {
   // Approuver un média
   async approveMedia(mediaId, moderatorId, notes = '') {
     try {
-      console.log('✅ Approbation média:', mediaId);
+      console.log('✅ Début approbation média:', mediaId);
       
-      await updateDoc(doc(db, 'gallery_moderation', mediaId), {
+      const updateData = ensureSafeFirestoreData({
         status: 'approved',
         moderatedAt: serverTimestamp(),
-        moderatorId,
-        notes,
-        rejectionReason: null
+        moderatorId: moderatorId || 'system',
+        notes: notes || 'Approuvé par modérateur',
+        rejectionReason: null,
+        moderated: true
       });
       
+      await updateDoc(doc(db, 'gallery_moderation', mediaId), updateData);
+      
+      // Publier dans la galerie principale
       await this.publishToMainGallery(mediaId);
       
-      console.log('✅ Média approuvé:', mediaId);
+      console.log('✅ Média approuvé et publié:', mediaId);
       return true;
     } catch (error) {
       console.error('❌ Erreur approbation:', error);
@@ -82,13 +101,16 @@ export const moderationService = {
     try {
       console.log('❌ Rejet média:', mediaId, 'Raison:', reason);
       
-      await updateDoc(doc(db, 'gallery_moderation', mediaId), {
+      const updateData = ensureSafeFirestoreData({
         status: 'rejected',
         moderatedAt: serverTimestamp(),
-        moderatorId,
-        rejectionReason: reason,
-        notes
+        moderatorId: moderatorId || 'system',
+        rejectionReason: reason || 'Non conforme',
+        notes: notes || 'Rejeté par modérateur',
+        moderated: true
       });
+      
+      await updateDoc(doc(db, 'gallery_moderation', mediaId), updateData);
       
       console.log('✅ Média rejeté:', mediaId);
       return true;
@@ -148,6 +170,30 @@ export const moderationService = {
     }
   },
 
+  // Récupérer tous les médias (pour admin)
+  async getAllMedia() {
+    try {
+      console.log('🔄 Récupération de tous les médias...');
+      
+      const q = query(
+        collection(db, 'gallery_moderation'),
+        orderBy('submittedAt', 'desc')
+      );
+      
+      const snapshot = await getDocs(q);
+      const media = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      console.log(`📊 ${media.length} médias totaux trouvés`);
+      return media;
+    } catch (error) {
+      console.error('❌ Erreur récupération tous médias:', error);
+      return [];
+    }
+  },
+
   // Récupérer les statistiques de modération
   async getModerationStats() {
     try {
@@ -191,14 +237,18 @@ export const moderationService = {
 
       const mediaData = moderationDoc.data();
       
-      await addDoc(collection(db, 'gallery'), {
+      // Nettoyer les données pour la galerie principale
+      const galleryData = ensureSafeFirestoreData({
         ...mediaData,
         publishedAt: serverTimestamp(),
         views: 0,
         likes: 0,
         approved: true,
-        source: 'member'
+        source: 'member',
+        moderationId: mediaId
       });
+      
+      await safeAddDoc(collection(db, 'gallery'), galleryData);
       
       console.log('✅ Média publié dans galerie principale');
       return true;
@@ -218,10 +268,31 @@ export const moderationService = {
 
   // Méthode utilitaire pour formater la taille du fichier
   formatFileSize(bytes) {
-    if (!bytes) return '0 B';
+    if (!bytes || bytes === 0) return '0 B';
     const sizes = ['B', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
     return Math.round(bytes / Math.pow(1024, i) * 100) / 100 + ' ' + sizes[i];
+  },
+
+  // Nouvelle méthode pour récupérer un média spécifique
+  async getMediaById(mediaId) {
+    try {
+      console.log('🔍 Récupération média par ID:', mediaId);
+      
+      const docSnap = await getDoc(doc(db, 'gallery_moderation', mediaId));
+      
+      if (docSnap.exists()) {
+        return {
+          id: docSnap.id,
+          ...docSnap.data()
+        };
+      } else {
+        throw new Error('Média non trouvé');
+      }
+    } catch (error) {
+      console.error('❌ Erreur récupération média:', error);
+      throw error;
+    }
   }
 };
 
