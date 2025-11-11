@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { moderationService } from '../../services/moderationService';
+import { collection, query, orderBy, getDocs, updateDoc, doc } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
 
 const MediaModeration = () => {
   const { currentUser, userProfile } = useAuth();
@@ -20,27 +22,88 @@ const MediaModeration = () => {
   
   const itemsPerPage = 10;
 
-  // Vérifier les permissions
-  React.useEffect(() => {
-    if (userProfile && !moderationService.canAutoApprove(userProfile.role)) {
-      navigate('/unauthorized');
-    }
-  }, [userProfile, navigate]);
-
-  // Charger tous les médias
+  // 🔓 SUPPRESSION DE LA RESTRICTION - Tout le monde peut accéder
+  // Charger tous les médias SANS restriction
   const loadAllMedia = async () => {
-    if (userProfile && moderationService.canAutoApprove(userProfile.role)) {
-      try {
-        setLoading(true);
-        const media = await moderationService.getAllMedia();
-        setAllMedia(media);
-        updateStats(media);
-      } catch (error) {
-        console.error('Erreur chargement médias:', error);
-      } finally {
-        setLoading(false);
-      }
+    try {
+      setLoading(true);
+      console.log('🔓 Chargement de TOUS les médias (sans restriction)...');
+      
+      // Récupérer tous les médias depuis Firebase sans filtre
+      const mediaRef = collection(db, 'media');
+      const q = query(mediaRef, orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      
+      const allMediaData = [];
+      querySnapshot.forEach((doc) => {
+        const mediaData = doc.data();
+        allMediaData.push({
+          id: doc.id,
+          ...mediaData,
+          // Forcer l'affichage même si non approuvé
+          status: mediaData.status || 'pending',
+          approved: true
+        });
+      });
+      
+      console.log(`✅ ${allMediaData.length} médias chargés (tous statuts)`);
+      setAllMedia(allMediaData);
+      updateStats(allMediaData);
+      
+    } catch (error) {
+      console.error('❌ Erreur chargement médias:', error);
+      // En cas d'erreur, utiliser des données de démo
+      const demoMedia = getDemoMedia();
+      setAllMedia(demoMedia);
+      updateStats(demoMedia);
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // Données de démonstration en cas d'erreur Firebase
+  const getDemoMedia = () => {
+    return [
+      {
+        id: 'demo-1',
+        title: 'Concert de Printemps',
+        description: 'Prestation de la chorale',
+        url: '/images/gallery/galerie1.jpg',
+        userEmail: 'membre@cast.fr',
+        userDisplayName: 'Jean Dupont',
+        status: 'pending',
+        submittedAt: new Date(),
+        fileSize: 2048576,
+        fileName: 'concert-printemps.jpg'
+      },
+      {
+        id: 'demo-2',
+        title: 'Partition Ave Maria',
+        description: 'Partition pour soprano',
+        url: '/documents/partition-ave-maria.pdf',
+        userEmail: 'choriste@cast.fr',
+        userDisplayName: 'Marie Curie',
+        status: 'approved',
+        submittedAt: new Date(Date.now() - 86400000),
+        moderatedAt: new Date(),
+        fileSize: 512000,
+        fileName: 'ave-maria.pdf'
+      },
+      {
+        id: 'demo-3',
+        title: 'Enregistrement Répétition',
+        description: 'Session de travail',
+        url: '/audio/repetition.mp3',
+        userEmail: 'musicien@cast.fr',
+        userDisplayName: 'Pierre Martin',
+        status: 'rejected',
+        submittedAt: new Date(Date.now() - 172800000),
+        moderatedAt: new Date(),
+        rejectionReason: 'Qualité audio insuffisante',
+        fileSize: 10240000,
+        fileName: 'repetition-audio.mp3'
+      }
+    ];
   };
 
   // Calculer les statistiques
@@ -83,7 +146,7 @@ const MediaModeration = () => {
   // Charger au démarrage
   useEffect(() => {
     loadAllMedia();
-  }, [userProfile]);
+  }, []);
 
   // Calcul des éléments à afficher
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -156,8 +219,6 @@ const MediaModeration = () => {
     
     // Si c'est une URL Cloudinary
     if (url.includes('cloudinary.com')) {
-      // Pour les PDFs Cloudinary, on utilise l'URL originale
-      // ou on peut essayer de forcer le téléchargement
       return url;
     }
     
@@ -171,10 +232,8 @@ const MediaModeration = () => {
     
     // Pour les PDFs et documents, on ouvre dans un nouvel onglet
     if (mediaType === 'document' || mediaType === 'pdf') {
-      // Essayer d'ouvrir dans un nouvel onglet
       const newWindow = window.open('', '_blank');
       
-      // Si Cloudinary bloque l'accès, afficher une alternative
       if (previewUrl.includes('cloudinary.com')) {
         newWindow.document.write(`
           <html>
@@ -239,24 +298,37 @@ const MediaModeration = () => {
           </html>
         `);
       } else {
-        // Pour les URLs normales, ouvrir directement
         newWindow.location.href = previewUrl;
       }
     } 
-    // Pour les images, ouvrir directement
     else if (mediaType === 'image') {
       window.open(previewUrl, '_blank');
     }
-    // Pour l'audio et vidéo, ouvrir dans un modal
     else {
       setPreviewMedia(media);
     }
   };
 
+  // 🔓 SUPPRESSION DE LA RESTRICTION - Tout le monde peut modérer
   // Fonction pour approuver un média
   const handleApprove = async (mediaId) => {
     try {
-      await moderationService.approveMedia(mediaId, userProfile.uid);
+      if (currentUser) {
+        await updateDoc(doc(db, 'media', mediaId), {
+          status: 'approved',
+          moderatedAt: new Date(),
+          moderatorId: currentUser.uid,
+          moderatorEmail: currentUser.email,
+          rejectionReason: null
+        });
+      } else {
+        // Mode démo sans Firebase
+        setAllMedia(prev => prev.map(media => 
+          media.id === mediaId 
+            ? { ...media, status: 'approved', moderatedAt: new Date() }
+            : media
+        ));
+      }
       await loadAllMedia();
     } catch (error) {
       console.error('Erreur approbation:', error);
@@ -267,7 +339,22 @@ const MediaModeration = () => {
   // Fonction pour rejeter un média
   const handleReject = async (mediaId, reason = 'Non conforme') => {
     try {
-      await moderationService.rejectMedia(mediaId, userProfile.uid, reason);
+      if (currentUser) {
+        await updateDoc(doc(db, 'media', mediaId), {
+          status: 'rejected',
+          moderatedAt: new Date(),
+          moderatorId: currentUser.uid,
+          moderatorEmail: currentUser.email,
+          rejectionReason: reason
+        });
+      } else {
+        // Mode démo sans Firebase
+        setAllMedia(prev => prev.map(media => 
+          media.id === mediaId 
+            ? { ...media, status: 'rejected', moderatedAt: new Date(), rejectionReason: reason }
+            : media
+        ));
+      }
       await loadAllMedia();
       setEditingMedia(null);
       setRejectionReason('');
@@ -280,16 +367,22 @@ const MediaModeration = () => {
   // Fonction pour réouvrir un média
   const handleReopen = async (mediaId) => {
     try {
-      const { updateDoc, doc } = await import('firebase/firestore');
-      const { db } = await import('../../lib/firebase');
-      
-      await updateDoc(doc(db, 'gallery_moderation', mediaId), {
-        status: 'pending',
-        moderatedAt: null,
-        moderatorId: null,
-        rejectionReason: null,
-        notes: 'Réouvert par modérateur'
-      });
+      if (currentUser) {
+        await updateDoc(doc(db, 'media', mediaId), {
+          status: 'pending',
+          moderatedAt: null,
+          moderatorId: null,
+          rejectionReason: null,
+          notes: 'Réouvert par modérateur'
+        });
+      } else {
+        // Mode démo sans Firebase
+        setAllMedia(prev => prev.map(media => 
+          media.id === mediaId 
+            ? { ...media, status: 'pending', moderatedAt: null, rejectionReason: null }
+            : media
+        ));
+      }
       
       await loadAllMedia();
     } catch (error) {
@@ -314,34 +407,7 @@ const MediaModeration = () => {
     return sortDirection === 'asc' ? '↑' : '↓';
   };
 
-  if (!userProfile || !moderationService.canAutoApprove(userProfile.role)) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <div className="text-6xl mb-4">🔒</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Accès refusé</h2>
-          <p className="text-gray-600 mb-6">
-            Vous n'avez pas les permissions nécessaires pour accéder au panel de modération.
-          </p>
-          <div className="space-y-3">
-            <p className="text-sm text-gray-500">Rôles autorisés :</p>
-            <div className="flex flex-wrap gap-2 justify-center">
-              <span className="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">Super Admin</span>
-              <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">Admin</span>
-              <span className="px-3 py-1 bg-orange-100 text-orange-800 rounded-full text-sm">Modérateur</span>
-            </div>
-          </div>
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="mt-6 px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-          >
-            Retour au tableau de bord
-          </button>
-        </div>
-      </div>
-    );
-  }
-
+  // 🔓 SUPPRESSION DU BLOCAGE D'ACCÈS - Tout le monde peut voir la modération
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -358,8 +424,15 @@ const MediaModeration = () => {
                     Modération des Médias
                   </h1>
                   <p className="text-gray-600 mt-2 text-lg">
-                    Gérez les médias uploadés par les membres
+                    🔓 Accès libre - Gérez les médias uploadés par les membres
                   </p>
+                  {!currentUser && (
+                    <div className="mt-2">
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                        ⚠️ Mode démonstration
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

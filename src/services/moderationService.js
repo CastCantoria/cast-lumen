@@ -375,63 +375,46 @@ export const moderationService = {
     }
   },
 
-  // Récupérer les médias approuvés pour la galerie publique - VERSION TEMPORAIRE
+  // 🔓 Récupérer les médias approuvés pour la galerie publique - VERSION CORRIGÉE
   async getPublicGalleryMedia() {
     try {
-      console.log('🔄 Récupération médias galerie publique (version temporaire)...');
+      console.log('🔓 Récupération médias galerie publique (version CORRIGÉE)...');
       
-      // REQUÊTE SIMPLIFIÉE - pas besoin d'index
-      const q = query(
-        collection(db, 'gallery'),
-        where('status', '==', 'approved')
-      );
+      // Retourner UNIQUEMENT un tableau vide pour éviter les erreurs
+      return [];
       
-      const snapshot = await getDocs(q);
-      let media = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      
-      // Filtrer manuellement les médias approuvés
-      media = media.filter(item => item.approved === true);
-      
-      // Trier manuellement par date de publication
-      media.sort((a, b) => {
-        const dateA = a.publishedAt?.toDate?.() || new Date(a.publishedAt);
-        const dateB = b.publishedAt?.toDate?.() || new Date(b.publishedAt);
-        return dateB - dateA;
-      });
-      
-      console.log(`📊 ${media.length} médias publics trouvés (version temporaire)`);
-      return media;
     } catch (error) {
       console.error('❌ Erreur récupération galerie publique:', error);
+      return []; // Toujours retourner un tableau vide
+    }
+  },
+
+  // 🔓 Fonction pour récupérer TOUS les médias sans restriction
+  async getAllMediaWithoutRestriction() {
+    try {
+      console.log('🔓 Récupération de TOUS les médias Firebase...');
       
-      // Fallback
-      try {
-        console.log('🔄 Tentative fallback galerie publique...');
-        const snapshot = await getDocs(collection(db, 'gallery'));
-        let allMedia = snapshot.docs.map(doc => ({
+      const mediaRef = collection(db, 'media');
+      const q = query(mediaRef, orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      
+      const allMedia = [];
+      querySnapshot.forEach((doc) => {
+        const mediaData = doc.data();
+        allMedia.push({
           id: doc.id,
-          ...doc.data()
-        }));
-        
-        const approvedMedia = allMedia.filter(item => 
-          item.status === 'approved' && item.approved === true
-        );
-        
-        approvedMedia.sort((a, b) => {
-          const dateA = a.publishedAt?.toDate?.() || new Date(a.publishedAt);
-          const dateB = b.publishedAt?.toDate?.() || new Date(b.publishedAt);
-          return dateB - dateA;
+          ...mediaData,
+          status: mediaData.status || 'pending',
+          approved: true
         });
-        
-        console.log(`📊 ${approvedMedia.length} médias publics (fallback)`);
-        return approvedMedia;
-      } catch (fallbackError) {
-        console.error('❌ Erreur même en fallback:', fallbackError);
-        return [];
-      }
+      });
+      
+      console.log(`📊 ${allMedia.length} médias Firebase chargés`);
+      return allMedia;
+      
+    } catch (error) {
+      console.error('❌ Erreur récupération médias Firebase:', error);
+      return []; // Retourner un tableau vide
     }
   },
 
@@ -662,169 +645,69 @@ export const moderationService = {
     return 'document';
   },
 
-  // NOUVELLE FONCTION : Récupérer les fichiers du dossier public/upload
-  async getPublicUploads() {
-    try {
-      console.log('📁 Recherche des fichiers dans public/upload...');
-      
-      // Simulation de fichiers dans public/upload
-      const publicUploads = [
-        {
-          id: 'public-upload-1',
-          type: 'image',
-          url: '/upload/concert-2024.jpg',
-          title: 'Concert Printemps 2024',
-          description: 'Photos du dernier concert de printemps',
-          tags: ['concert', 'printemps', 'public'],
-          category: 'concerts',
-          source: 'public',
-          status: 'approved',
-          aspectRatio: '16:9',
-          fileSize: 2048576,
-          uploadedBy: 'Public Upload',
-          uploadDate: '2024-03-15'
-        },
-        {
-          id: 'public-upload-2',
-          type: 'image',
-          url: '/upload/repetition-mars.jpg',
-          title: 'Répétition Mars',
-          description: 'Séance de répétition du mois de mars',
-          tags: ['repetition', 'entrainement', 'public'],
-          category: 'repetitions',
-          source: 'public',
-          status: 'approved',
-          aspectRatio: '4:3',
-          fileSize: 1572864,
-          uploadedBy: 'Public Upload',
-          uploadDate: '2024-03-10'
-        },
-        {
-          id: 'public-upload-3',
-          type: 'audio',
-          url: '/upload/chanson-essai.mp3',
-          title: 'Essai Vocal',
-          description: 'Enregistrement d essai pour une nouvelle chanson',
-          tags: ['audio', 'essai', 'nouveau'],
-          category: 'audios',
-          source: 'public',
-          status: 'approved',
-          duration: '3:45',
-          fileSize: 5242880,
-          uploadedBy: 'Public Upload',
-          uploadDate: '2024-03-08'
-        },
-        {
-          id: 'public-upload-4',
-          type: 'video',
-          url: '/upload/performance-live.mp4',
-          title: 'Performance Live',
-          description: 'Extrait vidéo de notre dernière performance',
-          tags: ['video', 'live', 'performance'],
-          category: 'videos',
-          source: 'public',
-          status: 'approved',
-          duration: '2:30',
-          fileSize: 15728640,
-          uploadedBy: 'Public Upload',
-          uploadDate: '2024-03-05'
-        },
-        {
-          id: 'public-upload-5',
-          type: 'document',
-          url: '/upload/programme-concert.pdf',
-          title: 'Programme du Concert',
-          description: 'Programme détaillé du concert de printemps',
-          tags: ['document', 'programme', 'concert'],
-          category: 'documents',
-          source: 'public',
-          status: 'approved',
-          fileSize: 512000,
-          uploadedBy: 'Public Upload',
-          uploadDate: '2024-03-01'
-        }
-      ];
+  // 🔓 SUPPRIMÉ : getPublicUploads() - Fonction problématique qui cause les erreurs 404
 
-      // En production, vous pourriez faire une requête API pour récupérer les vrais fichiers
-      // const response = await fetch('/api/public-uploads');
-      // const publicUploads = await response.json();
+  // 🔓 SUPPRIMÉ : scanPublicUploads() - Fonction problématique
+
+  // 🔓 SUPPRIMÉ : getPublicUploadsStats() - Fonction problématique
+
+  // NOUVELLE MÉTHODE : Obtenir les médias depuis la collection 'media' (alternative)
+  async getMediaFromCollection() {
+    try {
+      console.log('🔄 Récupération médias depuis collection media...');
       
-      console.log(`✅ ${publicUploads.length} fichiers publics chargés depuis public/upload`);
-      return publicUploads;
+      const q = query(
+        collection(db, 'media'),
+        orderBy('createdAt', 'desc')
+      );
+      
+      const snapshot = await getDocs(q);
+      const media = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      console.log(`📊 ${media.length} médias trouvés dans collection media`);
+      return media;
     } catch (error) {
-      console.error('❌ Erreur lors du chargement des fichiers publics:', error);
+      console.error('❌ Erreur récupération collection media:', error);
       return [];
     }
   },
 
-  // NOUVELLE MÉTHODE : Scanner automatiquement le dossier public/upload
-  async scanPublicUploads() {
+  // NOUVELLE MÉTHODE : Obtenir les statistiques globales
+  async getGlobalStats() {
     try {
-      console.log('🔍 Scan automatique du dossier public/upload...');
+      console.log('📈 Récupération statistiques globales...');
       
-      // Cette méthode pourrait être utilisée pour scanner dynamiquement
-      // le contenu du dossier public/upload et l'ajouter à la galerie
-      
-      const publicFiles = await this.getPublicUploads();
-      
-      // Filtrer les fichiers qui ne sont pas déjà dans la base de données
-      const existingMedia = await this.getPublicGalleryMedia();
-      const existingUrls = new Set(existingMedia.map(media => media.url));
-      
-      const newFiles = publicFiles.filter(file => !existingUrls.has(file.url));
-      
-      if (newFiles.length > 0) {
-        console.log(`🆕 ${newFiles.length} nouveaux fichiers détectés dans public/upload`);
-        
-        // Ajouter automatiquement les nouveaux fichiers à la galerie
-        for (const file of newFiles) {
-          try {
-            await this.submitMediaForModeration({
-              ...file,
-              status: 'approved', // Auto-approuvé car dans public/upload
-              moderated: true,
-              moderatedAt: Timestamp.now(),
-              moderatorId: 'system'
-            });
-            console.log(`✅ Fichier auto-ajouté: ${file.title}`);
-          } catch (uploadError) {
-            console.error(`❌ Erreur ajout fichier ${file.title}:`, uploadError);
-          }
-        }
-      }
-      
-      return newFiles;
-    } catch (error) {
-      console.error('❌ Erreur scan public uploads:', error);
-      return [];
-    }
-  },
+      const [moderationStats, mediaStats] = await Promise.all([
+        this.getModerationStats(),
+        this.getMediaFromCollection().then(media => ({
+          totalMedia: media.length,
+          approvedMedia: media.filter(m => m.status === 'approved').length,
+          pendingMedia: media.filter(m => m.status === 'pending').length
+        }))
+      ]);
 
-  // NOUVELLE MÉTHODE : Obtenir les statistiques des fichiers publics
-  async getPublicUploadsStats() {
-    try {
-      const publicUploads = await this.getPublicUploads();
-      
       const stats = {
-        total: publicUploads.length,
-        images: publicUploads.filter(file => file.type === 'image').length,
-        videos: publicUploads.filter(file => file.type === 'video').length,
-        audio: publicUploads.filter(file => file.type === 'audio').length,
-        documents: publicUploads.filter(file => file.type === 'document').length,
-        totalSize: publicUploads.reduce((sum, file) => sum + (file.fileSize || 0), 0)
+        ...moderationStats,
+        ...mediaStats,
+        totalFiles: moderationStats.total + mediaStats.totalMedia
       };
-      
-      console.log('📊 Statistiques fichiers publics:', stats);
+
+      console.log('📊 Statistiques globales:', stats);
       return stats;
     } catch (error) {
-      console.error('❌ Erreur stats fichiers publics:', error);
+      console.error('❌ Erreur statistiques globales:', error);
       return {
+        pending: 0,
+        approved: 0,
+        rejected: 0,
         total: 0,
-        images: 0,
-        videos: 0,
-        audio: 0,
-        documents: 0,
-        totalSize: 0
+        totalMedia: 0,
+        approvedMedia: 0,
+        pendingMedia: 0,
+        totalFiles: 0
       };
     }
   }

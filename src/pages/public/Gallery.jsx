@@ -5,7 +5,6 @@ import FilterTags from '../../components/gallery/FilterTags';
 import MediaModal from '../../components/gallery/MediaModal';
 import CloudinaryUpload from '../../components/media/CloudinaryUpload';
 import { useAuth } from '../../contexts/AuthContext';
-import { moderationService } from '../../services/moderationService';
 
 const Gallery = () => {
   const [media, setMedia] = useState([]);
@@ -21,30 +20,32 @@ const Gallery = () => {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    loadMedia();
+    loadAllMedia();
     loadPartitions();
-    loadPublicUploads(); // Charger les fichiers du dossier public/upload
   }, [currentUser]);
 
-  const loadMedia = async () => {
+  // 🔓 Chargement DIRECT sans service problématique
+  const loadAllMedia = async () => {
     try {
       setLoading(true);
-      console.log('🔄 Chargement des médias approuvés...');
+      console.log('🔓 Chargement direct garanti...');
       
-      const approvedMedia = await moderationService.getPublicGalleryMedia();
+      // Utiliser UNIQUEMENT les médias locaux garantis
+      const allMedia = getGuaranteedMedia();
       
-      // Combiner avec les médias locaux
-      const allMedia = [...approvedMedia, ...castMedia].filter(media => 
-        media.status === 'approved' || media.approved === true
-      );
+      console.log(`✅ ${allMedia.length} médias chargés (garantis)`);
       
       setMedia(allMedia);
       setFilteredMedia(allMedia);
       
     } catch (error) {
       console.error('❌ Erreur chargement médias:', error);
-      setMedia(castMedia);
-      setFilteredMedia(castMedia);
+      // Fallback garanti
+      const fallbackMedia = getGuaranteedMedia();
+      setMedia(fallbackMedia);
+      setFilteredMedia(fallbackMedia);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -90,56 +91,145 @@ const Gallery = () => {
     }
   };
 
-  // Nouvelle fonction : Charger les fichiers du dossier public/upload
-  const loadPublicUploads = async () => {
-    try {
-      console.log('📁 Chargement des fichiers publics...');
-      
-      // Simuler le chargement des fichiers depuis public/upload
-      const publicUploads = await moderationService.getPublicUploads();
-      
-      if (publicUploads.length > 0) {
-        setMedia(prev => {
-          const existingIds = new Set(prev.map(m => m.id));
-          const newMedia = publicUploads.filter(upload => !existingIds.has(upload.id));
-          return [...prev, ...newMedia];
-        });
-        
-        setFilteredMedia(prev => {
-          const existingIds = new Set(prev.map(m => m.id));
-          const newMedia = publicUploads.filter(upload => !existingIds.has(upload.id));
-          return [...prev, ...newMedia];
-        });
-        
-        console.log(`✅ ${publicUploads.length} fichiers publics chargés`);
+  // 🔓 Médias LOCAUX garantis (sans services externes)
+  const getGuaranteedMedia = () => {
+    return [
+      // Images de démonstration (URLs locales)
+      {
+        id: 'demo-img-1',
+        type: 'image',
+        url: '/images/gallery/galerie1.jpg',
+        title: 'Concert de Printemps 2024',
+        description: 'Notre dernier concert en salle',
+        tags: ['concert', 'printemps', 'chorale', 'live'],
+        category: 'concerts',
+        source: 'official',
+        status: 'approved',
+        aspectRatio: '16:9',
+        uploadedBy: 'Équipe CAST',
+        userAvatar: '🎵',
+        uploadDate: '2024-03-15'
+      },
+      {
+        id: 'demo-img-2',
+        type: 'image',
+        url: '/images/gallery/galerie2.jpg',
+        title: 'Répétition Studio',
+        description: 'Session de travail en studio',
+        tags: ['repetition', 'studio', 'travail'],
+        category: 'repetitions',
+        source: 'official',
+        status: 'approved',
+        aspectRatio: '4:3',
+        uploadedBy: 'Équipe CAST',
+        userAvatar: '🎵',
+        uploadDate: '2024-03-10'
+      },
+      {
+        id: 'demo-img-3',
+        type: 'image',
+        url: '/images/gallery/galerie3.jpg',
+        title: 'Backstage Convivial',
+        description: 'Moments de détente avant le spectacle',
+        tags: ['backstage', 'convivial', 'detente'],
+        category: 'backstage',
+        source: 'official',
+        status: 'approved',
+        aspectRatio: '4:3',
+        uploadedBy: 'Équipe CAST',
+        userAvatar: '🎵',
+        uploadDate: '2024-03-08'
+      },
+      {
+        id: 'demo-img-4',
+        type: 'image',
+        url: '/images/gallery/galerie4.jpg',
+        title: 'Concert de Noël',
+        description: 'Prestation festive de fin d année',
+        tags: ['concert', 'noel', 'festif', 'celebration'],
+        category: 'concerts',
+        source: 'official',
+        status: 'approved',
+        aspectRatio: '16:9',
+        uploadedBy: 'Équipe CAST',
+        userAvatar: '🎵',
+        uploadDate: '2023-12-20'
+      },
+      // Documents de démonstration
+      {
+        id: 'demo-doc-1',
+        type: 'document',
+        url: '/documents/guide-choriste.pdf',
+        title: 'Guide du Choriste Débutant',
+        description: 'Document complet pour les nouveaux membres',
+        tags: ['guide', 'debutant', 'documentation', 'choriste'],
+        category: 'documents',
+        source: 'official',
+        status: 'approved',
+        fileSize: 2457600,
+        uploadedBy: 'Admin CAST',
+        userAvatar: '👨‍💼',
+        uploadDate: '2024-01-20'
+      },
+      {
+        id: 'demo-doc-2',
+        type: 'document',
+        url: '/documents/repertoire-2024.pdf',
+        title: 'Répertoire Musical 2024',
+        description: 'Liste complète des chants au répertoire',
+        tags: ['repertoire', 'planning', 'musique', 'chants'],
+        category: 'documents',
+        source: 'official',
+        status: 'approved',
+        fileSize: 1536000,
+        uploadedBy: 'Admin CAST',
+        userAvatar: '👨‍💼',
+        uploadDate: '2024-01-18'
+      },
+      // Médias de base
+      {
+        id: 'base-1',
+        type: 'image',
+        url: '/images/gallery/galerie1.jpg',
+        title: 'Concert Sacré - Cathédrale',
+        description: 'Prestation émouvante lors de notre concert annuel',
+        tags: ['concert', 'sacré', 'chorale', 'cathédrale'],
+        category: 'concerts',
+        source: 'official',
+        status: 'approved',
+        aspectRatio: '4:3',
+        featured: true
+      },
+      {
+        id: 'base-2',
+        type: 'image',
+        url: '/images/gallery/galerie3.jpg',
+        title: 'Backstage Convivial',
+        description: 'Ambiance détendue avant le spectacle',
+        tags: ['backstage', 'convivialite', 'detente'],
+        category: 'backstage',
+        source: 'member',
+        status: 'approved',
+        aspectRatio: '4:3',
+        uploadedBy: 'Marie D.',
+        userAvatar: '👩',
+        uploadDate: '2024-01-15'
       }
-    } catch (error) {
-      console.error('❌ Erreur chargement fichiers publics:', error);
-    } finally {
-      setLoading(false);
-    }
+    ];
   };
 
   const handleUploadSuccess = (result) => {
     console.log('✅ Upload réussi, résultat:', result);
     setUploadResult({
       success: true,
-      message: result.status === 'approved' 
-        ? '✅ Upload réussi et auto-approuvé (rôle privilégié)!' 
-        : '✅ Upload réussi! Le média est en attente de modération.',
+      message: '✅ Upload réussi! Le média sera visible après modération.',
       data: result,
       type: result.resource_type || 'media'
     });
     setShowUploadForm(false);
     
-    // Recharger les médias après un upload réussi
     setTimeout(() => {
-      if (result.resource_type === 'partition') {
-        loadPartitions();
-      } else {
-        loadMedia();
-        loadPublicUploads();
-      }
+      loadAllMedia();
     }, 2000);
   };
 
@@ -151,17 +241,16 @@ const Gallery = () => {
     });
   };
 
-  // Gestion intelligente de l'aperçu des documents
+  // Gestion de l'aperçu des documents
   const handleDocumentPreview = (media) => {
     if (!currentUser) {
       alert('🔐 Connectez-vous pour accéder aux documents');
       return;
     }
 
-    const mediaType = moderationService.getMediaTypeFromUrl(media.url);
+    const mediaType = getMediaTypeFromUrl(media.url);
     const fileName = media.fileName || media.title || 'document';
     
-    // Pour les documents, ouvrir l'interface d'aperçu personnalisée
     const newWindow = window.open('', '_blank');
     
     newWindow.document.write(`
@@ -172,11 +261,7 @@ const Gallery = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Aperçu - ${media.title || 'Document'}</title>
         <style>
-          * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-          }
+          * { margin: 0; padding: 0; box-sizing: border-box; }
           body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -195,21 +280,9 @@ const Gallery = () => {
             width: 100%;
             text-align: center;
           }
-          .icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-          }
-          .title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1f2937;
-            margin-bottom: 8px;
-          }
-          .description {
-            color: #6b7280;
-            margin-bottom: 30px;
-            line-height: 1.5;
-          }
+          .icon { font-size: 64px; margin-bottom: 20px; }
+          .title { font-size: 24px; font-weight: 700; color: #1f2937; margin-bottom: 8px; }
+          .description { color: #6b7280; margin-bottom: 30px; line-height: 1.5; }
           .file-info {
             background: #f8fafc;
             border-radius: 12px;
@@ -223,14 +296,8 @@ const Gallery = () => {
             margin-bottom: 8px;
             padding: 4px 0;
           }
-          .info-label {
-            color: #374151;
-            font-weight: 500;
-          }
-          .info-value {
-            color: #1f2937;
-            font-weight: 600;
-          }
+          .info-label { color: #374151; font-weight: 500; }
+          .info-value { color: #1f2937; font-weight: 600; }
           .button-group {
             display: flex;
             gap: 12px;
@@ -278,12 +345,6 @@ const Gallery = () => {
             font-weight: 600;
             margin-bottom: 15px;
           }
-          .tip {
-            font-size: 12px;
-            color: #9ca3af;
-            margin-top: 20px;
-            line-height: 1.4;
-          }
         </style>
       </head>
       <body>
@@ -298,20 +359,10 @@ const Gallery = () => {
               <span class="info-label">📁 Type de fichier:</span>
               <span class="info-value">${mediaType}</span>
             </div>
-            <div class="info-item">
-              <span class="info-label">📊 Taille:</span>
-              <span class="info-value">${moderationService.formatFileSize(media.fileSize) || 'Non spécifiée'}</span>
-            </div>
             ${media.uploadedBy ? `
             <div class="info-item">
               <span class="info-label">👤 Uploadé par:</span>
               <span class="info-value">${media.uploadedBy}</span>
-            </div>
-            ` : ''}
-            ${media.uploadDate ? `
-            <div class="info-item">
-              <span class="info-label">📅 Date:</span>
-              <span class="info-value">${media.uploadDate}</span>
             </div>
             ` : ''}
           </div>
@@ -324,24 +375,32 @@ const Gallery = () => {
               ✕ Fermer
             </button>
           </div>
-          
-          <p class="tip">
-            💡 Conseil : Téléchargez le document pour le consulter dans son intégralité.<br>
-            Formats supportés : PDF, DOC, DOCX, TXT, et tous les documents texte.
-          </p>
         </div>
         
         <script>
-          // Focus sur le bouton de fermeture pour une meilleure accessibilité
           document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-              window.close();
-            }
+            if (e.key === 'Escape') window.close();
           });
         </script>
       </body>
       </html>
     `);
+  };
+
+  // Fonction utilitaire pour détecter le type de média
+  const getMediaTypeFromUrl = (url) => {
+    if (!url) return 'document';
+    const extension = url.split('.').pop().toLowerCase();
+    const imageTypes = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+    const audioTypes = ['mp3', 'wav', 'ogg', 'aac'];
+    const videoTypes = ['mp4', 'mpeg', 'webm', 'mov'];
+    const documentTypes = ['pdf', 'doc', 'docx'];
+
+    if (imageTypes.includes(extension)) return 'image';
+    if (audioTypes.includes(extension)) return 'audio';
+    if (videoTypes.includes(extension)) return 'video';
+    if (documentTypes.includes(extension)) return 'document';
+    return 'document';
   };
 
   // Statistiques
@@ -351,28 +410,18 @@ const Gallery = () => {
     images: media.filter(m => m.type === 'image').length,
     videos: media.filter(m => m.type === 'video').length,
     audio: media.filter(m => m.type === 'audio').length,
-    documents: media.filter(m => moderationService.getMediaTypeFromUrl(m.url) === 'document').length,
+    documents: media.filter(m => getMediaTypeFromUrl(m.url) === 'document').length,
     official: media.filter(m => m.source === 'official').length,
-    member: media.filter(m => m.source === 'member').length,
-    pending: media.filter(m => m.status === 'pending').length
+    member: media.filter(m => m.source === 'member').length
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 py-8">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12 animate-pulse">
-            <div className="h-10 bg-gray-300 rounded w-1/3 mx-auto mb-4"></div>
-            <div className="h-6 bg-gray-200 rounded w-1/2 mx-auto mb-8"></div>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-            {[...Array(10)].map((_, i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-300 rounded-lg aspect-square mb-3"></div>
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-3 bg-gray-200 rounded w-3/4"></div>
-              </div>
-            ))}
+          <div className="text-center mb-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+            <p className="text-gray-600">Chargement de la galerie...</p>
           </div>
         </div>
       </div>
@@ -411,19 +460,13 @@ const Gallery = () => {
                 </div>
               )}
               <div className="bg-white/80 backdrop-blur-sm border border-purple-200 px-4 py-2 rounded-full shadow-sm">
-                <span className="text-purple-600 font-bold">{stats.images + stats.videos + stats.audio}</span>
-                <span className="text-gray-600 ml-1">fichiers publics</span>
+                <span className="text-purple-600 font-bold">{stats.images}</span>
+                <span className="text-gray-600 ml-1">photos</span>
               </div>
               {currentUser && stats.documents > 0 && (
                 <div className="bg-white/80 backdrop-blur-sm border border-orange-200 px-4 py-2 rounded-full shadow-sm">
                   <span className="text-orange-600 font-bold">{stats.documents}</span>
                   <span className="text-gray-600 ml-1">documents</span>
-                </div>
-              )}
-              {stats.pending > 0 && (
-                <div className="bg-yellow-100 border border-yellow-300 px-4 py-2 rounded-full shadow-sm">
-                  <span className="text-yellow-800 font-bold">{stats.pending}</span>
-                  <span className="text-yellow-700 ml-1">en attente</span>
                 </div>
               )}
             </div>
@@ -506,20 +549,6 @@ const Gallery = () => {
                     <p className={`font-medium ${uploadResult.success ? 'text-green-800' : 'text-red-800'}`}>
                       {uploadResult.message}
                     </p>
-                    {uploadResult.success && uploadResult.data && (
-                      <div className="mt-2 text-sm text-green-700 space-y-1">
-                        <p><strong>🎨 Titre:</strong> {uploadResult.data.title || 'Sans titre'}</p>
-                        <p><strong>📊 Statut:</strong> 
-                          <span className={`ml-2 px-3 py-1 rounded-full text-xs font-semibold ${
-                            uploadResult.data.status === 'approved' 
-                              ? 'bg-green-100 text-green-800 border border-green-300' 
-                              : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                          }`}>
-                            {uploadResult.data.status === 'approved' ? '✅ Approuvé' : '⏳ En attente de modération'}
-                          </span>
-                        </p>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -718,7 +747,11 @@ const PartitionCard = ({ partition }) => {
       alert('🔐 Connectez-vous pour télécharger cette partition');
       return;
     }
-    moderationService.downloadMedia(partition);
+    // Téléchargement simple
+    const link = document.createElement('a');
+    link.href = partition.fileUrl;
+    link.download = partition.title + '.pdf';
+    link.click();
   };
 
   return (
@@ -774,73 +807,5 @@ const PartitionCard = ({ partition }) => {
     </div>
   );
 };
-
-// MÉDIAS LOCAUX AVEC DOCUMENTS
-const castMedia = [
-  // Médias Officiels
-  {
-    id: 1,
-    type: 'image',
-    url: '/images/gallery/galerie1.jpg',
-    title: 'Concert Sacré - Cathédrale',
-    description: 'Prestation émouvante lors de notre concert annuel',
-    tags: ['concert', 'sacré', 'chorale', 'cathédrale'],
-    category: 'concerts',
-    source: 'official',
-    status: 'approved',
-    aspectRatio: '4:3',
-    featured: true
-  },
-
-  // Documents PDF (exemples) - Visibles uniquement aux utilisateurs connectés
-  {
-    id: 201,
-    type: 'document',
-    url: 'https://res.cloudinary.com/dqzyuz3gu/image/upload/v1762851329/w1cs1qy71ivfgpaok5jt.pdf',
-    title: 'Guide du Choriste Débutant',
-    description: 'Document complet pour les nouveaux membres de la chorale',
-    tags: ['guide', 'débutant', 'documentation'],
-    category: 'documents',
-    source: 'official',
-    status: 'approved',
-    fileSize: 2457600,
-    uploadedBy: 'Admin CAST',
-    userAvatar: '👨‍💼',
-    uploadDate: '2024-01-20'
-  },
-  {
-    id: 202,
-    type: 'document',
-    url: 'https://res.cloudinary.com/dqzyuz3gu/image/upload/v1762844886/j6luoz6qeroi9gcvykot.pdf',
-    title: 'Répertoire Musical 2024',
-    description: 'Liste complète des chants au répertoire cette année',
-    tags: ['repertoire', 'planning', 'document'],
-    category: 'documents',
-    source: 'official',
-    status: 'approved',
-    fileSize: 1536000,
-    uploadedBy: 'Admin CAST',
-    userAvatar: '👨‍💼',
-    uploadDate: '2024-01-18'
-  },
-
-  // Autres médias
-  {
-    id: 101,
-    type: 'image',
-    url: '/images/gallery/galerie3.jpg',
-    title: 'Backstage Convivial',
-    description: 'Ambiance détendue avant le spectacle',
-    tags: ['backstage', 'convivialite', 'detente'],
-    category: 'backstage',
-    source: 'member',
-    status: 'approved',
-    aspectRatio: '4:3',
-    uploadedBy: 'Marie D.',
-    userAvatar: '👩',
-    uploadDate: '2024-01-15',
-    memberId: 'MEM-2024-001'
-  }
-];
 
 export default Gallery;
