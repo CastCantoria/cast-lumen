@@ -11,29 +11,29 @@ const Gallery = () => {
   const [media, setMedia] = useState([]);
   const [partitions, setPartitions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('gallery'); // 'gallery' | 'partitions'
+  const [activeTab, setActiveTab] = useState('gallery');
   const [filteredMedia, setFilteredMedia] = useState([]);
   const [filteredPartitions, setFilteredPartitions] = useState([]);
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [uploadResult, setUploadResult] = useState(null);
-  const [viewMode, setViewMode] = useState('grid');
+  const [viewMode, setViewMode] = useState('masonry');
   const { currentUser, userProfile } = useAuth();
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     loadMedia();
     loadPartitions();
-  }, []);
+    loadPublicUploads(); // Charger les fichiers du dossier public/upload
+  }, [currentUser]);
 
   const loadMedia = async () => {
     try {
       setLoading(true);
       console.log('🔄 Chargement des médias approuvés...');
       
-      // Charger depuis Firestore les médias approuvés
       const approvedMedia = await moderationService.getPublicGalleryMedia();
       
-      // Combiner avec les médias locaux pour la démo
+      // Combiner avec les médias locaux
       const allMedia = [...approvedMedia, ...castMedia].filter(media => 
         media.status === 'approved' || media.approved === true
       );
@@ -43,18 +43,13 @@ const Gallery = () => {
       
     } catch (error) {
       console.error('❌ Erreur chargement médias:', error);
-      // Fallback sur les médias locaux
       setMedia(castMedia);
       setFilteredMedia(castMedia);
-    } finally {
-      setLoading(false);
     }
   };
 
   const loadPartitions = async () => {
     try {
-      // Simuler le chargement des partitions
-      // À remplacer par un appel à votre service partitions
       const partitionsData = [
         {
           id: 'part-1',
@@ -85,21 +80,6 @@ const Gallery = () => {
           pages: 3,
           fileUrl: '/partitions/hallelujah-cohen.pdf',
           status: 'approved'
-        },
-        {
-          id: 'part-3',
-          title: 'Vois sur ton chemin - Les Choristes',
-          description: 'Partition complète avec accompagnement',
-          type: 'partition',
-          category: 'film',
-          difficulty: 'facile',
-          uploadedBy: 'Sophie L.',
-          userAvatar: '👩',
-          uploadDate: '2024-01-08',
-          downloads: 67,
-          pages: 5,
-          fileUrl: '/partitions/vois-sur-ton-chemin.pdf',
-          status: 'approved'
         }
       ];
       
@@ -107,6 +87,36 @@ const Gallery = () => {
       setFilteredPartitions(partitionsData);
     } catch (error) {
       console.error('❌ Erreur chargement partitions:', error);
+    }
+  };
+
+  // Nouvelle fonction : Charger les fichiers du dossier public/upload
+  const loadPublicUploads = async () => {
+    try {
+      console.log('📁 Chargement des fichiers publics...');
+      
+      // Simuler le chargement des fichiers depuis public/upload
+      const publicUploads = await moderationService.getPublicUploads();
+      
+      if (publicUploads.length > 0) {
+        setMedia(prev => {
+          const existingIds = new Set(prev.map(m => m.id));
+          const newMedia = publicUploads.filter(upload => !existingIds.has(upload.id));
+          return [...prev, ...newMedia];
+        });
+        
+        setFilteredMedia(prev => {
+          const existingIds = new Set(prev.map(m => m.id));
+          const newMedia = publicUploads.filter(upload => !existingIds.has(upload.id));
+          return [...prev, ...newMedia];
+        });
+        
+        console.log(`✅ ${publicUploads.length} fichiers publics chargés`);
+      }
+    } catch (error) {
+      console.error('❌ Erreur chargement fichiers publics:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -122,12 +132,13 @@ const Gallery = () => {
     });
     setShowUploadForm(false);
     
-    // Recharger les données après un délai
+    // Recharger les médias après un upload réussi
     setTimeout(() => {
       if (result.resource_type === 'partition') {
         loadPartitions();
       } else {
         loadMedia();
+        loadPublicUploads();
       }
     }, 2000);
   };
@@ -140,6 +151,199 @@ const Gallery = () => {
     });
   };
 
+  // Gestion intelligente de l'aperçu des documents
+  const handleDocumentPreview = (media) => {
+    if (!currentUser) {
+      alert('🔐 Connectez-vous pour accéder aux documents');
+      return;
+    }
+
+    const mediaType = moderationService.getMediaTypeFromUrl(media.url);
+    const fileName = media.fileName || media.title || 'document';
+    
+    // Pour les documents, ouvrir l'interface d'aperçu personnalisée
+    const newWindow = window.open('', '_blank');
+    
+    newWindow.document.write(`
+      <!DOCTYPE html>
+      <html lang="fr">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Aperçu - ${media.title || 'Document'}</title>
+        <style>
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+          }
+          .preview-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+          }
+          .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+          }
+          .title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 8px;
+          }
+          .description {
+            color: #6b7280;
+            margin-bottom: 30px;
+            line-height: 1.5;
+          }
+          .file-info {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px 0;
+            text-align: left;
+          }
+          .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 4px 0;
+          }
+          .info-label {
+            color: #374151;
+            font-weight: 500;
+          }
+          .info-value {
+            color: #1f2937;
+            font-weight: 600;
+          }
+          .button-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 25px;
+          }
+          .button {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+          }
+          .button-download {
+            background: #10b981;
+            color: white;
+          }
+          .button-download:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+          }
+          .button-close {
+            background: #6b7280;
+            color: white;
+          }
+          .button-close:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+          }
+          .document-type {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #e0e7ff;
+            color: #3730a3;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+          }
+          .tip {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 20px;
+            line-height: 1.4;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="preview-container">
+          <div class="icon">📄</div>
+          <div class="document-type">${mediaType.toUpperCase()}</div>
+          <h1 class="title">${media.title || 'Document sans titre'}</h1>
+          ${media.description ? `<p class="description">${media.description}</p>` : ''}
+          
+          <div class="file-info">
+            <div class="info-item">
+              <span class="info-label">📁 Type de fichier:</span>
+              <span class="info-value">${mediaType}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">📊 Taille:</span>
+              <span class="info-value">${moderationService.formatFileSize(media.fileSize) || 'Non spécifiée'}</span>
+            </div>
+            ${media.uploadedBy ? `
+            <div class="info-item">
+              <span class="info-label">👤 Uploadé par:</span>
+              <span class="info-value">${media.uploadedBy}</span>
+            </div>
+            ` : ''}
+            ${media.uploadDate ? `
+            <div class="info-item">
+              <span class="info-label">📅 Date:</span>
+              <span class="info-value">${media.uploadDate}</span>
+            </div>
+            ` : ''}
+          </div>
+          
+          <div class="button-group">
+            <a href="${media.url}" download="${fileName}" class="button button-download">
+              📥 Télécharger
+            </a>
+            <button onclick="window.close()" class="button button-close">
+              ✕ Fermer
+            </button>
+          </div>
+          
+          <p class="tip">
+            💡 Conseil : Téléchargez le document pour le consulter dans son intégralité.<br>
+            Formats supportés : PDF, DOC, DOCX, TXT, et tous les documents texte.
+          </p>
+        </div>
+        
+        <script>
+          // Focus sur le bouton de fermeture pour une meilleure accessibilité
+          document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+              window.close();
+            }
+          });
+        </script>
+      </body>
+      </html>
+    `);
+  };
+
   // Statistiques
   const stats = {
     totalMedia: media.length,
@@ -147,6 +351,7 @@ const Gallery = () => {
     images: media.filter(m => m.type === 'image').length,
     videos: media.filter(m => m.type === 'video').length,
     audio: media.filter(m => m.type === 'audio').length,
+    documents: media.filter(m => moderationService.getMediaTypeFromUrl(m.url) === 'document').length,
     official: media.filter(m => m.source === 'official').length,
     member: media.filter(m => m.source === 'member').length,
     pending: media.filter(m => m.status === 'pending').length
@@ -156,18 +361,10 @@ const Gallery = () => {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 py-8">
         <div className="container mx-auto px-4">
-          {/* Skeleton Header */}
           <div className="text-center mb-12 animate-pulse">
             <div className="h-10 bg-gray-300 rounded w-1/3 mx-auto mb-4"></div>
             <div className="h-6 bg-gray-200 rounded w-1/2 mx-auto mb-8"></div>
-            <div className="flex justify-center gap-4">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-8 bg-gray-200 rounded-full w-24"></div>
-              ))}
-            </div>
           </div>
-
-          {/* Skeleton Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
             {[...Array(10)].map((_, i) => (
               <div key={i} className="animate-pulse">
@@ -196,24 +393,33 @@ const Gallery = () => {
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-8 leading-relaxed">
               Découvrez l'univers musical de la chorale à travers notre collection de 
-              <span className="font-semibold text-blue-600"> {stats.totalMedia} médias</span> et 
-              <span className="font-semibold text-green-600"> {stats.totalPartitions} partitions</span>
+              <span className="font-semibold text-blue-600"> {stats.totalMedia} médias</span>
+              {currentUser && stats.totalPartitions > 0 && (
+                <span> et <span className="font-semibold text-green-600"> {stats.totalPartitions} partitions</span></span>
+              )}
             </p>
             
-            {/* Statistiques en badges */}
             <div className="flex flex-wrap justify-center gap-3 mb-6">
               <div className="bg-white/80 backdrop-blur-sm border border-blue-200 px-4 py-2 rounded-full shadow-sm">
                 <span className="text-blue-600 font-bold">{stats.totalMedia}</span>
                 <span className="text-gray-600 ml-1">médias</span>
               </div>
-              <div className="bg-white/80 backdrop-blur-sm border border-green-200 px-4 py-2 rounded-full shadow-sm">
-                <span className="text-green-600 font-bold">{stats.totalPartitions}</span>
-                <span className="text-gray-600 ml-1">partitions</span>
-              </div>
+              {currentUser && stats.totalPartitions > 0 && (
+                <div className="bg-white/80 backdrop-blur-sm border border-green-200 px-4 py-2 rounded-full shadow-sm">
+                  <span className="text-green-600 font-bold">{stats.totalPartitions}</span>
+                  <span className="text-gray-600 ml-1">partitions</span>
+                </div>
+              )}
               <div className="bg-white/80 backdrop-blur-sm border border-purple-200 px-4 py-2 rounded-full shadow-sm">
                 <span className="text-purple-600 font-bold">{stats.images + stats.videos + stats.audio}</span>
-                <span className="text-gray-600 ml-1">fichiers</span>
+                <span className="text-gray-600 ml-1">fichiers publics</span>
               </div>
+              {currentUser && stats.documents > 0 && (
+                <div className="bg-white/80 backdrop-blur-sm border border-orange-200 px-4 py-2 rounded-full shadow-sm">
+                  <span className="text-orange-600 font-bold">{stats.documents}</span>
+                  <span className="text-gray-600 ml-1">documents</span>
+                </div>
+              )}
               {stats.pending > 0 && (
                 <div className="bg-yellow-100 border border-yellow-300 px-4 py-2 rounded-full shadow-sm">
                   <span className="text-yellow-800 font-bold">{stats.pending}</span>
@@ -226,7 +432,6 @@ const Gallery = () => {
           {/* Navigation par Onglets */}
           <div className="bg-white/90 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-xl p-2 mb-8">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              {/* Onglets */}
               <div className="flex space-x-1 bg-gray-100 p-1 rounded-xl">
                 <button
                   onClick={() => setActiveTab('gallery')}
@@ -238,19 +443,20 @@ const Gallery = () => {
                 >
                   🖼️ Galerie Médias
                 </button>
-                <button
-                  onClick={() => setActiveTab('partitions')}
-                  className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
-                    activeTab === 'partitions'
-                      ? 'bg-white text-green-600 shadow-sm'
-                      : 'text-gray-600 hover:text-gray-900'
-                  }`}
-                >
-                  📝 Partitions
-                </button>
+                {currentUser && partitions.length > 0 && (
+                  <button
+                    onClick={() => setActiveTab('partitions')}
+                    className={`px-6 py-3 rounded-xl font-semibold transition-all duration-300 ${
+                      activeTab === 'partitions'
+                        ? 'bg-white text-green-600 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    📝 Partitions
+                  </button>
+                )}
               </div>
 
-              {/* Bouton Upload */}
               {currentUser && (
                 <button
                   onClick={() => setShowUploadForm(!showUploadForm)}
@@ -261,7 +467,6 @@ const Gallery = () => {
               )}
             </div>
 
-            {/* Formulaire d'upload */}
             {showUploadForm && (
               <div className="mt-6 p-6 bg-gradient-to-br from-blue-50 to-green-50 rounded-xl border-2 border-dashed border-blue-200 transition-all duration-500">
                 <div className="mb-4">
@@ -287,7 +492,6 @@ const Gallery = () => {
               </div>
             )}
 
-            {/* Résultat d'upload animé */}
             {uploadResult && (
               <div className={`mt-4 p-4 rounded-xl border-2 transition-all duration-500 ${
                 uploadResult.success 
@@ -314,9 +518,6 @@ const Gallery = () => {
                             {uploadResult.data.status === 'approved' ? '✅ Approuvé' : '⏳ En attente de modération'}
                           </span>
                         </p>
-                        {uploadResult.type === 'partition' && (
-                          <p><strong>📁 Type:</strong> Partition musicale</p>
-                        )}
                       </div>
                     )}
                   </div>
@@ -325,14 +526,13 @@ const Gallery = () => {
             )}
           </div>
 
-          {/* CTA Connexion Élégant */}
           {!currentUser && (
             <div className="mb-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl shadow-2xl overflow-hidden">
               <div className="p-8 text-center text-white">
                 <div className="text-6xl mb-4">🎭</div>
                 <h3 className="text-2xl font-bold mb-2">Rejoignez l'aventure musicale</h3>
                 <p className="text-blue-100 mb-6 text-lg">
-                  Connectez-vous pour partager vos médias, partitions et contributions avec la communauté C.A.S.T.
+                  Connectez-vous pour accéder aux documents, partitions et partager vos médias avec la communauté C.A.S.T.
                 </p>
                 <div className="flex gap-4 justify-center">
                   <a 
@@ -360,6 +560,7 @@ const Gallery = () => {
               setViewMode={setViewMode}
               onFilterChange={setFilteredMedia}
               allMedia={media}
+              onDocumentPreview={handleDocumentPreview}
             />
           ) : (
             <PartitionsContent 
@@ -369,10 +570,8 @@ const Gallery = () => {
             />
           )}
 
-          {/* Modal lightbox */}
           <MediaModal />
 
-          {/* Pied de page informatif */}
           <div className="mt-12 text-center">
             <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-8 border border-gray-200">
               <h4 className="text-xl font-bold text-gray-900 mb-4">💫 Notre Collection Musicale</h4>
@@ -392,14 +591,15 @@ const Gallery = () => {
                   <div className="font-bold text-green-600">{stats.audio}</div>
                   <div className="text-gray-600">Audios</div>
                 </div>
-                <div className="text-center">
-                  <div className="text-3xl mb-2">📝</div>
-                  <div className="font-bold text-orange-600">{stats.totalPartitions}</div>
-                  <div className="text-gray-600">Partitions</div>
-                </div>
+                {currentUser && (
+                  <div className="text-center">
+                    <div className="text-3xl mb-2">📄</div>
+                    <div className="font-bold text-orange-600">{stats.documents}</div>
+                    <div className="text-gray-600">Documents</div>
+                  </div>
+                )}
               </div>
               
-              {/* Lien modération pour admins */}
               {(userProfile?.role === 'admin' || userProfile?.role === 'moderator' || userProfile?.role === 'super-admin') && (
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <a 
@@ -421,25 +621,14 @@ const Gallery = () => {
 };
 
 // Composant pour le contenu Galerie
-const GalleryContent = ({ media, viewMode, setViewMode, onFilterChange, allMedia }) => {
+const GalleryContent = ({ media, viewMode, setViewMode, onFilterChange, allMedia, onDocumentPreview }) => {
   return (
     <div className="space-y-6">
-      {/* Contrôles de vue et filtres */}
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
           <div className="flex items-center gap-4">
             <h3 className="text-lg font-semibold text-gray-900">Mode d'affichage:</h3>
             <div className="flex gap-2">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-3 rounded-lg transition-all duration-300 ${
-                  viewMode === 'grid' 
-                    ? 'bg-blue-500 text-white shadow-lg' 
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-              >
-                ◼️ Grille
-              </button>
               <button
                 onClick={() => setViewMode('masonry')}
                 className={`p-3 rounded-lg transition-all duration-300 ${
@@ -450,6 +639,16 @@ const GalleryContent = ({ media, viewMode, setViewMode, onFilterChange, allMedia
               >
                 🧱 Masonry
               </button>
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-3 rounded-lg transition-all duration-300 ${
+                  viewMode === 'grid' 
+                    ? 'bg-blue-500 text-white shadow-lg' 
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                ◼️ Grille
+              </button>
             </div>
           </div>
           
@@ -458,13 +657,15 @@ const GalleryContent = ({ media, viewMode, setViewMode, onFilterChange, allMedia
           </div>
         </div>
 
-        {/* Filtres avancés */}
         <FilterTags onFilterChange={onFilterChange} allMedia={allMedia} />
       </div>
 
-      {/* Grille de médias */}
       <div className="bg-white/50 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden transition-all duration-500">
-        <GalleryGrid media={media} viewMode={viewMode} />
+        <GalleryGrid 
+          media={media} 
+          viewMode={viewMode} 
+          onDocumentPreview={onDocumentPreview}
+        />
       </div>
     </div>
   );
@@ -474,7 +675,6 @@ const GalleryContent = ({ media, viewMode, setViewMode, onFilterChange, allMedia
 const PartitionsContent = ({ partitions, onFilterChange, allPartitions }) => {
   return (
     <div className="space-y-6">
-      {/* En-tête Partitions */}
       <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg p-6">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
           <div>
@@ -490,7 +690,6 @@ const PartitionsContent = ({ partitions, onFilterChange, allPartitions }) => {
         </div>
       </div>
 
-      {/* Grille de partitions */}
       <div className="bg-white/50 backdrop-blur-sm rounded-2xl shadow-lg overflow-hidden p-6">
         {partitions.length === 0 ? (
           <div className="text-center py-12">
@@ -512,9 +711,18 @@ const PartitionsContent = ({ partitions, onFilterChange, allPartitions }) => {
 
 // Composant Carte Partition
 const PartitionCard = ({ partition }) => {
+  const { currentUser } = useAuth();
+
+  const handleDownload = () => {
+    if (!currentUser) {
+      alert('🔐 Connectez-vous pour télécharger cette partition');
+      return;
+    }
+    moderationService.downloadMedia(partition);
+  };
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-300">
-      {/* En-tête de la partition */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -527,7 +735,6 @@ const PartitionCard = ({ partition }) => {
         </div>
       </div>
 
-      {/* Métadonnées */}
       <div className="space-y-2 mb-4">
         <div className="flex justify-between text-sm">
           <span className="text-gray-500">Difficulté:</span>
@@ -548,7 +755,6 @@ const PartitionCard = ({ partition }) => {
         </div>
       </div>
 
-      {/* Uploader info */}
       <div className="flex items-center justify-between pt-4 border-t border-gray-100">
         <div className="flex items-center gap-2">
           <span className="text-lg">{partition.userAvatar}</span>
@@ -558,7 +764,10 @@ const PartitionCard = ({ partition }) => {
           </div>
         </div>
         
-        <button className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium">
+        <button 
+          onClick={handleDownload}
+          className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium"
+        >
           📥 Télécharger
         </button>
       </div>
@@ -566,7 +775,7 @@ const PartitionCard = ({ partition }) => {
   );
 };
 
-// MÉDIAS LOCAUX OPTIMISÉS AVEC INFORMATIONS MEMBRES
+// MÉDIAS LOCAUX AVEC DOCUMENTS
 const castMedia = [
   // Médias Officiels
   {
@@ -582,20 +791,40 @@ const castMedia = [
     aspectRatio: '4:3',
     featured: true
   },
+
+  // Documents PDF (exemples) - Visibles uniquement aux utilisateurs connectés
   {
-    id: 2,
-    type: 'image',
-    url: '/images/gallery/galerie2.jpg',
-    title: 'Répétition Intensive',
-    description: 'Moment de travail et de perfectionnement en groupe',
-    tags: ['repetition', 'ensemble', 'travail'],
-    category: 'repetitions',
+    id: 201,
+    type: 'document',
+    url: 'https://res.cloudinary.com/dqzyuz3gu/image/upload/v1762851329/w1cs1qy71ivfgpaok5jt.pdf',
+    title: 'Guide du Choriste Débutant',
+    description: 'Document complet pour les nouveaux membres de la chorale',
+    tags: ['guide', 'débutant', 'documentation'],
+    category: 'documents',
     source: 'official',
     status: 'approved',
-    aspectRatio: '3:4'
+    fileSize: 2457600,
+    uploadedBy: 'Admin CAST',
+    userAvatar: '👨‍💼',
+    uploadDate: '2024-01-20'
+  },
+  {
+    id: 202,
+    type: 'document',
+    url: 'https://res.cloudinary.com/dqzyuz3gu/image/upload/v1762844886/j6luoz6qeroi9gcvykot.pdf',
+    title: 'Répertoire Musical 2024',
+    description: 'Liste complète des chants au répertoire cette année',
+    tags: ['repertoire', 'planning', 'document'],
+    category: 'documents',
+    source: 'official',
+    status: 'approved',
+    fileSize: 1536000,
+    uploadedBy: 'Admin CAST',
+    userAvatar: '👨‍💼',
+    uploadDate: '2024-01-18'
   },
 
-  // Médias Uploadés par les Membres (exemples)
+  // Autres médias
   {
     id: 101,
     type: 'image',
@@ -611,104 +840,6 @@ const castMedia = [
     userAvatar: '👩',
     uploadDate: '2024-01-15',
     memberId: 'MEM-2024-001'
-  },
-  {
-    id: 102,
-    type: 'video',
-    url: '/videos/presentation-cast.mp4',
-    title: 'Répétition Solo - Soprano',
-    description: 'Partage de ma préparation personnelle',
-    tags: ['solo', 'soprano', 'repetition', 'partage'],
-    category: 'repetitions',
-    source: 'member',
-    status: 'approved',
-    duration: '2:45',
-    uploadedBy: 'Sophie L.',
-    userAvatar: '👩',
-    uploadDate: '2024-01-12',
-    memberId: 'MEM-2024-002'
-  },
-  {
-    id: 103,
-    type: 'audio',
-    url: '/audio/cantique-1.mp3',
-    title: 'Improvisation Vocale',
-    description: 'Expérimentation harmonique personnelle',
-    tags: ['improvisation', 'vocale', 'experimentation'],
-    category: 'creations',
-    source: 'member',
-    status: 'approved',
-    duration: '3:15',
-    uploadedBy: 'Jean P.',
-    userAvatar: '👨',
-    uploadDate: '2024-01-10',
-    memberId: 'MEM-2024-003'
-  },
-  {
-    id: 104,
-    type: 'image',
-    url: '/images/gallery/galerie4.jpg',
-    title: 'Détail Partition Ancienne',
-    description: 'Partage d\'une partition historique',
-    tags: ['partition', 'historique', 'detail'],
-    category: 'partitions',
-    source: 'member',
-    status: 'approved',
-    aspectRatio: '2:3',
-    uploadedBy: 'Pierre M.',
-    userAvatar: '👨',
-    uploadDate: '2024-01-08',
-    memberId: 'MEM-2024-004'
-  },
-
-  // Autres médias existants...
-  {
-    id: 5,
-    type: 'image',
-    url: '/images/gallery/galerie5.jpg',
-    title: 'Répétition Piano',
-    description: 'Session de travail avec accompagnateur',
-    tags: ['repetition', 'piano', 'musique'],
-    category: 'repetitions',
-    source: 'official',
-    status: 'approved',
-    aspectRatio: '1:1'
-  },
-  {
-    id: 6,
-    type: 'image',
-    url: '/images/gallery/galerie6.jpg',
-    title: 'Moments de Partage',
-    description: 'Échanges authentiques entre membres',
-    tags: ['partage', 'communauté', 'rencontre'],
-    category: 'evenements',
-    source: 'official',
-    status: 'approved',
-    aspectRatio: '4:3'
-  },
-  {
-    id: 22,
-    type: 'video', 
-    url: '/videos/message-spirituel.mp4',
-    title: 'Message Spirituel & Musical',
-    description: 'Partage spirituel accompagné de mélodies',
-    tags: ['spiritualite', 'message', 'partage'],
-    category: 'evenements',
-    source: 'official',
-    status: 'approved',
-    duration: '4:20'
-  },
-  {
-    id: 32,
-    type: 'audio',
-    url: '/audio/intro-cast.mp3', 
-    title: 'Introduction C.A.S.T. Audio',
-    description: 'Présentation audio de la chorale',
-    tags: ['audio', 'introduction', 'presentation'],
-    category: 'evenements',
-    source: 'official',
-    status: 'approved',
-    duration: '1:30'
   }
 ];
 
