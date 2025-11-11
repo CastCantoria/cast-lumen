@@ -269,7 +269,7 @@ const AdminNavigation = () => {
   const renderNavigationItem = (item) => {
     if (item.type === 'section') {
       return (
-        <div key={item.id} className="px-4 py-3 mt-6 first:mt-0">
+        <div key={item.id} className="px-4 py-3 mt-6 first:mt-0 border-t border-gray-200 first:border-t-0">
           <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
             {item.title}
           </h3>
@@ -285,14 +285,15 @@ const AdminNavigation = () => {
         to={item.path}
         className={`flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-colors mx-2 ${
           isItemActive
-            ? 'bg-blue-100 text-blue-700 border-l-4 border-blue-500'
-            : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+            ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-500 shadow-sm'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 border-l-4 border-transparent'
         } ${item.parent ? 'ml-6' : ''}`}
+        title={item.description}
       >
         <div className="flex items-center w-full">
-          <span className="mr-3 text-lg">{item.title.split(' ')[0]}</span>
+          <span className="mr-3 text-lg flex-shrink-0">{item.title.split(' ')[0]}</span>
           <div className="flex-1 min-w-0">
-            <div className="font-medium truncate">
+            <div className="font-medium truncate text-gray-900">
               {item.title.replace(/^[^\s]+\s/, '')}
             </div>
             {item.description && (
@@ -302,7 +303,7 @@ const AdminNavigation = () => {
             )}
           </div>
           {isItemActive && (
-            <div className="w-2 h-2 bg-blue-500 rounded-full ml-2"></div>
+            <div className="w-2 h-2 bg-blue-500 rounded-full ml-2 flex-shrink-0"></div>
           )}
         </div>
       </Link>
@@ -311,44 +312,60 @@ const AdminNavigation = () => {
 
   if (!userProfile) {
     return (
-      <div className="admin-navigation p-4">
-        <div className="text-center text-gray-500">
-          Chargement des permissions...
+      <div className="admin-navigation bg-white h-full overflow-y-auto border-r border-gray-200">
+        <div className="p-4">
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mr-3"></div>
+            <span className="text-gray-500 text-sm">Chargement...</span>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="admin-navigation bg-white h-full overflow-y-auto">
+    <div className="admin-navigation bg-white h-full overflow-y-auto border-r border-gray-200 flex flex-col">
       {/* En-tête */}
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
-          Navigation Admin
-        </h2>
+      <div className="p-4 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-lg">C</span>
+          </div>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">
+              C.A.S.T. Admin
+            </h2>
+            <p className="text-xs text-gray-600">Panel de gestion</p>
+          </div>
+        </div>
+        
         <div className="flex items-center justify-between">
           <div className="text-sm text-gray-600">
             Connecté en tant que:
           </div>
           <span className={`px-2 py-1 text-xs font-medium rounded-full ${
             userProfile.role === 'super-admin' 
-              ? 'bg-purple-100 text-purple-800'
+              ? 'bg-purple-100 text-purple-800 border border-purple-200'
               : userProfile.role === 'admin'
-              ? 'bg-blue-100 text-blue-800'
+              ? 'bg-blue-100 text-blue-800 border border-blue-200'
               : userProfile.role === 'moderator'
-              ? 'bg-orange-100 text-orange-800'
-              : 'bg-green-100 text-green-800'
+              ? 'bg-orange-100 text-orange-800 border border-orange-200'
+              : 'bg-green-100 text-green-800 border border-green-200'
           }`}>
+            {userProfile.role === 'super-admin' && '👑 '}
+            {userProfile.role === 'admin' && '⚙️ '}
+            {userProfile.role === 'moderator' && '🛡️ '}
             {userProfile.role}
           </span>
         </div>
       </div>
       
       {/* Menu de navigation */}
-      <nav className="p-2 space-y-1">
+      <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
         {filteredItems.length === 0 ? (
           <div className="text-center py-8 text-gray-500">
-            Aucun accès administrateur
+            <div className="text-4xl mb-2">🔒</div>
+            <p className="text-sm">Aucun accès administrateur</p>
           </div>
         ) : (
           filteredItems.map(renderNavigationItem)
@@ -356,9 +373,10 @@ const AdminNavigation = () => {
       </nav>
 
       {/* Pied de page */}
-      <div className="p-4 border-t border-gray-200 mt-auto">
+      <div className="p-4 border-t border-gray-200 bg-gray-50">
         <div className="text-xs text-gray-500 text-center">
-          C.A.S.T. Admin Panel v2.0
+          <div className="font-semibold text-gray-700 mb-1">C.A.S.T. Cantoria</div>
+          <div>Admin Panel v2.0</div>
         </div>
       </div>
     </div>

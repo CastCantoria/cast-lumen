@@ -1,19 +1,19 @@
 import { 
   collection, 
   doc, 
+  addDoc, 
   updateDoc, 
   query, 
   where, 
   orderBy,
   getDocs,
   getDoc,
-  addDoc,
-  Timestamp
+  serverTimestamp 
 } from 'firebase/firestore';
-import { db, ensureSafeFirestoreData, safeAddDoc } from '../lib/firebase';
+import { db, ensureSafeFirestoreData, safeAddDoc } from '../lib/firebase'; // ✅ IMPORT CORRIGÉ
 
 export const moderationService = {
-  // Soumettre un média pour modération
+  // Soumettre un média pour modération (CORRIGÉ)
   async submitMediaForModeration(mediaData) {
     try {
       console.log('📤 Début soumission modération...');
@@ -22,7 +22,7 @@ export const moderationService = {
       const safeModerationData = ensureSafeFirestoreData({
         // Valeurs par défaut garanties
         status: 'pending',
-        submittedAt: Timestamp.now(),
+        submittedAt: serverTimestamp(),
         moderatedAt: null,
         moderatorId: null,
         rejectionReason: null,
@@ -76,7 +76,7 @@ export const moderationService = {
       
       const updateData = ensureSafeFirestoreData({
         status: 'approved',
-        moderatedAt: Timestamp.now(),
+        moderatedAt: serverTimestamp(),
         moderatorId: moderatorId || 'system',
         notes: notes || 'Approuvé par modérateur',
         rejectionReason: null,
@@ -103,7 +103,7 @@ export const moderationService = {
       
       const updateData = ensureSafeFirestoreData({
         status: 'rejected',
-        moderatedAt: Timestamp.now(),
+        moderatedAt: serverTimestamp(),
         moderatorId: moderatorId || 'system',
         rejectionReason: reason || 'Non conforme',
         notes: notes || 'Rejeté par modérateur',
@@ -120,59 +120,28 @@ export const moderationService = {
     }
   },
 
-  // Récupérer les médias en attente - VERSION TEMPORAIRE SANS INDEX
+  // Récupérer les médias en attente
   async getPendingMedia() {
     try {
-      console.log('🔄 Récupération médias en attente (version temporaire)...');
+      console.log('🔄 Récupération médias en attente...');
       
-      // REQUÊTE SIMPLIFIÉE - pas besoin d'index composite
       const q = query(
         collection(db, 'gallery_moderation'),
-        where('status', '==', 'pending')
-        // Retirer temporairement orderBy pour éviter l'erreur d'index
-        // orderBy('submittedAt', 'desc')
+        where('status', '==', 'pending'),
+        orderBy('submittedAt', 'desc')
       );
       
-      const querySnapshot = await getDocs(q);
-      let media = querySnapshot.docs.map(doc => ({
+      const snapshot = await getDocs(q);
+      const media = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
       
-      // Tri MANUEL par date (plus récent en premier)
-      media.sort((a, b) => {
-        const dateA = a.submittedAt?.toDate?.() || new Date(a.submittedAt);
-        const dateB = b.submittedAt?.toDate?.() || new Date(b.submittedAt);
-        return dateB - dateA; // Décroissant
-      });
-      
-      console.log(`✅ ${media.length} médias en attente récupérés (version temporaire)`);
+      console.log(`📊 ${media.length} médias en attente trouvés`);
       return media;
     } catch (error) {
       console.error('❌ Erreur récupération pending:', error);
-      
-      // Fallback ultime : récupérer TOUS les médias et filtrer
-      try {
-        console.log('🔄 Tentative de fallback...');
-        const querySnapshot = await getDocs(collection(db, 'gallery_moderation'));
-        let allMedia = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        
-        const pendingMedia = allMedia.filter(item => item.status === 'pending');
-        pendingMedia.sort((a, b) => {
-          const dateA = a.submittedAt?.toDate?.() || new Date(a.submittedAt);
-          const dateB = b.submittedAt?.toDate?.() || new Date(b.submittedAt);
-          return dateB - dateA;
-        });
-        
-        console.log(`✅ ${pendingMedia.length} médias récupérés (fallback)`);
-        return pendingMedia;
-      } catch (fallbackError) {
-        console.error('❌ Erreur même en fallback:', fallbackError);
-        return [];
-      }
+      return [];
     }
   },
 
@@ -270,25 +239,13 @@ export const moderationService = {
       
       // Nettoyer les données pour la galerie principale
       const galleryData = ensureSafeFirestoreData({
-        url: mediaData.url,
-        type: mediaData.type,
-        title: mediaData.title,
-        description: mediaData.description,
-        tags: mediaData.tags,
-        category: mediaData.category,
-        source: 'member',
-        status: 'approved',
-        publishedAt: Timestamp.now(),
+        ...mediaData,
+        publishedAt: serverTimestamp(),
         views: 0,
         likes: 0,
         approved: true,
-        moderationId: mediaId,
-        uploadedBy: mediaData.uploadedBy,
-        userDisplayName: mediaData.userDisplayName,
-        dimensions: mediaData.dimensions,
-        duration: mediaData.duration,
-        fileSize: mediaData.fileSize,
-        format: mediaData.format
+        source: 'member',
+        moderationId: mediaId
       });
       
       await safeAddDoc(collection(db, 'gallery'), galleryData);
@@ -335,32 +292,6 @@ export const moderationService = {
     } catch (error) {
       console.error('❌ Erreur récupération média:', error);
       throw error;
-    }
-  },
-
-  // Nouvelle méthode pour récupérer les médias approuvés pour la galerie publique
-  async getPublicGalleryMedia() {
-    try {
-      console.log('🔄 Récupération médias galerie publique...');
-      
-      const q = query(
-        collection(db, 'gallery'),
-        where('status', '==', 'approved'),
-        where('approved', '==', true),
-        orderBy('publishedAt', 'desc')
-      );
-      
-      const snapshot = await getDocs(q);
-      const media = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      
-      console.log(`📊 ${media.length} médias publics trouvés`);
-      return media;
-    } catch (error) {
-      console.error('❌ Erreur récupération galerie publique:', error);
-      return [];
     }
   }
 };

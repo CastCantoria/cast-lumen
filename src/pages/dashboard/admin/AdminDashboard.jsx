@@ -1,8 +1,8 @@
-// src/pages/dashboard/admin/AdminDashboard.jsx
 import React, { useState, useEffect } from 'react';
 import { useAuth } from "../../../contexts/AuthContext";
 import { collection, getDocs, query, where, doc, updateDoc, deleteDoc, setDoc } from 'firebase/firestore';
 import { db } from "../../../lib/firebase";
+import { moderationService } from '../../../services/moderationService';
 
 // IMPORT DES DASHBOARDS - AJOUTÉ
 import EventsDashboard from './events/EventsDashboard';
@@ -18,6 +18,7 @@ const ContentIcon = () => <span>📝</span>;
 const RepertoireIcon = () => <span>🎼</span>;
 const StatsIcon = () => <span>📈</span>;
 const RefreshIcon = () => <span>🔄</span>;
+const ModerationIcon = () => <span>🛡️</span>;
 
 const AdminDashboard = () => {
   const { userProfile, currentUser, logout } = useAuth();
@@ -26,6 +27,7 @@ const AdminDashboard = () => {
     adminCount: 0,
     activeEvents: 0,
     pendingContent: 0,
+    pendingModeration: 0
   });
   const [allUsers, setAllUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -89,11 +91,20 @@ const AdminDashboard = () => {
         user.role === 'admin' || user.role === 'super-admin'
       );
 
+      // Récupérer les statistiques de modération
+      let moderationStats = { pending: 0 };
+      try {
+        moderationStats = await moderationService.getModerationStats();
+      } catch (error) {
+        console.log('Aucune donnée de modération trouvée');
+      }
+
       setSystemStats({
         totalUsers: allUsers.length,
         adminCount: adminUsers.length,
         activeEvents: 0,
         pendingContent: 0,
+        pendingModeration: moderationStats.pending || 0
       });
 
       setAllUsers(allUsers);
@@ -141,9 +152,9 @@ const AdminDashboard = () => {
 
         case 'role':
           // Ordre personnalisé pour les rôles
-          const roleOrder = { 'super-admin': 0, 'admin': 1, 'member': 2, 'user': 3 };
-          const aRoleOrder = roleOrder[aValue] ?? 4;
-          const bRoleOrder = roleOrder[bValue] ?? 4;
+          const roleOrder = { 'super-admin': 0, 'admin': 1, 'moderator': 2, 'member': 3, 'user': 4 };
+          const aRoleOrder = roleOrder[aValue] ?? 5;
+          const bRoleOrder = roleOrder[bValue] ?? 5;
           
           if (sortConfig.direction === 'asc') {
             return aRoleOrder - bRoleOrder;
@@ -453,18 +464,22 @@ const AdminDashboard = () => {
   };
 
   // Composant Carte de Statistique
-  const StatCard = ({ icon, title, value, subtitle, color, loading }) => {
+  const StatCard = ({ icon, title, value, subtitle, color, loading, onClick }) => {
     const colorClasses = {
-      blue: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-600' },
-      green: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-600' },
-      orange: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-600' },
-      purple: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-600' }
+      blue: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-600', hover: 'hover:bg-blue-100' },
+      green: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-600', hover: 'hover:bg-green-100' },
+      orange: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-600', hover: 'hover:bg-orange-100' },
+      purple: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-600', hover: 'hover:bg-purple-100' },
+      red: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-600', hover: 'hover:bg-red-100' }
     };
 
     const colorClass = colorClasses[color] || colorClasses.blue;
 
     return (
-      <div className={`bg-white rounded-lg shadow-sm border ${colorClass.border} p-4 sm:p-6 transition-transform hover:translate-y-[-2px] hover:shadow-md`}>
+      <div 
+        className={`bg-white rounded-lg shadow-sm border ${colorClass.border} p-4 sm:p-6 transition-all cursor-pointer ${onClick ? colorClass.hover : ''} ${onClick ? 'hover:translate-y-[-2px] hover:shadow-md' : ''}`}
+        onClick={onClick}
+      >
         <div className="flex items-center mb-3">
           <div className={`${colorClass.text} mr-3 text-lg sm:text-xl`}>
             {icon}
@@ -482,6 +497,12 @@ const AdminDashboard = () => {
               {value}
             </div>
             <p className="text-gray-600 text-xs sm:text-sm">{subtitle}</p>
+            {onClick && (
+              <div className="mt-2 text-xs text-gray-500 flex items-center">
+                <span>Cliquer pour accéder</span>
+                <span className="ml-1">→</span>
+              </div>
+            )}
           </>
         )}
       </div>
@@ -558,18 +579,44 @@ const AdminDashboard = () => {
                 loading={loading}
               />
               <StatCard
-                icon="📝"
+                icon="🛡️"
                 title="En attente"
-                value={systemStats.pendingContent}
-                subtitle="Contenu à modérer"
-                color="blue"
+                value={systemStats.pendingModeration}
+                subtitle="Médias à modérer"
+                color="red"
                 loading={loading}
+                onClick={() => window.location.href = '/admin/media'}
               />
             </div>
 
+            {/* Section Modération en Vedette */}
+            {systemStats.pendingModeration > 0 && (
+              <div className="mb-6 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg shadow-lg p-6 text-white">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="p-3 bg-white/20 rounded-2xl">
+                    <span className="text-2xl">🛡️</span>
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-semibold">Action de Modération Requise</h2>
+                    <p className="text-orange-100 text-sm mt-1">
+                      {systemStats.pendingModeration} média(s) en attente de validation
+                    </p>
+                  </div>
+                </div>
+                
+                <button
+                  onClick={() => window.location.href = '/admin/media'}
+                  className="w-full bg-white text-orange-600 text-center py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center gap-2"
+                >
+                  <ModerationIcon />
+                  Accéder au Panel de Modération
+                </button>
+              </div>
+            )}
+
             {/* Actions rapides */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8">
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">Actions Rapides</h3>
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-4">⚡ Actions Rapides</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {menuItems.map((item) => (
                   <button 
@@ -581,6 +628,14 @@ const AdminDashboard = () => {
                     {item.name}
                   </button>
                 ))}
+                {/* Bouton modération supplémentaire */}
+                <button 
+                  onClick={() => window.location.href = '/admin/media'}
+                  className="bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-lg font-medium transition-colors flex items-center justify-center text-sm sm:text-base"
+                >
+                  <span className="mr-2">🛡️</span>
+                  Modération
+                </button>
               </div>
             </div>
 
@@ -599,6 +654,12 @@ const AdminDashboard = () => {
                     <p className="text-gray-600 text-sm">Administrateurs actifs</p>
                     <p className="text-xl font-semibold text-purple-600">
                       {systemStats.adminCount} admin(s)
+                    </p>
+                  </div>
+                  <div className="mb-4">
+                    <p className="text-gray-600 text-sm">Contenu en attente</p>
+                    <p className={`text-xl font-semibold ${systemStats.pendingModeration > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                      {systemStats.pendingModeration} média(s)
                     </p>
                   </div>
                 </div>
@@ -620,6 +681,18 @@ const AdminDashboard = () => {
                       {new Date().toLocaleString('fr-FR')}
                     </p>
                   </div>
+                  {systemStats.pendingModeration > 0 && (
+                    <div className="mb-4">
+                      <p className="text-gray-600 text-sm">Action recommandée</p>
+                      <button
+                        onClick={() => window.location.href = '/admin/media'}
+                        className="mt-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center gap-2"
+                      >
+                        <ModerationIcon />
+                        Traiter la modération
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -680,6 +753,7 @@ const AdminDashboard = () => {
                     <option value="">Tous les rôles</option>
                     <option value="super-admin">Super Admin</option>
                     <option value="admin">Admin</option>
+                    <option value="moderator">Modérateur</option>
                     <option value="member">Membre</option>
                     <option value="user">Utilisateur</option>
                   </select>
@@ -812,6 +886,7 @@ const AdminDashboard = () => {
                               >
                                 <option value="user">Utilisateur</option>
                                 <option value="member">Membre</option>
+                                <option value="moderator">Modérateur</option>
                                 <option value="admin">Admin</option>
                                 {userProfile.role === 'super-admin' && (
                                   <option value="super-admin">Super Admin</option>
@@ -821,6 +896,7 @@ const AdminDashboard = () => {
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 user.role === 'super-admin' ? 'bg-purple-100 text-purple-800 border border-purple-300' :
                                 user.role === 'admin' ? 'bg-red-100 text-red-800' :
+                                user.role === 'moderator' ? 'bg-orange-100 text-orange-800' :
                                 user.role === 'member' ? 'bg-green-100 text-green-800' :
                                 'bg-blue-100 text-blue-800'
                               }`}>
@@ -1004,7 +1080,7 @@ const AdminDashboard = () => {
     }
   };
 
-  if (!userProfile || (userProfile.role !== 'admin' && userProfile.role !== 'super-admin')) {
+  if (!userProfile || (userProfile.role !== 'admin' && userProfile.role !== 'super-admin' && userProfile.role !== 'moderator')) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 max-w-md w-full text-center">
@@ -1047,7 +1123,9 @@ const AdminDashboard = () => {
               <div className="flex items-center space-x-2 bg-blue-50 px-3 py-1 rounded-lg">
                 <span className="text-blue-600">🛡️</span>
                 <span className="text-sm font-medium text-blue-700 uppercase">
-                  {userProfile?.role === 'super-admin' ? 'SUPER ADMIN' : 'ADMIN'}
+                  {userProfile?.role === 'super-admin' ? 'SUPER ADMIN' : 
+                   userProfile?.role === 'admin' ? 'ADMIN' : 
+                   userProfile?.role === 'moderator' ? 'MODÉRATEUR' : 'UTILISATEUR'}
                 </span>
               </div>
 

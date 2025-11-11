@@ -71,6 +71,19 @@ const usePermissions = () => {
   const canEditMemberContent = () => hasPermission(PERMISSIONS.EDIT_MEMBER_CONTENT);
 
   // ====================
+  // UTILITAIRES SPÉCIFIQUES MODÉRATION
+  // ====================
+
+  // Vérifier si l'utilisateur peut modérer
+  const canModerate = () => hasAnyRole(['super-admin', 'admin', 'moderator']);
+
+  // Vérifier si l'utilisateur peut auto-approuver ses médias
+  const canAutoApproveMedia = () => hasAnyRole(['super-admin', 'admin', 'moderator']);
+
+  // Vérifier l'accès au panel de modération
+  const canAccessModerationPanel = () => hasAnyRole(['super-admin', 'admin', 'moderator']);
+
+  // ====================
   // UTILITAIRES
   // ====================
 
@@ -118,6 +131,11 @@ const usePermissions = () => {
     canAccessMemberContent,
     canCreateMemberContent,
     canEditMemberContent,
+    
+    // Modération spécifique
+    canModerate,
+    canAutoApproveMedia,
+    canAccessModerationPanel,
     
     // Rôle actuel et statuts
     currentRole: userProfile?.role,

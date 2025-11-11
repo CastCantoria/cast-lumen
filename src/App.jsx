@@ -32,7 +32,7 @@ import SetupAdmins from './pages/admin/SetupAdmins';
 // Pages privées
 import Profile from './pages/private/Profile';
 import Blog from './pages/private/Blog';
-import Chat from './pages/private/Chat'; // ✅ CHAT INTÉGRÉ
+import Chat from './pages/private/Chat';
 import Newsletter from './pages/private/Newsletter';
 
 // Pages membres
@@ -43,6 +43,9 @@ import Rehearsals from './pages/member/Rehearsals';
 import MediaManager from './pages/admin/MediaManager';
 import PartitionUpload from './pages/admin/PartitionUpload';
 import NoticesManager from './pages/admin/NoticesManager';
+
+// NOUVELLE PAGE DE MODÉRATION
+import MediaModeration from './pages/admin/MediaModeration';
 
 // Dashboards
 import Dashboard from './components/dashboard/Dashboard';
@@ -115,7 +118,7 @@ function App() {
                 } 
               />
 
-              {/* ✅ CHAT COMMUNAUTAIRE - ROUTE PRINCIPALE */}
+              {/* CHAT COMMUNAUTAIRE - ROUTE PRINCIPALE */}
               <Route 
                 path="/chat" 
                 element={
@@ -169,8 +172,19 @@ function App() {
               {/* ROUTES MODÉRATION MÉDIAS - ADMIN ET MODÉRATEURS */}
               {/* ==================== */}
 
+              {/* NOUVELLE ROUTE DE MODÉRATION */}
               <Route 
                 path="/admin/media" 
+                element={
+                  <RequireRole allowedRoles={['admin', 'moderator', 'super-admin']}>
+                    <MediaModeration />
+                  </RequireRole>
+                } 
+              />
+
+              {/* Ancienne route MediaManager pour compatibilité */}
+              <Route 
+                path="/admin/media-manager" 
                 element={
                   <RequireRole allowedRoles={['admin', 'moderator', 'super-admin']}>
                     <MediaManager />
@@ -305,6 +319,11 @@ function App() {
                         <a href="/gallery" className="text-indigo-600 hover:text-indigo-800 font-medium">
                           🖼️ Galerie Publique
                         </a>
+                        {(window.location.pathname.includes('admin') || window.location.pathname.includes('moderation')) && (
+                          <a href="/admin/media" className="text-orange-600 hover:text-orange-800 font-medium">
+                            🛡️ Panel de Modération
+                          </a>
+                        )}
                       </div>
                     </div>
 
