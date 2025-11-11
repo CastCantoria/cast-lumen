@@ -1,19 +1,17 @@
 import { 
   collection, 
   doc, 
-  addDoc, 
   updateDoc, 
   query, 
   where, 
   orderBy,
   getDocs,
-  getDoc,
-  serverTimestamp 
+  getDoc
 } from 'firebase/firestore';
-import { db, ensureSafeFirestoreData, safeAddDoc } from '../lib/firebase'; // ✅ IMPORT CORRIGÉ
+import { db, ensureSafeFirestoreData, safeAddDoc, serverTimestamp } from '../lib/firebase'; // ✅ IMPORT CORRIGÉ
 
 export const moderationService = {
-  // Soumettre un média pour modération (CORRIGÉ)
+  // Soumettre un média pour modération (CORRIGÉ - utilise safeAddDoc)
   async submitMediaForModeration(mediaData) {
     try {
       console.log('📤 Début soumission modération...');
