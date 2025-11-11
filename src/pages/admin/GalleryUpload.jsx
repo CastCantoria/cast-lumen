@@ -10,7 +10,8 @@ import {
   addDoc, 
   collection, 
   serverTimestamp,
-  secureUploadData 
+  prepareFirestoreData,
+  createUploadData
 } from '../../lib/firebase';
 
 const GalleryUpload = () => {
@@ -65,6 +66,16 @@ const GalleryUpload = () => {
     setUploadSuccess('Fichier sélectionné: ' + file.name);
   };
 
+  // Fonction de débogage pour vérifier les données
+  const debugData = (data, label) => {
+    console.log(`🔍 ${label}:`, JSON.parse(JSON.stringify(data)));
+    const hasUndefined = Object.values(data).some(value => value === undefined);
+    if (hasUndefined) {
+      console.error('❌ Données avec undefined:', data);
+    }
+    return data;
+  };
+
   const handleUpload = async () => {
     if (!selectedFile) {
       setUploadError('Veuillez sélectionner un fichier');
@@ -78,6 +89,7 @@ const GalleryUpload = () => {
 
     try {
       const user = auth.currentUser;
+      console.log('👤 Utilisateur actuel:', user);
       
       // Créer une référence de stockage unique
       const timestamp = Date.now();
@@ -85,44 +97,60 @@ const GalleryUpload = () => {
       const fileName = `gallery_${timestamp}.${fileExtension}`;
       const storageRef = ref(storage, `gallery/${fileName}`);
 
-      // Préparer les données sécurisées
-      const uploadData = secureUploadData(selectedFile, user, {
-        title: selectedFile.name.replace(/\.[^/.]+$/, ""), // Retirer l'extension
-        description: `Image uploadée ${new Date().toLocaleDateString()}`,
+      // CRÉATION DES DONNÉES SÉCURISÉES
+      const uploadData = createUploadData(selectedFile, user, {
+        title: selectedFile.name.replace(/\.[^/.]+$/, ""),
+        description: `Image uploadée ${new Date().toLocaleDateString('fr-FR')}`,
         category: 'general',
-        tags: []
+        tags: ['upload']
       });
+
+      // DÉBOGUAGE : Vérifier les données avant envoi
+      const cleanedData = debugData(uploadData, 'Données nettoyées pour Firestore');
+      
+      // Vérification finale pour userRole
+      if (!cleanedData.userRole) {
+        cleanedData.userRole = 'user'; // Garantie absolue
+      }
+
+      console.log('📤 Début upload vers:', storageRef.fullPath);
 
       // Démarrer l'upload
       const uploadTask = uploadBytesResumable(storageRef, selectedFile);
 
       uploadTask.on('state_changed',
         (snapshot) => {
-          // Mettre à jour la progression
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
           setProgress(Math.round(progress));
         },
         (error) => {
-          // Gérer les erreurs d'upload
-          console.error('Erreur upload:', error);
+          console.error('❌ Erreur upload:', error);
           setUploadError(`Erreur lors de l'upload: ${error.message}`);
           setUploading(false);
         },
         async () => {
           try {
             // Upload réussi - obtenir l'URL de téléchargement
+            console.log('✅ Upload storage réussi, récupération URL...');
             const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
             
-            // Ajouter les métadonnées à Firestore
-            const docData = {
-              ...uploadData,
+            // Données finales pour Firestore
+            const finalData = {
+              ...cleanedData,
               fileURL: downloadURL,
               storagePath: uploadTask.snapshot.ref.fullPath,
-              dimensions: await getImageDimensions(selectedFile)
+              dimensions: await getImageDimensions(selectedFile),
+              lastUpdated: serverTimestamp()
             };
 
-            const docRef = await addDoc(collection(db, 'gallery_moderation'), docData);
+            // Dernière vérification
+            const finalCleanedData = prepareFirestoreData(finalData);
+            debugData(finalCleanedData, 'Données finales pour Firestore');
+
+            console.log('📝 Ajout à Firestore...');
+            const docRef = await addDoc(collection(db, 'gallery_moderation'), finalCleanedData);
             
+            console.log('✅ Document créé avec ID:', docRef.id);
             setUploadSuccess(`✅ Upload réussi! Fichier en attente de modération. ID: ${docRef.id}`);
             setSelectedFile(null);
             setProgress(0);
@@ -132,7 +160,7 @@ const GalleryUpload = () => {
               fileInputRef.current.value = '';
             }
           } catch (error) {
-            console.error('Erreur Firestore:', error);
+            console.error('❌ Erreur Firestore:', error);
             setUploadError(`Erreur lors de l'enregistrement: ${error.message}`);
           } finally {
             setUploading(false);
@@ -141,7 +169,7 @@ const GalleryUpload = () => {
       );
 
     } catch (error) {
-      console.error('Erreur générale:', error);
+      console.error('❌ Erreur générale:', error);
       setUploadError(`Erreur: ${error.message}`);
       setUploading(false);
     }
@@ -214,10 +242,7 @@ const GalleryUpload = () => {
               id="file-upload"
             />
             
-            <label 
-              htmlFor="file-upload" 
-              className="cursor-pointer block"
-            >
+            <label htmlFor="file-upload" className="cursor-pointer block">
               <div className="flex flex-col items-center justify-center space-y-4">
                 <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />

@@ -82,32 +82,40 @@ export {
   deleteObject
 } from 'firebase/storage';
 
-// Helper pour les données Firestore
+// Helper pour nettoyer les données Firestore (supprimer undefined)
 export const prepareFirestoreData = (data) => {
-  const prepared = {};
+  const cleaned = {};
   
   Object.entries(data).forEach(([key, value]) => {
-    // Supprimer les champs undefined et null
+    // Supprimer les champs undefined, null et les objets vides
     if (value !== undefined && value !== null) {
-      prepared[key] = value;
+      if (typeof value === 'object' && !(value instanceof Date) && !Array.isArray(value)) {
+        // Nettoyer les objets imbriqués
+        const cleanedNested = prepareFirestoreData(value);
+        if (Object.keys(cleanedNested).length > 0) {
+          cleaned[key] = cleanedNested;
+        }
+      } else {
+        cleaned[key] = value;
+      }
     }
   });
   
-  return prepared;
+  return cleaned;
 };
 
-// Helper pour l'upload sécurisé
-export const secureUploadData = (file, user = null, additionalData = {}) => {
+// Helper pour créer des données d'upload sécurisées
+export const createUploadData = (file, user = null, additionalData = {}) => {
   const baseData = {
-    fileName: file.name || 'sans-nom',
-    fileSize: file.size || 0,
-    fileType: file.type || 'application/octet-stream',
+    fileName: file?.name || 'sans-nom',
+    fileSize: file?.size || 0,
+    fileType: file?.type || 'application/octet-stream',
     uploadDate: serverTimestamp(),
     status: 'pending',
-    userId: user?.uid || null,
-    userEmail: user?.email || null,
-    userRole: user?.role || 'visitor', // Valeur par défaut cruciale
-    userDisplayName: user?.displayName || null,
+    userId: user?.uid || 'anonymous',
+    userEmail: user?.email || 'unknown@example.com',
+    userRole: user?.role || 'user', // VALEUR PAR DÉFAUT GARANTIE
+    userDisplayName: user?.displayName || 'Utilisateur',
     likes: 0,
     reports: 0,
     moderated: false,
@@ -115,9 +123,9 @@ export const secureUploadData = (file, user = null, additionalData = {}) => {
     moderatorId: null,
     moderatorNotes: '',
     metadata: {
-      originalName: file.name,
+      originalName: file?.name || 'sans-nom',
       uploadTime: new Date().toISOString(),
-      userAgent: navigator.userAgent.substring(0, 500) // Limiter la taille
+      userAgent: navigator.userAgent?.substring(0, 200) || 'unknown'
     }
   };
   
@@ -130,6 +138,6 @@ export const secureUploadData = (file, user = null, additionalData = {}) => {
 
 console.log('✅ Firebase initialisé avec succès!');
 console.log('📊 Services disponibles: db, auth, storage, googleProvider');
-console.log('🛠️ Utilitaires: secureUploadData, prepareFirestoreData');
+console.log('🛠️ Utilitaires: prepareFirestoreData, createUploadData');
 
 export default app;
